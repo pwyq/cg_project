@@ -1,3 +1,0 @@
-/home/pwyq/github/cg_group_22/build/CMakeFiles/rebuild_cache.dir
-/home/pwyq/github/cg_group_22/build/CMakeFiles/raytracing.dir
-/home/pwyq/github/cg_group_22/build/CMakeFiles/edit_cache.dir
