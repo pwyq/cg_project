@@ -42,16 +42,20 @@ void Flyscene::initialize(int width, int height) {
 
   glEnable(GL_DEPTH_TEST);
 
-  // for (int i = 0; i<mesh.getNumberOfFaces(); ++i){
-  //   Tucano::Face face = mesh.getFace(i);    
-  //   for (int j =0; j<face.vertex_ids.size(); ++j){
-  //     std::cout<<"vid "<<j<<" "<<face.vertex_ids[j]<<std::endl;
-  //     std::cout<<"vertex "<<mesh.getVertex(face.vertex_ids[j]).transpose()<<std::endl;
-  //     std::cout<<"normal "<<mesh.getNormal(face.vertex_ids[j]).transpose()<<std::endl;
-  //   }
-  //   std::cout<<"mat id "<<face.material_id<<std::endl<<std::endl;
-  //   std::cout<<"face   normal "<<face.normal.transpose() << std::endl << std::endl;
-  // }
+  /*
+   for (int i = 0; i<mesh.getNumberOfFaces(); ++i){
+     Tucano::Face face = mesh.getFace(i);
+     std::cout<<"Face id: "<<i<<std::endl;
+     std::cout<<"mat id "<<face.material_id<<std::endl;
+     std::cout<<"number of verticies of this face: "<<face.vertex_ids.size()<<std::endl;
+     std::cout<<"face   normal "<<face.normal.transpose() << std::endl << std::endl;
+     for (int j =0; j<face.vertex_ids.size(); ++j){
+       std::cout<<"vid "<<j<<" "<<face.vertex_ids[j]<<std::endl;
+       std::cout<<"vertex "<<mesh.getVertex(face.vertex_ids[j]).transpose()<<std::endl;
+       std::cout<<"normal "<<mesh.getNormal(face.vertex_ids[j]).transpose()<<std::endl;
+     }
+   }
+   */
 
 
 
@@ -144,12 +148,15 @@ void Flyscene::raytraceScene(int width, int height) {
   Eigen::Vector3f screen_coords;
 
   // for every pixel shoot a ray from the origin through the pixel coords
+  long long total = image_size[0] * image_size[1];
+  long long c = 0;
   for (int j = 0; j < image_size[1]; ++j) {
     for (int i = 0; i < image_size[0]; ++i) {
       // create a ray from the camera passing through the pixel (i,j)
       screen_coords = flycamera.screenToWorld(Eigen::Vector2f(i, j));
       // launch raytracing for the given ray and write result to pixel data
       pixel_data[i][j] = traceRay(origin, screen_coords);
+      std::cout << ++c << " of " << total <<" rays traced\n";
     }
   }
 
@@ -158,11 +165,67 @@ void Flyscene::raytraceScene(int width, int height) {
   std::cout << "ray tracing done! " << std::endl;
 }
 
+/**
+ * Finds a face from the mesh that is intersected by a ray defined
+ * @param origin the origin of the ray
+ * @param dir the direction of the ray
+ * @return id of the intersected face on the mesh or -1 if 
+ * the ray doesn't hit anything
+ */
+long long Flyscene::intersectRayTriangle(const Eigen::Vector3f &origin,
+                                         const Eigen::Vector3f &dir) {
+  for (size_t i = 0; i < mesh.getNumberOfFaces(); ++i){
+    Tucano::Face face = mesh.getFace(i);
+
+    /* Get the xyz of the 3 vertices from current face */
+    Eigen::Vector3f a = mesh.getVertex(face.vertex_ids[0]).head<3>();
+    Eigen::Vector3f b = mesh.getVertex(face.vertex_ids[1]).head<3>();
+    Eigen::Vector3f c = mesh.getVertex(face.vertex_ids[2]).head<3>();
+
+    /* Find the edges of the triangle */
+    Eigen::Vector3f edgeA = b - a;
+    Eigen::Vector3f edgeB = c - a;
+    Eigen::Vector3f edgeC = a - c;
+    /* Find the triangle's normal */
+    Eigen::Vector3f norm = edgeA.cross(edgeB);
+    norm.normalize();
+    /* Find distance from origin to plane */
+    double dist = norm.dot(edgeA);
+    /* Find the length of ray to the point of imact on the plane */
+    double t = (norm.dot(origin) + dist) / norm.dot(dir);
+    Eigen::Vector3f ray = origin + t*dir;
+
+    /* Determine if point of impact is within triangle */
+    Eigen::Vector3f C0 = ray - a;
+    Eigen::Vector3f C1 = ray - b;
+    Eigen::Vector3f C2 = ray - c;
+    if (norm.dot( C0.cross(edgeA) ) > 0
+    &&  norm.dot( C1.cross(edgeB) ) > 0
+    &&  norm.dot( C2.cross(edgeC) ) > 0 ) {
+	    std::cout<<"Intersecting with "<<i<<std::endl;
+            return i;
+    }
+  }
+
+  return -1;
+}
 
 Eigen::Vector3f Flyscene::traceRay(Eigen::Vector3f &origin,
                                    Eigen::Vector3f &dest) {
-  // just some fake random color per pixel until you implement your ray tracing
-  // remember to return your RGB values as floats in the range [0, 1]!!!
-  return Eigen::Vector3f(rand() / (float)RAND_MAX, rand() / (float)RAND_MAX,
-                         rand() / (float)RAND_MAX);
+
+  Eigen::Vector3f color(0.0f, 0.0f, 0.0f);
+  Eigen::Vector3f dir = dest - origin;
+
+  long long faceid = intersectRayTriangle(origin, dir);
+  /* If we don't hit anything return default color */
+  if (faceid == -1)
+    return color;
+
+  Tucano::Face face = mesh.getFace(faceid);
+
+  Tucano::Material::Mtl mat = materials[face.material_id];
+  /* TODO Fix this */
+  color = mat.getAmbient();
+
+  return color;
 }

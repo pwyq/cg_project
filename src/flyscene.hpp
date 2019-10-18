@@ -49,6 +49,9 @@ public:
    */
   void addLight(void) { lights.push_back(flycamera.getCenter()); }
 
+  long long intersectRayTriangle(const Eigen::Vector3f &,
+                                 const Eigen::Vector3f &);
+
   /**
    * @brief Create a debug ray at the current camera location and passing
    * through pixel that mouse is over
