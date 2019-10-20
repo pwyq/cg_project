@@ -37,7 +37,7 @@ namespace Shapes
 
 /// Default fragment shader for rendering camerarep 
 const string camerarep_fragment_code = "\n"
-        "#version 150\n"
+        "#version 130\n"
         "in vec4 color;\n"
 		"in vec3 normal;\n"
         "out vec4 out_Color;\n"
@@ -55,7 +55,7 @@ const string camerarep_fragment_code = "\n"
 
 /// Default vertex shader for rendering camerarep 
 const string camerarep_vertex_code = "\n"
-        "#version 150\n"
+        "#version 130\n"
 		"in vec4 in_Position;\n"
 		"in vec4 in_Normal;\n"
 		"in vec4 in_Color;\n"

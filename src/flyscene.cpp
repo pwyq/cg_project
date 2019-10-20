@@ -1,4 +1,6 @@
 #include "flyscene.hpp"
+#include "primitives.hpp"
+#include "scene.hpp"
 #include <GLFW/glfw3.h>
 
 void Flyscene::initialize(int width, int height) {
@@ -213,6 +215,7 @@ long long Flyscene::intersectRayTriangle(const Eigen::Vector3f &origin,
 Eigen::Vector3f Flyscene::traceRay(Eigen::Vector3f &origin,
                                    Eigen::Vector3f &dest) {
 
+  Ray hi(origin, dest);
   Eigen::Vector3f color(0.0f, 0.0f, 0.0f);
   Eigen::Vector3f dir = dest - origin;
 

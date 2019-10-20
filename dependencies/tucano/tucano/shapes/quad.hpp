@@ -35,7 +35,7 @@ namespace Shapes
 
 /// Default fragment shader for rendering quad
 const string quad_fragment_code = "\n"
-        "#version 430\n"
+        "#version 330\n"
         "in vec4 color;\n"
         "out vec4 out_Color;\n"
         "void main(void)\n"
@@ -45,7 +45,7 @@ const string quad_fragment_code = "\n"
 
 /// Default vertex shader for rendering quad
 const string quad_vertex_code = "\n"
-        "#version 430\n"
+        "#version 330\n"
 		"in vec4 in_Position;\n"
         "out vec4 color;\n"
         "uniform mat4 modelMatrix;\n"

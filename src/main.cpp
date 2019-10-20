@@ -65,7 +65,7 @@ void keyCallback(GLFWwindow *window, int key, int scancode, int action,
   else if (key == GLFW_KEY_L && action == GLFW_PRESS)
     flyscene->addLight();
   else if (key == GLFW_KEY_T && action == GLFW_PRESS)
-    flyscene->raytraceScene();
+    flyscene->raytraceScene(50, 50);
 }
 
 static void mouseButtonCallback(GLFWwindow *window, int button, int action,
