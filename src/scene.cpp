@@ -40,10 +40,11 @@ Scene::Scene(Tucano::Mesh &mesh, std::vector<Tucano::Material::Mtl> &materials)
 		int a = f.vertex_ids[0];
 		int b = f.vertex_ids[1];
 		int c = f.vertex_ids[2];
-		this->objectsInScene.push_back(new Triangle(mesh.getVertex(a).head<3>(),
-		                                       mesh.getVertex(b).head<3>(),
-		                                       mesh.getVertex(c).head<3>(),
-		                                       f.normal.head<3>()));
+		this->objectsInScene.push_back(new Triangle(
+      mesh.getShapeMatrix() * mesh.getVertex(a).head<3>(),
+		  mesh.getShapeMatrix() * mesh.getVertex(b).head<3>(),
+		  mesh.getShapeMatrix() * mesh.getVertex(c).head<3>(),
+		  f.normal.head<3>()));
 	}
 }
 
