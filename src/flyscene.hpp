@@ -67,7 +67,12 @@ public:
    * @param dest Other point on the ray, usually screen coordinates
    * @return a RGB color
    */
-  Eigen::Vector3f traceRay(Eigen::Vector3f &origin, Eigen::Vector3f &dest);
+  Eigen::Vector3f traceRay(int level, Eigen::Vector3f &origin, Eigen::Vector3f &dest);
+  
+  void intersect(Tucano::Face &face, float &max, Eigen::Vector3f &origin, Eigen::Vector3f &direction );
+  
+  void shade(int level, Tucano::Face face, Eigen::Vector3f hitpoint, Eigen::Vector3f &color, Eigen::Vector3f &origin, Eigen::Vector3f &dest);
+  Eigen::Vector3f computeDirectLight(Tucano::Face &face, Eigen::Vector3f hitpoint, Eigen::Vector3f &eye);
 
 private:
   // A simple phong shader for rendering meshes
