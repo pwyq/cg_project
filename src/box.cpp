@@ -1,8 +1,24 @@
+/**
+ * File              : box.cpp
+ * Author            : Yanqing Wu <meet.yanqing.wu@gmail.com>
+ * Date              : 21.10.2019
+ * Last Modified Date: 21.10.2019
+ * Last Modified By  : Yanqing Wu <meet.yanqing.wu@gmail.com>
+ */
 #include "box.hpp"
 
-// Determine if ray hit a box
+/*
+We're assuming the input box is AABB (Axis-aligned bounding box)
+post on AABB vs. OBB type bounding box:
+    https://www.scratchapixel.com/lessons/3d-basic-rendering/minimal-ray-tracer-rendering-simple-shapes/ray-box-intersection
+*/
+
+// Determine if incoming ray hit a box
 bool Box::intersect(float &hitPoint, Ray &ray)
 {
+    // Lec 8 - Slides 46
+    
+    // substitute ray in all planes to calculate intersection parameters
     float x_min = this.bMin[0];
     float y_min = this.bMin[1];
     float z_min = this.bMin[2];
@@ -19,6 +35,7 @@ bool Box::intersect(float &hitPoint, Ray &ray)
     float ty_max = (y_max - ray.origin.y) / ray.direction.y;
     float tz_max = (z_max - ray.origin.z) / ray.direction.z;
 
+    // sort to find in and out
     float t_in_x  = std::min(tx_min, tx_max);
     float t_out_x = std::max(tx_min, tx_max);
 
@@ -28,9 +45,11 @@ bool Box::intersect(float &hitPoint, Ray &ray)
     float t_in_z  = std::min(ty_min, ty_max);
     float t_out_z = std::max(ty_min, ty_max);
 
+    // determine when we crossed all _in_ points & at least one _out_ point
     float t_in  = std::max(t_in_x, t_in_y, t_in_z);
     float t_out = std::min(t_out_x, t_out_y, t_out_z);
 
+    // check for intersection
     if (t_in > t_out || t_out < 0)
         return false;
     return true;
