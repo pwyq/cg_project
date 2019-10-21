@@ -252,8 +252,6 @@ void Flyscene::shade(int level, Tucano::Face face, Eigen::Vector3f hitpoint, Eig
 
   Eigen::Vector3f directLightColor = computeDirectLight(face, hitpoint, origin);
 
-
-
   color = directLightColor;
   //color = Eigen::Vector3f(0.4,0.1,0.0);
 }
