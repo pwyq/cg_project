@@ -42,10 +42,12 @@ bool Triangle::isInTriangle(Eigen::Vector3f point) {
 Triangle::Triangle(const Eigen::Vector3f &a,
                    const Eigen::Vector3f &b,
                    const Eigen::Vector3f &c,
-                   const Eigen::Vector3f &norm)
-	: Hitable(norm)
+                   const Eigen::Vector3f &norm,
+                   const int id)
+	: Hitable(norm, id)
 {
 	this->vertex0 = a;
 	this->vertex1 = b;
 	this->vertex2 = c;
+    this->material_id = id;
 }

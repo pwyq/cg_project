@@ -16,5 +16,6 @@ public:
 	Triangle(const Eigen::Vector3f &,
 	         const Eigen::Vector3f &,
 	         const Eigen::Vector3f &,
-	         const Eigen::Vector3f &);
+	         const Eigen::Vector3f &,
+	         const int);
 };

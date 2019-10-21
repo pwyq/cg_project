@@ -14,13 +14,17 @@ public:
 	std::vector<Hitable*> objectsInScene;
 	std::vector<Light> lights;
 	std::vector<Tucano::Material::Mtl>* materials;
+	Eigen::Vector3f cameraPosition;
 
 	//Will return a color
 	Eigen::Vector3f traceRay(Ray &, int);
 
 	//Will return a color
-	Eigen::Vector3f shade(Hitable hitObject, const Ray &, float t);
+	Eigen::Vector3f shade(Hitable &hitObject, const Ray &, float t);
 
-	Scene(Tucano::Mesh &, std::vector<Tucano::Material::Mtl> &);
+	Eigen::Vector3f computeDirectLight(Hitable &hitObject, Eigen::Vector3f hitPoint);
+
+
+	Scene(Tucano::Mesh &, std::vector<Tucano::Material::Mtl> &, Eigen::Vector3f &);
 	Scene();
 };
