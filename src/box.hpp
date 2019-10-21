@@ -7,6 +7,11 @@ public:
 	Eigen::Vector3f bMin;
 	Eigen::Vector3f bMax;
 
-	bool intersect(float &hitPoint, Ray &ray);
+    // init Box
+    Box(Eigen::Vector3f x, Eigen::Vector3f y) {
+        this.bMin = x;
+        this.bMax = y;
+    }
 
+	bool intersect(float &hitPoint, Ray &ray);
 }
