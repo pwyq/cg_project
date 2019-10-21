@@ -13,8 +13,7 @@ void Flyscene::initialize(int width, int height) {
   flycamera.setViewport(Eigen::Vector2f((float)width, (float)height));
 
   // load the OBJ file and materials
-  Tucano::MeshImporter::loadObjFile(mesh, materials,
-                                    "resources/models/cube.obj");
+  Tucano::MeshImporter::loadObjFile(mesh, materials,"resources/models/cube.obj");
 
   // normalize the model (scale to unit cube and center at origin)
   mesh.normalizeModelMatrix();
@@ -22,7 +21,6 @@ void Flyscene::initialize(int width, int height) {
   // pass all the materials to the Phong Shader
   for (int i = 0; i < materials.size(); ++i)
     phong.addMaterial(materials[i]);
-
 
   // set the color and size of the sphere to represent the light sources
   // same sphere is used for all sources
@@ -43,20 +41,7 @@ void Flyscene::initialize(int width, int height) {
 
   glEnable(GL_DEPTH_TEST);
 
-  Eigen::Vector3f cameraCenter = flycamera.getCenter();
-  scene = new Scene(mesh, materials, cameraCenter);
-
-  // for (int i = 0; i<mesh.getNumberOfFaces(); ++i){
-  //   Tucano::Face face = mesh.getFace(i);    
-  //   for (int j =0; j<face.vertex_ids.size(); ++j){
-  //     std::cout<<"vid "<<j<<" "<<face.vertex_ids[j]<<std::endl;
-  //     std::cout<<"vertex "<<mesh.getVertex(face.vertex_ids[j]).transpose()<<std::endl;
-  //     std::cout<<"normal "<<mesh.getNormal(face.vertex_ids[j]).transpose()<<std::endl;
-  //   }
-  //   std::cout<<"mat id "<<face.material_id<<std::endl<<std::endl;
-  //   std::cout<<"face   normal "<<face.normal.transpose() << std::endl << std::endl;
-  // }
-
+  scene = new Scene(mesh, materials);
 }
 
 void Flyscene::paintGL(void) {
@@ -145,6 +130,12 @@ void Flyscene::raytraceScene(int width, int height) {
   Eigen::Vector3f origin = flycamera.getCenter();
   Eigen::Vector3f screen_coords;
 
+  //Set the camera in the scene
+  scene -> cameraPosition = flycamera.getCenter();
+  //Set the lights in the scene
+  scene -> lights.clear();
+  for ( Eigen::Vector3f lightPosition : lights ) 
+    scene -> lights.push_back(Light(Eigen::Vector3f(1.0,1.0,1.0), lightPosition));
   
   // for every pixel shoot a ray from the origin through the pixel coords
   for (int j = 0; j < image_size[1]; ++j) {

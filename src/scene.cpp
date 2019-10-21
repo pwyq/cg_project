@@ -29,14 +29,9 @@ Eigen::Vector3f Scene::traceRay(Ray &ray, int level) {
 }
 
 //TODO For now this only copies triangles
-Scene::Scene(Tucano::Mesh &mesh, std::vector<Tucano::Material::Mtl> &materials, Eigen::Vector3f &camera)
+Scene::Scene(Tucano::Mesh &mesh, std::vector<Tucano::Material::Mtl> &materials)
 {
 	this->materials = &materials;
-  this->cameraPosition = camera;
-
-  Light lightSource = Light(Eigen::Vector3f(1.0,1.0,1.0), Eigen::Vector3f(-1.0, 1.0, 1.0));
-  this->lights.push_back(lightSource);
-
 	for (size_t i = 0; i < mesh.getNumberOfFaces(); ++i)
 	{
 		Tucano::Face f = mesh.getFace(i);
@@ -100,7 +95,7 @@ Eigen::Vector3f Scene::computeDirectLight(Hitable& hitObject, Eigen::Vector3f hi
       }
       //If we hitted a object, it means we are in shadow so skip this light source
       if ( hitted ) continue;
-      
+
       //If we reach this point, it means that the current light can reach the object, so we compute the shading
       
       //Normailized vector from the hitpoint to the light

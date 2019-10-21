@@ -25,6 +25,6 @@ public:
 	Eigen::Vector3f computeDirectLight(Hitable &hitObject, Eigen::Vector3f hitPoint);
 
 
-	Scene(Tucano::Mesh &, std::vector<Tucano::Material::Mtl> &, Eigen::Vector3f &);
+	Scene(Tucano::Mesh &, std::vector<Tucano::Material::Mtl> &);
 	Scene();
 };
