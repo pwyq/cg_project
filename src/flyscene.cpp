@@ -151,7 +151,7 @@ void Flyscene::raytraceScene(int width, int height) {
       // create a ray from the camera passing through the pixel (i,j)
       screen_coords = flycamera.screenToWorld(Eigen::Vector2f(i, j));
       // launch raytracing for the given ray and write result to pixel data
-      pixel_data[i][j] = traceRay(1, origin, screen_coords);
+      pixel_data[i][j] = scene.traceRay(Ray(origin, screen_coords - origin));
     }
   }
 
@@ -160,15 +160,32 @@ void Flyscene::raytraceScene(int width, int height) {
   std::cout << "ray tracing done! " << std::endl;
 }
 
-Eigen::Vector3f Flyscene::traceRay(int level, Eigen::Vector3f &origin, Eigen::Vector3f &dest) {
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*
+Eigen::Vector3f Flyscene::traceRay(int level, Ray ray) {
   //This variable will hold the face which the ray intersects first.
-  Tucano::Face hitface;
+  Hitable hitObject;
 
   //This variable will hold the value of t on intersection in the formula r(t) = o + t * d 
   float tOnIntersection = std::numeric_limits<float>::infinity();
-
-  //The direction of the ray to shoot
-  Eigen::Vector3f rayDirection = dest-origin;
 
   //Call intersect. After this call "hitface" and "tOnIntersection" will hold the right values
   intersect( hitface, tOnIntersection, origin, rayDirection );
@@ -304,4 +321,4 @@ Eigen::Vector3f Flyscene::computeDirectLight(Tucano::Face &face, Eigen::Vector3f
       color += ambient + diffuse + specular;
   }
   return color;
-}
+}*/

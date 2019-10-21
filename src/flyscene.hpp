@@ -15,6 +15,7 @@
 #include <tucano/utils/imageIO.hpp>
 #include <tucano/utils/mtlIO.hpp>
 #include <tucano/utils/objimporter.hpp>
+#include "scene.hpp"
 
 class Flyscene {
 
@@ -61,19 +62,6 @@ public:
    */
   void raytraceScene(int width = 0, int height = 0);
 
-  /**
-   * @brief trace a single ray from the camera passing through dest
-   * @param origin Ray origin
-   * @param dest Other point on the ray, usually screen coordinates
-   * @return a RGB color
-   */
-  Eigen::Vector3f traceRay(int level, Eigen::Vector3f &origin, Eigen::Vector3f &dest);
-  
-  void intersect(Tucano::Face &face, float &max, Eigen::Vector3f &origin, Eigen::Vector3f &direction );
-  
-  void shade(int level, Tucano::Face face, Eigen::Vector3f hitpoint, Eigen::Vector3f &color, Eigen::Vector3f &origin, Eigen::Vector3f &dest);
-  Eigen::Vector3f computeDirectLight(Tucano::Face &face, Eigen::Vector3f hitpoint, Eigen::Vector3f &eye);
-
 private:
   // A simple phong shader for rendering meshes
   Tucano::Effects::PhongMaterial phong;
@@ -105,6 +93,9 @@ private:
 
   /// MTL materials
   vector<Tucano::Material::Mtl> materials;
+
+  //Our scene
+  Scene scene;
 };
 
 #endif // FLYSCENE
