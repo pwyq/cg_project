@@ -24,3 +24,12 @@ Eigen::Vector3f Scene::traceRay(Ray ray, int level = 0) {
   //return color;
   return Eigen::Vector3f(0,0,0);
 }
+
+//TODO For now this only copies triangles
+Scene::Scene(const Tucano::Mesh &mesh, const Tucano::Material::Mtl &materials)
+{
+	this->materials = materials;
+	this->objectsInScene.resize(mesh.getNumberOfFaces());
+	for (size_t i = 0; i < mesh.getNumberOfFaces(); ++i)
+		this->objectsInScene[i] = new Triangle(mesh.getFace(i));
+}

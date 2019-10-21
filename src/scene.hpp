@@ -5,6 +5,7 @@ class Scene {
 public:
 	std::vector<Hitable> objectsInScene;
 	std::vector<Light> lights;
+	std::vector<Tucano::Material::Mtl> materials;
 
 	//Will return a color
 	Eigen::Vector3f traceRay(Ray ray, int level);
@@ -12,5 +13,5 @@ public:
 	//Will return a color
 	Eigen::Vector3f shade(Hitable hitObject, Ray ray, float t);
 
-
+	Scene(const Tucano::Mesh &, const Tucano::Mareial::Mtl &);
 }
