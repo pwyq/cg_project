@@ -1,10 +1,15 @@
-#include "ray.hpp"
+#pragma once
 
+#include <Eigen/Dense>
+
+#include "ray.hpp"
 
 class Hitable {
 
 public:
+	virtual bool intersect(float &, Ray &);
+	Eigen::Vector3f normal;
 
-	bool intersect(float &hitPoint, Ray &ray);
-
+	Hitable();
+	Hitable(const Eigen::Vector3f &);
 };

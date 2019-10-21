@@ -95,7 +95,7 @@ private:
   vector<Tucano::Material::Mtl> materials;
 
   //Our scene
-  Scene scene;
+  Scene* scene;
 };
 
 #endif // FLYSCENE

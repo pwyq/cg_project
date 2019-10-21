@@ -40,6 +40,10 @@ set(
   PROJECT_SOURCES
   ${PROJECT_DIR}/main.cpp
   ${PROJECT_DIR}/flyscene.cpp
+  ${PROJECT_DIR}/ray.cpp
+  ${PROJECT_DIR}/scene.cpp
+  ${PROJECT_DIR}/triangle.cpp
+  ${PROJECT_DIR}/hitable.cpp
   #${PROJECT_DIR}/raytracing.cpp  
   )
 

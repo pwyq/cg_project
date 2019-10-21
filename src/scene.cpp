@@ -1,15 +1,19 @@
 #include "scene.hpp"
+#include "triangle.hpp"
+#include "hitable.hpp"
 
-Eigen::Vector3f Scene::traceRay(Ray ray, int level = 0) {
+#include <iostream>
+
+Eigen::Vector3f Scene::traceRay(Ray &ray, int level) {
   //This variable will hold the hitable which the ray intersects first.
   Hitable hitObject;
 
   //This variable will hold the value of t on intersection in the formula r(t) = o + t * d 
   float tOnIntersection = std::numeric_limits<float>::infinity();
 
-  for (auto &h: this.objectsInScene) {
-  	if ( h.intersect(tOnIntersection, ray) ) {
-  		hitObject = h;
+  for (auto &h: this->objectsInScene) {
+  	if ( h->intersect(tOnIntersection, ray) ) {
+  		hitObject = *h;
   	}
   }
 
@@ -26,10 +30,22 @@ Eigen::Vector3f Scene::traceRay(Ray ray, int level = 0) {
 }
 
 //TODO For now this only copies triangles
-Scene::Scene(const Tucano::Mesh &mesh, const Tucano::Material::Mtl &materials)
+Scene::Scene(Tucano::Mesh &mesh, std::vector<Tucano::Material::Mtl> &materials)
 {
-	this->materials = materials;
-	this->objectsInScene.resize(mesh.getNumberOfFaces());
+	this->materials = &materials;
+//	this->objectsInScene.resize(mesh.getNumberOfFaces());
 	for (size_t i = 0; i < mesh.getNumberOfFaces(); ++i)
-		this->objectsInScene[i] = new Triangle(mesh.getFace(i));
+	{
+		Tucano::Face f = mesh.getFace(i);
+		int a = f.vertex_ids[0];
+		int b = f.vertex_ids[1];
+		int c = f.vertex_ids[2];
+		this->objectsInScene.push_back(new Triangle(mesh.getVertex(a).head<3>(),
+		                                       mesh.getVertex(b).head<3>(),
+		                                       mesh.getVertex(c).head<3>(),
+		                                       f.normal.head<3>()));
+	}
 }
+
+Scene::Scene()
+{}

@@ -44,6 +44,8 @@ void Flyscene::initialize(int width, int height) {
 
   glEnable(GL_DEPTH_TEST);
 
+  scene = new Scene(mesh, materials);
+
   // for (int i = 0; i<mesh.getNumberOfFaces(); ++i){
   //   Tucano::Face face = mesh.getFace(i);    
   //   for (int j =0; j<face.vertex_ids.size(); ++j){
@@ -151,7 +153,8 @@ void Flyscene::raytraceScene(int width, int height) {
       // create a ray from the camera passing through the pixel (i,j)
       screen_coords = flycamera.screenToWorld(Eigen::Vector2f(i, j));
       // launch raytracing for the given ray and write result to pixel data
-      pixel_data[i][j] = scene.traceRay(Ray(origin, screen_coords - origin));
+      Ray r(origin, screen_coords - origin);
+      pixel_data[i][j] = scene->traceRay(r, 0);
     }
   }
 

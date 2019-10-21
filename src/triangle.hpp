@@ -1,3 +1,7 @@
+#pragma once
+
+#include <Eigen/Dense>
+
 #include "hitable.hpp"
 
 class Triangle : public Hitable {
@@ -5,9 +9,12 @@ public:
 	Eigen::Vector3f vertex0;
 	Eigen::Vector3f vertex1;
 	Eigen::Vector3f vertex2;
-	Eigen::Vector3f normal;
 
 	bool isInTriangle(Eigen::Vector3f point); 
+	virtual bool intersect(float &, Ray &);
 
-	bool intersect(float &hitPoint, Ray &ray);
-}
+	Triangle(const Eigen::Vector3f &,
+	         const Eigen::Vector3f &,
+	         const Eigen::Vector3f &,
+	         const Eigen::Vector3f &);
+};
