@@ -7,7 +7,7 @@ public:
 	Eigen::Vector3f vertex2;
 	Eigen::Vector3f normal;
 
-	void getBarycentricCoordinates(Eigen::Vector3f point, int &a, int &b); 
+	bool isInTriangle(Eigen::Vector3f point); 
 
 	bool intersect(float &hitPoint, Ray &ray);
 }
