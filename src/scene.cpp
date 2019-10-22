@@ -23,7 +23,6 @@ void Scene::traceRay(Eigen::Vector3f *color, Ray &ray, int level) {
   if ( tOnIntersection == std::numeric_limits<float>::infinity() ) return;
 
   //If we reach this point, it means the ray hitted a object. Now we should compute the color of this object, so we call the shade method.
-  std::cout << "Found intersection between triangle and ray" << std::endl;
   
   *color = shade(hitObject, ray, tOnIntersection);
 }

@@ -227,7 +227,6 @@ void Flyscene::raytraceScene(int width, int height) {
   // for every pixel shoot a ray from the origin through the pixel coords
   for (int j = 0; j < image_size[1]; ++j) {
     for (int i = 0; i < image_size[0]; ++i) {
-      std::cout << "Shooting ray from: (" << i << "," << j << ")" << "\n";
       // create a ray from the camera passing through the pixel (i,j)
       screen_coords = flycamera.screenToWorld(Eigen::Vector2f(i, j));
       // launch raytracing for the given ray and write result to pixel data
