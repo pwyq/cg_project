@@ -54,7 +54,7 @@ Box::Box(vector<Triangle*> &inputTriangles) : Hitable() {
 
 /*
 This function gets a list of triangles as input and needs to create 2 subboxes over which the triangles are divided.
-Right now, the splitting is along the longest axis.
+Right now, the splitting is at the median of the longest axis.
 */
 void Box::splitBox(vector<Triangle*> &inputTriangles) {
     //First we get the width, heigtht and depth of this box
