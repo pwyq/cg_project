@@ -25,6 +25,7 @@ endif()
 if(CMAKE_THREAD_LIBS_INIT)
   target_link_libraries(${PROJECT_NAME} "${CMAKE_THREAD_LIBS_INIT}")
 endif()
+list(APPEND CMAKE_CXX_FLAGS "-pthread ${CMAKE_CXX_FLAGS}")
 
 # Eigen 3 and glfw
 # pkg-config is used so we don't hard-code the location of eigen.
