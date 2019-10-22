@@ -18,4 +18,14 @@ public:
 	         const Eigen::Vector3f &,
 	         const Eigen::Vector3f &,
 	         const int);
+
+
+	float getMaxCoordinate(int dimension);
+	float getMinCoordinate(int dimension);
+	float getMaxX();
+	float getMaxY();
+	float getMaxZ();
+	float getMinX();
+	float getMinY();
+	float getMinZ();
 };
