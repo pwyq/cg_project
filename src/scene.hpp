@@ -8,7 +8,6 @@
 #include "ray.hpp"
 #include "hitable.hpp"
 #include "light.hpp"
-#include "triangle.hpp"
 
 class Scene {
 public:
@@ -28,14 +27,4 @@ public:
 
 	Scene(Tucano::Mesh &, std::vector<Tucano::Material::Mtl> &);
 	Scene();
-
-
-	CreateBox(std::vector<Triangle> triangles);
-	//
-	CreateAccelarate();
-	//
-	Split();
-	//
-	Boxing();
-
 };

@@ -5,10 +5,10 @@
 # Last Modified Date: 17.10.2019
 # Last Modified By  : Yanqing Wu <meet.yanqing.wu@gmail.com>
 
-rm -rf build
-mkdir build
+#rm -rf build
+#mkdir build
 cd build
-cmake ..
+#cmake ..
 make -j8
 cd ..
 #rm *.ppm
