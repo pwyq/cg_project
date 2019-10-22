@@ -135,7 +135,7 @@ void Scene::CreateAccelarate(){
 
 }
 
-void Scene::CreateBox(std::vector<Triangle> triangles){
+Box Scene::CreateBox(std::vector<Triangle> triangles){
   std::vector<Hitable*> boxesInScene;
   //Set the min max values of the new box to the min and max values
   float xmax = std::numeric_limits<float>::min();
@@ -171,9 +171,9 @@ void Scene::CreateBox(std::vector<Triangle> triangles){
   Eigen::Vector3f bMin = Eigen::Vector3f(xmin, ymin, zmin);
   Eigen::Vector3f bMax = Eigen::Vector3f(xmax, ymax, zmax);
 
-  createdBox = Box(bMin, bMax, true);
-  //createdBox.triangles = triangles;
-  //return Box(bMin, bMax, true);
+  Box createdBox = Box(bMin, bMax, true);
+  createdBox.triangles = triangles;
+  return createdBox;
 }
 
 

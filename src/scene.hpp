@@ -28,7 +28,7 @@ public:
 
 	void CreateAccelarate();
 
-	void CreateBox(std::vector<Triangle> triangles);
+	Box CreateBox(std::vector<Triangle> triangles);
 
 	Scene(Tucano::Mesh &, std::vector<Tucano::Material::Mtl> &);
 	Scene();
