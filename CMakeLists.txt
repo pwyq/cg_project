@@ -18,6 +18,13 @@ find_package(OpenGL REQUIRED)
 if(NOT OPENGL_FOUND)
   message(SEND_ERROR "OpenGL not found on your system.")
 endif()
+find_package(Threads REQUIRED)
+if(THREADS_HAVE_PTHREAD_ARG)
+  target_compile_options(${PROJECT_NAME} PUBLIC "-pthread")
+endif()
+if(CMAKE_THREAD_LIBS_INIT)
+  target_link_libraries(${PROJECT_NAME} "${CMAKE_THREAD_LIBS_INIT}")
+endif()
 
 # Eigen 3 and glfw
 # pkg-config is used so we don't hard-code the location of eigen.
