@@ -7,16 +7,14 @@ public:
 	Eigen::Vector3f bMin;
 	Eigen::Vector3f bMax;
 
-	std::vector<Hitable> subBoxes;
-	std::vector<Triangle> triangles;
+	std::vector<Hitable*> subBoxes;
+	std::vector<Triangle*> triangles;
 	bool isLeaf;
 
     // init Box
-    Box(Eigen::Vector3f x, Eigen::Vector3f y, bool isLeaf) {
-        this->bMin = x;
-        this->bMax = y;
-        this->isLeaf = isLeaf;
+    Box(){
     };
+    Box(Eigen::Vector3f x, Eigen::Vector3f y, bool isLeaf);
 
 	bool intersect(float &hitPoint, Ray &ray);
 

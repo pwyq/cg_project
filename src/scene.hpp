@@ -17,6 +17,7 @@ public:
 	std::vector<Light> lights;
 	std::vector<Tucano::Material::Mtl>* materials;
 	Eigen::Vector3f cameraPosition;
+	Box SceneBox;
 
 	//Will return a color
 	Eigen::Vector3f traceRay(Ray &, int);
@@ -28,7 +29,7 @@ public:
 
 	void CreateAccelarate();
 
-	Box CreateBox(std::vector<Triangle> triangles);
+	void CreateSceneBox();
 
 	Scene(Tucano::Mesh &, std::vector<Tucano::Material::Mtl> &);
 	Scene();

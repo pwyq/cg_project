@@ -135,7 +135,7 @@ void Scene::CreateAccelarate(){
 
 }
 
-Box Scene::CreateBox(std::vector<Triangle> triangles){
+void Scene::CreateSceneBox(){
   std::vector<Hitable*> boxesInScene;
   //Set the min max values of the new box to the min and max values
   float xmax = std::numeric_limits<float>::min();
@@ -145,35 +145,43 @@ Box Scene::CreateBox(std::vector<Triangle> triangles){
   float zmax = std::numeric_limits<float>::min();
   float zmin = std::numeric_limits<float>::max();
   
-
+  std::vector<Triangle*> TriangleInBox;
   //Loop over the trianlges and update x,y,z accordingly 
-  for(Triangle t : triangles){
+  for(Hitable* hitable : this->objectsInScene){
+    Triangle* t = static_cast<Triangle*>(hitable);
 
-    if(t.getMaxX() > xmax){
-      xmax = t.getMaxX();
+    if(t->getMaxX() > xmax){
+      xmax = t->getMaxX();
     }
-    if(t.getMinX() < xmin){
-      xmin = t.getMinX();
+    if(t->getMinX() < xmin){
+      xmin = t->getMinX();
     }
-    if(t.getMaxY() > ymax){
-      ymax = t.getMaxY();
+    if(t->getMaxY() > ymax){
+      ymax = t->getMaxY();
     }
-    if(t.getMinY() < ymin){
-      ymin = t.getMinY();
+    if(t->getMinY() < ymin){
+      ymin = t->getMinY();
     }
-    if(t.getMaxZ() > xmax){
-      zmax = t.getMaxZ();
+    if(t->getMaxZ() > xmax){
+      zmax = t->getMaxZ();
     }
-    if(t.getMinZ() < xmin){
-      zmin = t.getMinZ();
+    if(t->getMinZ() < xmin){
+      zmin = t->getMinZ();
     }
+    TriangleInBox.push_back(t);
+
   }
+
   Eigen::Vector3f bMin = Eigen::Vector3f(xmin, ymin, zmin);
   Eigen::Vector3f bMax = Eigen::Vector3f(xmax, ymax, zmax);
 
-  Box createdBox = Box(bMin, bMax, true);
-  createdBox.triangles = triangles;
-  return createdBox;
+
+
+  Box tempBox = Box(bMin, bMax, true);
+  
+  tempBox.triangles = TriangleInBox;
+  this->SceneBox = tempBox;
+
 }
 
 

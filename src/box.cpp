@@ -1,10 +1,3 @@
-/**
- * File              : box.cpp
- * Author            : Yanqing Wu <meet.yanqing.wu@gmail.com>
- * Date              : 21.10.2019
- * Last Modified Date: 21.10.2019
- * Last Modified By  : Yanqing Wu <meet.yanqing.wu@gmail.com>
- */
 #include "box.hpp"
 
 /*
@@ -12,6 +5,12 @@ We're assuming the input box is AABB (Axis-aligned bounding box)
 post on AABB vs. OBB type bounding box:
     https://www.scratchapixel.com/lessons/3d-basic-rendering/minimal-ray-tracer-rendering-simple-shapes/ray-box-intersection
 */
+
+Box::Box(Eigen::Vector3f x, Eigen::Vector3f y, bool isLeaf): Hitable(){
+      this->bMin = x;
+        this->bMax = y;
+        this->isLeaf = isLeaf;
+}
 
 // Determine if incoming ray hit a box
 bool Box::intersect(float &hitPoint, Ray &ray)
