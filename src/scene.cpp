@@ -129,4 +129,51 @@ Eigen::Vector3f Scene::computeDirectLight(Hitable& hitObject, Eigen::Vector3f hi
   return color;
 }
 
+void Scene::CreateAccelarate(){
+  std::vector<Hitable*> boxesInScene;
+
+
+}
+
+void Scene::CreateBox(std::vector<Triangle> triangles){
+  std::vector<Hitable*> boxesInScene;
+  //Set the min max values of the new box to the min and max values
+  float xmax = std::numeric_limits<float>::min();
+  float xmin = std::numeric_limits<float>::max();
+  float ymax = std::numeric_limits<float>::min();
+  float ymin = std::numeric_limits<float>::max();
+  float zmax = std::numeric_limits<float>::min();
+  float zmin = std::numeric_limits<float>::max();
+  
+
+  //Loop over the trianlges and update x,y,z accordingly 
+  for(Triangle t : triangles){
+
+    if(t.getMaxX() > xmax){
+      xmax = t.getMaxX();
+    }
+    if(t.getMinX() < xmin){
+      xmin = t.getMinX();
+    }
+    if(t.getMaxY() > ymax){
+      ymax = t.getMaxY();
+    }
+    if(t.getMinY() < ymin){
+      ymin = t.getMinY();
+    }
+    if(t.getMaxZ() > xmax){
+      zmax = t.getMaxZ();
+    }
+    if(t.getMinZ() < xmin){
+      zmin = t.getMinZ();
+    }
+  }
+  Eigen::Vector3f bMin = Eigen::Vector3f(xmin, ymin, zmin);
+  Eigen::Vector3f bMax = Eigen::Vector3f(xmax, ymax, zmax);
+
+  createdBox = Box(bMin, bMax, true);
+  //createdBox.triangles = triangles;
+  //return Box(bMin, bMax, true);
+}
+
 

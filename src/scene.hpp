@@ -8,6 +8,8 @@
 #include "ray.hpp"
 #include "hitable.hpp"
 #include "light.hpp"
+#include "triangle.hpp"
+#include "box.hpp"
 
 class Scene {
 public:
@@ -24,6 +26,9 @@ public:
 
 	Eigen::Vector3f computeDirectLight(Hitable &hitObject, Eigen::Vector3f hitPoint);
 
+	void CreateAccelarate();
+
+	void CreateBox(std::vector<Triangle> triangles);
 
 	Scene(Tucano::Mesh &, std::vector<Tucano::Material::Mtl> &);
 	Scene();
