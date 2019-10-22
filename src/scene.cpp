@@ -2,6 +2,7 @@
 #include "triangle.hpp"
 #include "hitable.hpp"
 #include "light.cpp"
+#include "box.cpp"
 
 #include <iostream>
 
@@ -32,24 +33,26 @@ Eigen::Vector3f Scene::traceRay(Ray &ray, int level) {
 Scene::Scene(Tucano::Mesh &mesh, std::vector<Tucano::Material::Mtl> &materials)
 {
 	this->materials = &materials;
+  //Vector with all the triangles in the scene
+  vector<Triangle*> allTrianglesInScene;
 	for (size_t i = 0; i < mesh.getNumberOfFaces(); ++i)
-	{
+  {
 		Tucano::Face f = mesh.getFace(i);
 		int a = f.vertex_ids[0];
 		int b = f.vertex_ids[1];
 		int c = f.vertex_ids[2];
-		this->objectsInScene.push_back(new Triangle(
+		allTrianglesInScene.push_back(new Triangle(
       mesh.getShapeMatrix() * mesh.getVertex(a).head<3>(),
 		  mesh.getShapeMatrix() * mesh.getVertex(b).head<3>(),
 		  mesh.getShapeMatrix() * mesh.getVertex(c).head<3>(),
 		  f.normal.head<3>(),
       f.material_id));
 	}
+  objectsInScene.push_back(new Box(allTrianglesInScene));  
 }
 
 Scene::Scene()
 {}
-
 
 Eigen::Vector3f Scene::shade(Hitable &hitObject, const Ray &ray, float t) {
   //Compute direct light
@@ -128,60 +131,3 @@ Eigen::Vector3f Scene::computeDirectLight(Hitable& hitObject, Eigen::Vector3f hi
   }
   return color;
 }
-
-void Scene::CreateAccelarate(){
-  std::vector<Hitable*> boxesInScene;
-
-
-}
-
-void Scene::CreateSceneBox(){
-  std::vector<Hitable*> boxesInScene;
-  //Set the min max values of the new box to the min and max values
-  float xmax = std::numeric_limits<float>::min();
-  float xmin = std::numeric_limits<float>::max();
-  float ymax = std::numeric_limits<float>::min();
-  float ymin = std::numeric_limits<float>::max();
-  float zmax = std::numeric_limits<float>::min();
-  float zmin = std::numeric_limits<float>::max();
-  
-  std::vector<Triangle*> TriangleInBox;
-  //Loop over the trianlges and update x,y,z accordingly 
-  for(Hitable* hitable : this->objectsInScene){
-    Triangle* t = static_cast<Triangle*>(hitable);
-
-    if(t->getMaxX() > xmax){
-      xmax = t->getMaxX();
-    }
-    if(t->getMinX() < xmin){
-      xmin = t->getMinX();
-    }
-    if(t->getMaxY() > ymax){
-      ymax = t->getMaxY();
-    }
-    if(t->getMinY() < ymin){
-      ymin = t->getMinY();
-    }
-    if(t->getMaxZ() > xmax){
-      zmax = t->getMaxZ();
-    }
-    if(t->getMinZ() < xmin){
-      zmin = t->getMinZ();
-    }
-    TriangleInBox.push_back(t);
-
-  }
-
-  Eigen::Vector3f bMin = Eigen::Vector3f(xmin, ymin, zmin);
-  Eigen::Vector3f bMax = Eigen::Vector3f(xmax, ymax, zmax);
-
-
-
-  Box tempBox = Box(bMin, bMax, true);
-  
-  tempBox.triangles = TriangleInBox;
-  this->SceneBox = tempBox;
-
-}
-
-

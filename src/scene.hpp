@@ -17,7 +17,6 @@ public:
 	std::vector<Light> lights;
 	std::vector<Tucano::Material::Mtl>* materials;
 	Eigen::Vector3f cameraPosition;
-	Box SceneBox;
 
 	//Will return a color
 	Eigen::Vector3f traceRay(Ray &, int);
@@ -25,11 +24,8 @@ public:
 	//Will return a color
 	Eigen::Vector3f shade(Hitable &hitObject, const Ray &, float t);
 
+	//Will return a color
 	Eigen::Vector3f computeDirectLight(Hitable &hitObject, Eigen::Vector3f hitPoint);
-
-	void CreateAccelarate();
-
-	void CreateSceneBox();
 
 	Scene(Tucano::Mesh &, std::vector<Tucano::Material::Mtl> &);
 	Scene();

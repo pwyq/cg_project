@@ -43,8 +43,7 @@ Triangle::Triangle(const Eigen::Vector3f &a,
                    const Eigen::Vector3f &b,
                    const Eigen::Vector3f &c,
                    const Eigen::Vector3f &norm,
-                   const int id)
-	: Hitable(norm, id)
+                   const int id) : Hitable(norm, id)
 {
 	this->vertex0 = a;
 	this->vertex1 = b;
@@ -69,25 +68,9 @@ float Triangle::getMinCoordinate(int dimension) {
     return min;
 }
 
-float Triangle::getMaxX() {
-    return getMaxCoordinate(0);
-}
-
-float Triangle::getMaxY() {
-    return getMaxCoordinate(1);
-}
-float Triangle::getMaxZ() {
-    return getMaxCoordinate(2);
-}
-
-float Triangle::getMinX() {
-    return getMinCoordinate(0);
-}
-
-float Triangle::getMinY() {
-    return getMinCoordinate(1);
-}
-
-float Triangle::getMinZ() {
-    return getMinCoordinate(2);
-}
+float Triangle::getMaxX() { return getMaxCoordinate(0); }
+float Triangle::getMaxY() { return getMaxCoordinate(1); }
+float Triangle::getMaxZ() { return getMaxCoordinate(2); }
+float Triangle::getMinX() { return getMinCoordinate(0); }
+float Triangle::getMinY() { return getMinCoordinate(1); }
+float Triangle::getMinZ() { return getMinCoordinate(2); }

@@ -1,6 +1,9 @@
 #include "flyscene.hpp"
 #include <GLFW/glfw3.h>
 #include <limits>
+#include <cmath>
+
+#include "box.hpp"
 
 #define DEPTH = 2;
 
@@ -13,7 +16,8 @@ void Flyscene::initialize(int width, int height) {
   flycamera.setViewport(Eigen::Vector2f((float)width, (float)height));
 
   // load the OBJ file and materials
-  Tucano::MeshImporter::loadObjFile(mesh, materials,"resources/models/cube.obj");
+  Tucano::MeshImporter::loadObjFile(mesh, materials,"resources/models/dodgeColorTest.obj");
+  //Tucano::MeshImporter::loadObjFile(mesh, materials,"resources/models/cube.obj");
 
   // normalize the model (scale to unit cube and center at origin)
   mesh.normalizeModelMatrix();
@@ -42,6 +46,7 @@ void Flyscene::initialize(int width, int height) {
   glEnable(GL_DEPTH_TEST);
 
   scene = new Scene(mesh, materials);
+  getAllLeafBoxesInScene();
 }
 
 void Flyscene::paintGL(void) {
@@ -61,6 +66,10 @@ void Flyscene::paintGL(void) {
   // render the scene using OpenGL and one light source
   phong.render(mesh, flycamera, scene_light);
 
+  for ( auto boxInScene : leafBoxesInScene ) {
+    boxInScene.render(flycamera, scene_light);
+  }
+  
   // render the ray and camera representation for ray debug
   ray.render(flycamera, scene_light);
   camerarep.render(flycamera, scene_light);
@@ -137,6 +146,7 @@ void Flyscene::raytraceScene(int width, int height) {
   for ( Eigen::Vector3f lightPosition : lights ) 
     scene -> lights.push_back(Light(Eigen::Vector3f(1.0,1.0,1.0), lightPosition));
   
+  /*
   // for every pixel shoot a ray from the origin through the pixel coords
   for (int j = 0; j < image_size[1]; ++j) {
     for (int i = 0; i < image_size[0]; ++i) {
@@ -148,8 +158,28 @@ void Flyscene::raytraceScene(int width, int height) {
       pixel_data[i][j] = scene->traceRay(r, 0);
     }
   }
-
+  */
   // write the ray tracing result to a PPM image
   Tucano::ImageImporter::writePPMImage("result.ppm", pixel_data);
   std::cout << "ray tracing done! " << std::endl;
+}
+
+void Flyscene::getAllLeafBoxesInScene() {
+  this->leafBoxesInScene.clear();
+  for ( Hitable* hitableObject : scene->objectsInScene ) {
+    Box* box = dynamic_cast<Box*>(hitableObject);
+    this->leafBoxesInScene.push_back(convertToTucanoBox(box));
+  }
+}
+
+Tucano::Shapes::Box Flyscene::convertToTucanoBox( Box *box ) {
+    float width  = std::abs(box->bMin(0) - box->bMax(0));
+    float height = std::abs(box->bMin(1) - box->bMax(1));
+    float depth  = std::abs(box->bMin(2) - box->bMax(2));
+    Eigen::Vector3f boxCenter = Eigen::Vector3f( (box->bMin(0)+box->bMax(0))/2, (box->bMin(1)+box->bMax(1))/2, (box->bMin(2)+box->bMax(2))/2 );
+    Tucano::Shapes::Box tucanoBox = Tucano::Shapes::Box(width,height,depth);
+    tucanoBox.resetModelMatrix();
+    tucanoBox.modelMatrix()->translate(boxCenter);
+    tucanoBox.setColor(Eigen::Vector4f(1.0, 1.0, 0.0, 0.5));
+    return tucanoBox;
 }

@@ -1,6 +1,8 @@
 #pragma once
-#include <vector>
 #include "hitable.hpp"
+#include "triangle.hpp"
+
+#include <vector>
 
 class Box : public Hitable {
 public:
@@ -12,10 +14,11 @@ public:
 	bool isLeaf;
 
     // init Box
-    Box(){
-    };
+    Box(){};
+
+    //Constructor creates a box around the given list of triangles
+    Box(vector<Triangle*> &inputTriangles); 
     Box(Eigen::Vector3f x, Eigen::Vector3f y, bool isLeaf);
 
 	bool intersect(float &hitPoint, Ray &ray);
-
 };
