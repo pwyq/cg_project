@@ -19,6 +19,8 @@ if(NOT OPENGL_FOUND)
   message(SEND_ERROR "OpenGL not found on your system.")
 endif()
 
+list(APPEND CMAKE_CXX_FLAGS "-pthread ${CMAKE_CXX_FLAGS}")
+
 # Eigen 3 and glfw
 # pkg-config is used so we don't hard-code the location of eigen.
 find_package(PkgConfig)

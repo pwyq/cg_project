@@ -1,6 +1,10 @@
 #include "flyscene.hpp"
 #include <GLFW/glfw3.h>
 #include <limits>
+#include <thread>
+#include <queue>
+#include <mutex>
+#include <chrono>
 #include <cmath>
 
 #include "box.hpp"
@@ -151,47 +155,19 @@ void Flyscene::raytraceScene(int width, int height) {
   for ( Eigen::Vector3f lightPosition : lights ) 
     scene -> lights.push_back(Light(Eigen::Vector3f(1.0,1.0,1.0), lightPosition));
   
-  /*
   // for every pixel shoot a ray from the origin through the pixel coords
   for (int j = 0; j < image_size[1]; ++j) {
     for (int i = 0; i < image_size[0]; ++i) {
-      std::cout << "Shooting ray from: (" << i << "," << j << ")" << std::endl;
       // create a ray from the camera passing through the pixel (i,j)
       screen_coords = flycamera.screenToWorld(Eigen::Vector2f(i, j));
       // launch raytracing for the given ray and write result to pixel data
       Ray r(origin, screen_coords - origin);
-      pixel_data[i][j] = scene->traceRay(r, 0);
+      globalQueue.push(raytraceTask(&pixel_data[i][j], r));
+      //scene->traceRay(&pixel_data[i][j], r, 0);
     }
   }
-  */
+
   // write the ray tracing result to a PPM image
   Tucano::ImageImporter::writePPMImage("result.ppm", pixel_data);
   std::cout << "ray tracing done! " << std::endl;
-}
-
-//This method will intialize the leafBoxesInScene attribute of this Flyscene class to contain
-//all the boxes which contain triangles. So these are the leaf boxes in our hierarchy tree.
-void Flyscene::getAllLeafBoxesInScene() {
-  this->leafBoxesInScene.clear();
-  Hitable* firstBoxHitable = scene -> objectsInScene.at(0);
-  Box* firstBox = dynamic_cast<Box*>(firstBoxHitable);
-  std::vector<Box*> boxes = firstBox -> getLeafBoxes();
-  std::cout << "#LEAF_BOXES = " << boxes.size() << std::endl;
-  for ( Box* box : boxes ) {
-    this->leafBoxesInScene.push_back(convertToTucanoBox(box));
-  }
-  this->leafBoxesInScene.at(1).setColor(Eigen::Vector4f(0.0, 0.0, 1.0, 0.5));
-}
-
-//This method will convert a box to a tucano box, we use this to draw the box in the preview
-Tucano::Shapes::Box Flyscene::convertToTucanoBox( Box *box ) {
-    float width  = std::abs(box->bMin(0) - box->bMax(0));
-    float height = std::abs(box->bMin(1) - box->bMax(1));
-    float depth  = std::abs(box->bMin(2) - box->bMax(2));
-    Eigen::Vector3f boxCenter = Eigen::Vector3f( (box->bMin(0)+box->bMax(0))/2, (box->bMin(1)+box->bMax(1))/2, (box->bMin(2)+box->bMax(2))/2 );
-    Tucano::Shapes::Box tucanoBox = Tucano::Shapes::Box(width,height,depth);
-    tucanoBox.resetModelMatrix();
-    tucanoBox.modelMatrix()->translate(boxCenter);
-    tucanoBox.setColor(Eigen::Vector4f(1.0, 1.0, 0.0, 0.5));
-    return tucanoBox;
 }
