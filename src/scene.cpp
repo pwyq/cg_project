@@ -5,9 +5,10 @@
 
 #include <iostream>
 
-Eigen::Vector3f Scene::traceRay(Ray &ray, int level) {
+void Scene::traceRay(Eigen::Vector3f *color, Ray &ray, int level) {
   //This variable will hold the hitable which the ray intersects first.
   Hitable hitObject;
+  *color = Eigen::Vector3f(1.0, 1.0, 1.0);
 
   //This variable will hold the value of t on intersection in the formula r(t) = o + t * d 
   float tOnIntersection = std::numeric_limits<float>::infinity();
@@ -19,13 +20,12 @@ Eigen::Vector3f Scene::traceRay(Ray &ray, int level) {
   }
 
   //If tOnIntersection is still infinity, it means this ray did not hit anything, so we return the background color
-  if ( tOnIntersection == std::numeric_limits<float>::infinity() ) return Eigen::Vector3f(1.0,1.0,1.0);
+  if ( tOnIntersection == std::numeric_limits<float>::infinity() ) return;
 
   //If we reach this point, it means the ray hitted a object. Now we should compute the color of this object, so we call the shade method.
   std::cout << "Found intersection between triangle and ray" << std::endl;
   
-  Eigen::Vector3f color = shade(hitObject, ray, tOnIntersection);
-  return color;
+  *color = shade(hitObject, ray, tOnIntersection);
 }
 
 //TODO For now this only copies triangles

@@ -17,7 +17,7 @@ public:
 	Eigen::Vector3f cameraPosition;
 
 	//Will return a color
-	Eigen::Vector3f traceRay(Ray &, int);
+	void traceRay(Eigen::Vector3f *, Ray &, int);
 
 	//Will return a color
 	Eigen::Vector3f shade(Hitable &hitObject, const Ray &, float t);

@@ -12,6 +12,8 @@ public:
 		this->origin = origin;
 		this->direction = direction;
 	}
+	Ray()
+	{}
 
 	Eigen::Vector3f getPoint(float t);
 };
