@@ -172,10 +172,12 @@ void Flyscene::getAllLeafBoxesInScene() {
   Hitable* firstBoxHitable = scene -> objectsInScene.at(0);
   Box* firstBox = dynamic_cast<Box*>(firstBoxHitable);
   std::vector<Box*> boxes = firstBox -> getLeafBoxes();
-  std::cout << "#LEAF_BOXES = " << boxes.size() << acceleration_done << std::endl;
+  std::cout << "#LEAF_BOXES = " << boxes.size() << std::endl;
   for ( Box* box : boxes ) {
     this->leafBoxesInScene.push_back(convertToTucanoBox(box));
   }
+  this->leafBoxesInScene.at(1).setColor(Eigen::Vector4f(0.0, 0.0, 1.0, 0.5));
+  this->leafBoxesInScene.at(1).modelMatrix()->translate(Eigen::Vector3f(0,0,-0.1));
 }
 
 Tucano::Shapes::Box Flyscene::convertToTucanoBox( Box *box ) {

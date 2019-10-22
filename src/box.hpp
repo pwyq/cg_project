@@ -4,8 +4,6 @@
 
 #include <vector>
 
-#define TRIANGLES_PER_BOX = 2;
-
 class Box : public Hitable {
 public:
 	Eigen::Vector3f bMin;
@@ -21,5 +19,8 @@ public:
     
 	bool intersect(float &hitPoint, Ray &ray);
 
+	void splitBox(vector<Triangle*> &inputTriangles);
+
 	std::vector<Box*> getLeafBoxes();
+
 };
