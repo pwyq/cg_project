@@ -47,6 +47,7 @@ void Flyscene::initialize(int width, int height) {
 
   scene = new Scene(mesh, materials);
   getAllLeafBoxesInScene();
+  acceleration_done = true;
 }
 
 void Flyscene::paintGL(void) {
@@ -66,8 +67,10 @@ void Flyscene::paintGL(void) {
   // render the scene using OpenGL and one light source
   phong.render(mesh, flycamera, scene_light);
 
-  for ( auto boxInScene : leafBoxesInScene ) {
-    boxInScene.render(flycamera, scene_light);
+  if ( acceleration_done ) {
+    for ( auto boxInScene : leafBoxesInScene ) {
+       boxInScene.render(flycamera, scene_light);
+    }
   }
   
   // render the ray and camera representation for ray debug
@@ -166,8 +169,11 @@ void Flyscene::raytraceScene(int width, int height) {
 
 void Flyscene::getAllLeafBoxesInScene() {
   this->leafBoxesInScene.clear();
-  for ( Hitable* hitableObject : scene->objectsInScene ) {
-    Box* box = dynamic_cast<Box*>(hitableObject);
+  Hitable* firstBoxHitable = scene -> objectsInScene.at(0);
+  Box* firstBox = dynamic_cast<Box*>(firstBoxHitable);
+  std::vector<Box*> boxes = firstBox -> getLeafBoxes();
+  std::cout << "#LEAF_BOXES = " << boxes.size() << acceleration_done << std::endl;
+  for ( Box* box : boxes ) {
     this->leafBoxesInScene.push_back(convertToTucanoBox(box));
   }
 }

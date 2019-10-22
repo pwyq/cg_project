@@ -6,13 +6,6 @@ We're assuming the input box is AABB (Axis-aligned bounding box)
 post on AABB vs. OBB type bounding box:
     https://www.scratchapixel.com/lessons/3d-basic-rendering/minimal-ray-tracer-rendering-simple-shapes/ray-box-intersection
 */
-
-Box::Box(Eigen::Vector3f x, Eigen::Vector3f y, bool isLeaf): Hitable(){
-    this->bMin = x;
-    this->bMax = y;
-    this->isLeaf = isLeaf;
-}
-
 Box::Box(vector<Triangle*> &inputTriangles) : Hitable() {
   //Set the min max values of the new box to the min and max values
   float xmax = std::numeric_limits<float>::min(), xmin = std::numeric_limits<float>::max();
@@ -27,11 +20,13 @@ Box::Box(vector<Triangle*> &inputTriangles) : Hitable() {
     if(triangle->getMinY() < ymin) ymin = triangle->getMinY();
     if(triangle->getMaxZ() > zmax) zmax = triangle->getMaxZ();
     if(triangle->getMinZ() < zmin) zmin = triangle->getMinZ();
+    this->children.push_back( dynamic_cast<Hitable*>(triangle) );
   }
 
   this->bMin = Eigen::Vector3f(xmin, ymin, zmin);
   this->bMax = Eigen::Vector3f(xmax, ymax, zmax);
-  this->triangles = inputTriangles;
+  //this->children = inputTriangles;
+  this->isLeaf = true;
 }
 
 // Determine if incoming ray hit a box
@@ -74,4 +69,17 @@ bool Box::intersect(float &hitPoint, Ray &ray)
     if (t_in > t_out || t_out < 0)
         return false;
     return true;
+}
+
+std::vector<Box*> Box::getLeafBoxes() {
+    std::vector<Box*> leafBoxes;
+    if ( this->isLeaf ) leafBoxes.push_back(this);
+    else {
+        for ( Hitable* child : this->children ) {
+            Box* subBox = dynamic_cast<Box*>(child);
+            std::vector<Box*> leafBoxesOfSubBox = subBox -> getLeafBoxes();
+            leafBoxes.insert( leafBoxes.end(), leafBoxesOfSubBox.begin(), leafBoxesOfSubBox.end() );
+        }
+    }
+    return leafBoxes;
 }

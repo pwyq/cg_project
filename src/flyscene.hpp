@@ -107,6 +107,9 @@ private:
 
   //All the boxes of the acceleration structure that contain triangles
   std::vector<Tucano::Shapes::Box> leafBoxesInScene;
+
+  //Indicates if the acceleration structure is build or not
+  bool acceleration_done = false;
 };
 
 #endif // FLYSCENE
