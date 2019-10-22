@@ -68,18 +68,18 @@ Eigen::Vector3f Scene::shade(Hitable &hitObject, const Ray &ray, float t) {
 
 Eigen::Vector3f Scene::computeDirectLight(Hitable& hitObject, Eigen::Vector3f hitPoint) {
   //Get the material properties of the hitable object this ray interesected with 
-  Tucano::Material::Mtl faceMaterial = materials -> at(hitObject.material_id);
+  /*Tucano::Material::Mtl faceMaterial = materials -> at(hitObject.material_id);
   Eigen::Vector3f ka = faceMaterial.getAmbient();
   Eigen::Vector3f kd = faceMaterial.getDiffuse();
   Eigen::Vector3f ks = faceMaterial.getSpecular();
   float shininess = faceMaterial.getShininess();
 
   Eigen::Vector3f faceNormal = hitObject.normal.normalized();
-
+*/
 
   Eigen::Vector3f color = Eigen::Vector3f(0.0, 0.0, 0.0);
   //Loop over all the lights in the scene
-  for ( int i = 0; i < lights.size(); i++ ) {
+  /*for ( int i = 0; i < lights.size(); i++ ) {
       //Get the current light
       Light currentLight = lights.at(i);
 
@@ -127,6 +127,6 @@ Eigen::Vector3f Scene::computeDirectLight(Hitable& hitObject, Eigen::Vector3f hi
       Eigen::Vector3f specular = currentLight.spectrum.cwiseProduct(ks) * cosinus;
       
       color += ambient + diffuse + specular;
-  }
+  }*/
   return color;
 }

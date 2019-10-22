@@ -17,6 +17,7 @@ void Flyscene::initialize(int width, int height) {
 
   // load the OBJ file and materials
   Tucano::MeshImporter::loadObjFile(mesh, materials,"resources/models/dodgeColorTest.obj");
+  //Tucano::MeshImporter::loadObjFile(mesh, materials,"resources/models/toy.obj");
   //Tucano::MeshImporter::loadObjFile(mesh, materials,"resources/models/cube.obj");
 
   // normalize the model (scale to unit cube and center at origin)

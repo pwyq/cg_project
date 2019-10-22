@@ -21,11 +21,8 @@ CASE 2: number of triangles > max number of triangles per box
   We say this box is NOT a leaf.
 */
 Box::Box(vector<Triangle*> &inputTriangles) : Hitable() {
-  std::cout << "Creating new box -> #TRIANGLES =  " << inputTriangles.size() << std::endl;
-  //cin.get();
-
   //Max number of triangles per box  
-  int TRIANGLES_PER_BOX = 16310;
+  int TRIANGLES_PER_BOX = 100;
 
   //Set the min max values of the new box to the min and max values
   float xmax = std::numeric_limits<float>::min(), xmin = std::numeric_limits<float>::max();
@@ -60,7 +57,6 @@ This function gets a list of triangles as input and needs to create 2 subboxes o
 Right now, the splitting is along the longest axis.
 */
 void Box::splitBox(vector<Triangle*> &inputTriangles) {
-    std::cout << "Box contains to many triangles, so we are going to split" << std::endl;
     //First we get the width, heigtht and depth of this box
     float width  = std::abs(this->bMin(0) - this->bMax(0));
     float height = std::abs(this->bMin(1) - this->bMax(1));
@@ -68,20 +64,18 @@ void Box::splitBox(vector<Triangle*> &inputTriangles) {
     //This is a bit of a complex statement, but it determines which dimension to split on, 0, 1 or 2.
     int dimensionToSplitOn = width > height ? (width > depth ? 0 : 2) : (height > depth ? 1 : 2);
 
-    std::cout << "dimensionToSplitOn = " << dimensionToSplitOn << std::endl;
-    //Now we determine the middle point of this dimension
-    float middlePoint = (this->bMin(dimensionToSplitOn) + this->bMax(dimensionToSplitOn)) / 2;
-
-    std::cout << "low = " << this->bMin(dimensionToSplitOn) << " high = " << this->bMax(dimensionToSplitOn) << " middle = " << middlePoint << std::endl;
+    //Now we determine the median on this dimension
+    std::vector<float> trianglePositions;
+    for ( Triangle* triangle : inputTriangles ) trianglePositions.push_back( triangle -> getPosition()(dimensionToSplitOn) );
+    sort(trianglePositions.begin(), trianglePositions.end());
+    float median = trianglePositions.at(trianglePositions.size()/2);
 
     //We make two lists of triangles and add the triangles on the appropiate side of the middle to the correct set.
     std::vector<Triangle*> left, right;
     for ( Triangle* triangle : inputTriangles ) {
-        if ( triangle -> getPosition()(dimensionToSplitOn) < middlePoint ) left.push_back( triangle );
+        if ( triangle -> getPosition()(dimensionToSplitOn) < median ) left.push_back( triangle );
         else right.push_back( triangle );
     }
-    std::cout << "#left = " << left.size() << std::endl;
-    std::cout << "#right = " << right.size() << std::endl; 
 
     //Now we create the 2 subboxes. Note that we create new boxes by calling the constructor of Box,
     //this will automatically split this new box further (if necessary). So this is were the recursion of splitting happens!
