@@ -71,8 +71,6 @@ void Flyscene::paintGL(void) {
   // render the scene using OpenGL and one light source
   phong.render(mesh, flycamera, scene_light);
 
-  //If the acceleration structure is build, it means the leafBoxes are initialed,
-  //so we can render them on the screen.
   if ( acceleration_done ) {
     for ( auto boxInScene : leafBoxesInScene ) {
        boxInScene.render(flycamera, scene_light);
@@ -170,4 +168,29 @@ void Flyscene::raytraceScene(int width, int height) {
   // write the ray tracing result to a PPM image
   Tucano::ImageImporter::writePPMImage("result.ppm", pixel_data);
   std::cout << "ray tracing done! " << std::endl;
+}
+
+void Flyscene::getAllLeafBoxesInScene() {
+  this->leafBoxesInScene.clear();
+  Hitable* firstBoxHitable = scene -> objectsInScene.at(0);
+  Box* firstBox = dynamic_cast<Box*>(firstBoxHitable);
+  std::vector<Box*> boxes = firstBox -> getLeafBoxes();
+  std::cout << "#LEAF_BOXES = " << boxes.size() << std::endl;
+  for ( Box* box : boxes ) {
+    this->leafBoxesInScene.push_back(convertToTucanoBox(box));
+  }
+  this->leafBoxesInScene.at(1).setColor(Eigen::Vector4f(0.0, 0.0, 1.0, 0.5));
+  this->leafBoxesInScene.at(1).modelMatrix()->translate(Eigen::Vector3f(0,0,-0.1));
+}
+
+Tucano::Shapes::Box Flyscene::convertToTucanoBox( Box *box ) {
+    float width  = std::abs(box->bMin(0) - box->bMax(0));
+    float height = std::abs(box->bMin(1) - box->bMax(1));
+    float depth  = std::abs(box->bMin(2) - box->bMax(2));
+    Eigen::Vector3f boxCenter = Eigen::Vector3f( (box->bMin(0)+box->bMax(0))/2, (box->bMin(1)+box->bMax(1))/2, (box->bMin(2)+box->bMax(2))/2 );
+    Tucano::Shapes::Box tucanoBox = Tucano::Shapes::Box(width,height,depth);
+    tucanoBox.resetModelMatrix();
+    tucanoBox.modelMatrix()->translate(boxCenter);
+    tucanoBox.setColor(Eigen::Vector4f(1.0, 1.0, 0.0, 0.5));
+    return tucanoBox;
 }

@@ -38,7 +38,6 @@ float Triangle::getMinX() { return getMinCoordinate(0); }
 float Triangle::getMinY() { return getMinCoordinate(1); }
 float Triangle::getMinZ() { return getMinCoordinate(2); }
 
-//Get the middlepoint of the triangle
 Eigen::Vector3f Triangle::getPosition() {
     return (1.0/3.0) * vertex0 + (1.0/3.0) * vertex1 + (1.0/3.0) * vertex2;
 }

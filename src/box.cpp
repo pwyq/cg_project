@@ -7,23 +7,8 @@ We're assuming the input box is AABB (Axis-aligned bounding box)
 post on AABB vs. OBB type bounding box:
     https://www.scratchapixel.com/lessons/3d-basic-rendering/minimal-ray-tracer-rendering-simple-shapes/ray-box-intersection
 */
-
-
-/*The constructor of the box takes a list of triangles, it acts differently in 2 different cases
-
-CASE 1: number of triangles <= max number of triangles per box
-- If this is the case, it means we don't have to split this box any further. 
-  We say this box is a leaf box.
-
-CASE 2: number of triangles > max number of triangles per box
-- If this is the case, it means we have to split this box further. 
-  We call the split method, this takes care of the splitting.
-  We say this box is NOT a leaf.
-*/
 Box::Box(vector<Triangle*> &inputTriangles) : Hitable() {
   std::cout << "Creating new box -> #TRIANGLES =  " << inputTriangles.size() << std::endl;
-  //cin.get();
-
   //Max number of triangles per box  
   int TRIANGLES_PER_BOX = 16310;
 
@@ -55,26 +40,15 @@ Box::Box(vector<Triangle*> &inputTriangles) : Hitable() {
   }
 }
 
-/*
-This function gets a list of triangles as input and needs to create 2 subboxes over which the triangles are divided.
-Right now, the splitting is along the longest axis.
-*/
 void Box::splitBox(vector<Triangle*> &inputTriangles) {
     std::cout << "Box contains to many triangles, so we are going to split" << std::endl;
-    //First we get the width, heigtht and depth of this box
     float width  = std::abs(this->bMin(0) - this->bMax(0));
     float height = std::abs(this->bMin(1) - this->bMax(1));
     float depth  = std::abs(this->bMin(2) - this->bMax(2));
-    //This is a bit of a complex statement, but it determines which dimension to split on, 0, 1 or 2.
     int dimensionToSplitOn = width > height ? (width > depth ? 0 : 2) : (height > depth ? 1 : 2);
-
     std::cout << "dimensionToSplitOn = " << dimensionToSplitOn << std::endl;
-    //Now we determine the middle point of this dimension
-    float middlePoint = (this->bMin(dimensionToSplitOn) + this->bMax(dimensionToSplitOn)) / 2;
-
+    float middlePoint = (this->bMin(dimensionToSplitOn) + this->bMax(dimensionToSplitOn)) / 2 + 0.1;
     std::cout << "low = " << this->bMin(dimensionToSplitOn) << " high = " << this->bMax(dimensionToSplitOn) << " middle = " << middlePoint << std::endl;
-
-    //We make two lists of triangles and add the triangles on the appropiate side of the middle to the correct set.
     std::vector<Triangle*> left, right;
     for ( Triangle* triangle : inputTriangles ) {
         if ( triangle -> getPosition()(dimensionToSplitOn) < middlePoint ) left.push_back( triangle );
@@ -82,13 +56,8 @@ void Box::splitBox(vector<Triangle*> &inputTriangles) {
     }
     std::cout << "#left = " << left.size() << std::endl;
     std::cout << "#right = " << right.size() << std::endl; 
-
-    //Now we create the 2 subboxes. Note that we create new boxes by calling the constructor of Box,
-    //this will automatically split this new box further (if necessary). So this is were the recursion of splitting happens!
     Hitable* leftBox = dynamic_cast<Hitable*>(new Box(left));
     Hitable* rightBox = dynamic_cast<Hitable*>(new Box(right));
-
-    //Add the boxes to the children of this Box
     this->children.push_back(leftBox);
     this->children.push_back(rightBox);
 }
@@ -135,17 +104,10 @@ bool Box::intersect(float &hitPoint, Ray &ray)
     return true;
 }
 
-/*
-This function returns all the leave boxes of the tree of boxes.
-This function is recursive and walks from the top of the tree of boxes to the bottem.
-The base case is when this box is a leaf.
-*/
 std::vector<Box*> Box::getLeafBoxes() {
     std::vector<Box*> leafBoxes;
-    //If this is the leaf box return this box
     if ( this->isLeaf ) leafBoxes.push_back(this);
     else {
-        //Loop over all the children (which are boxes) and get the leaf boxes for each child.
         for ( Hitable* child : this->children ) {
             Box* subBox = dynamic_cast<Box*>(child);
             std::vector<Box*> leafBoxesOfSubBox = subBox -> getLeafBoxes();
