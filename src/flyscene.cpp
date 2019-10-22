@@ -67,6 +67,8 @@ void Flyscene::paintGL(void) {
   // render the scene using OpenGL and one light source
   phong.render(mesh, flycamera, scene_light);
 
+  //If the acceleration structure is build, it means the leafBoxes are initialed,
+  //so we can render them on the screen.
   if ( acceleration_done ) {
     for ( auto boxInScene : leafBoxesInScene ) {
        boxInScene.render(flycamera, scene_light);
@@ -167,6 +169,8 @@ void Flyscene::raytraceScene(int width, int height) {
   std::cout << "ray tracing done! " << std::endl;
 }
 
+//This method will intialize the leafBoxesInScene attribute of this Flyscene class to contain
+//all the boxes which contain triangles. So these are the leaf boxes in our hierarchy tree.
 void Flyscene::getAllLeafBoxesInScene() {
   this->leafBoxesInScene.clear();
   Hitable* firstBoxHitable = scene -> objectsInScene.at(0);
@@ -177,9 +181,9 @@ void Flyscene::getAllLeafBoxesInScene() {
     this->leafBoxesInScene.push_back(convertToTucanoBox(box));
   }
   this->leafBoxesInScene.at(1).setColor(Eigen::Vector4f(0.0, 0.0, 1.0, 0.5));
-  this->leafBoxesInScene.at(1).modelMatrix()->translate(Eigen::Vector3f(0,0,-0.1));
 }
 
+//This method will convert a box to a tucano box, we use this to draw the box in the preview
 Tucano::Shapes::Box Flyscene::convertToTucanoBox( Box *box ) {
     float width  = std::abs(box->bMin(0) - box->bMax(0));
     float height = std::abs(box->bMin(1) - box->bMax(1));
