@@ -46,6 +46,8 @@ void Flyscene::initialize(int width, int height) {
   glEnable(GL_DEPTH_TEST);
 
   scene = new Scene(mesh, materials);
+  scene.CreateAccelarate();
+
 }
 
 void Flyscene::paintGL(void) {
