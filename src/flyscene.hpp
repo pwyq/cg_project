@@ -66,7 +66,6 @@ public:
    */
   void raytraceScene(int width = 0, int height = 0);
 
-
   Tucano::Shapes::Box convertToTucanoBox( Box *box );
   void getAllLeafBoxesInScene();
 
@@ -91,7 +90,7 @@ private:
   Tucano::Shapes::Sphere lightrep;
 
   // light sources for ray tracing
-  vector<Eigen::Vector3f> lights;
+  std::vector<Eigen::Vector3f> lights;
 
   // Scene light represented as a camera
   Tucano::Camera scene_light;
@@ -103,7 +102,7 @@ private:
   Tucano::Mesh mesh;
 
   /// MTL materials
-  vector<Tucano::Material::Mtl> materials;
+  std::vector<Tucano::Material::Mtl> materials;
 
   //Our scene
   Scene* scene;

@@ -11,8 +11,8 @@ public:
 	std::vector<Hitable*> children; //either smaller boxes or triangles
 	bool isLeaf; //if true, children will contain triangles
 
-    // init Box
-    Box(){};
+    // default Box constructor
+    Box();
 
     //Constructor creates a box around the given list of triangles
     Box(std::vector<Triangle*> &inputTriangles); 

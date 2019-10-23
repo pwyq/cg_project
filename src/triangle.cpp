@@ -40,11 +40,14 @@ float Triangle::getMinZ() { return getMinCoordinate(2); }
 
 //Get the middlepoint of the triangle
 Eigen::Vector3f Triangle::getPosition() {
-    return (1.0/3.0) * vertex0 + (1.0/3.0) * vertex1 + (1.0/3.0) * vertex2;
+    return (vertex0 + vertex1 + vertex2)/3.0;
 }
 
 
-Hitable* Triangle::intersect(float &hitPoint, Ray &ray) {             
+Hitable* Triangle::intersect(float &hitPoint, Ray &ray) { 
+    //Checks if the ray is parrallel to the triangle, then return NULL
+    if ( this -> normal.dot(ray.direction) == 0 ) return NULL;
+
     //Find triangle's plane, plane equation: p * n - D = 0
     float D = this->normal.dot(vertex0);
 
@@ -67,15 +70,13 @@ Hitable* Triangle::intersect(float &hitPoint, Ray &ray) {
 }
 
 bool Triangle::isInTriangle(Eigen::Vector3f point) {
-    float areaABC = normal.dot( (vertex1 - vertex0).cross(vertex2 - vertex0) );
-    float areaPBC = normal.dot( (vertex1 - point).cross(vertex2 - point) );
-    float areaPCA = normal.dot( (vertex2 - point).cross(vertex0 - point) );
+    float areaABC = this->normal.dot( (vertex1 - vertex0).cross(vertex2 - vertex0) );
+    float areaPBC = this->normal.dot( (vertex1 - point).cross(vertex2 - point) );
+    float areaPCA = this->normal.dot( (vertex2 - point).cross(vertex0 - point) );
 
     float a = areaPBC / areaABC;
     float b = areaPCA / areaABC;    
     
-    if ( a < 0 || a > 1 ) return false;
-    if ( b < 0 || b > 1 ) return false;
-    if ( a + b > 1 ) return false;
+    if ( a < 0 || b < 0 || a + b > 1 ) return false;
     return true;  
 }

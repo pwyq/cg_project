@@ -1,10 +1,17 @@
 #pragma once
 
-#include <vector>
-
+// Tucano framework
 #include <tucano/mesh.hpp>
 #include <tucano/utils/mtlIO.hpp>
 
+// General C++ library
+#include <vector>
+#include <mutex>
+#include <queue>
+#include <thread>
+#include <chrono>
+
+// Local header files
 #include "ray.hpp"
 #include "hitable.hpp"
 #include "light.hpp"
@@ -35,3 +42,47 @@ public:
 	Scene(Tucano::Mesh &, std::vector<Tucano::Material::Mtl> &);
 	Scene();
 };
+
+/****************************************************************
+ * Multi-threads                                                *
+ ****************************************************************/
+
+struct raytraceTask
+{
+    Eigen::Vector3f *result = nullptr;
+    Ray origin;
+	raytraceTask() {}
+
+	raytraceTask(Eigen::Vector3f *r, Ray &o)
+	{
+	    result = r;
+	    origin = o;
+	}
+};
+
+class TaskQueue
+{
+    std::queue<raytraceTask> queue;
+    std::mutex m;
+public:
+    std::size_t totalTasks = 0;
+    std::size_t completedTasks = 0;
+
+    void push(const raytraceTask &task);
+    raytraceTask pop();
+    bool isEmpty();
+};
+
+class Worker
+{
+public:
+    TaskQueue *globalQueue;
+    Scene *workerScene;
+    bool done = false;
+
+    void work();
+    void end();
+};
+
+
+/* End of File */

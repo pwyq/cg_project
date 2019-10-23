@@ -1,15 +1,9 @@
 #include "flyscene.hpp"
-#include <GLFW/glfw3.h>
+
 #include <limits>
-#include <thread>
-#include <queue>
-#include <mutex>
-#include <chrono>
 #include <cmath>
 
-#include "box.hpp"
-
-#define DEPTH = 2;
+// #define DEPTH = 2;  // no use so far
 
 void Flyscene::initialize(int width, int height) {
   // initiliaze the Phong Shading effect for the Opengl Previewer
@@ -21,8 +15,10 @@ void Flyscene::initialize(int width, int height) {
 
   // load the OBJ file and materials
   Tucano::MeshImporter::loadObjFile(mesh, materials,"resources/models/toy.obj");
-  //Tucano::MeshImporter::loadObjFile(mesh, materials,"resources/models/toy.obj");
-  //Tucano::MeshImporter::loadObjFile(mesh, materials,"resources/models/cube.obj");
+  // Tucano::MeshImporter::loadObjFile(mesh, materials,"resources/models/cube.obj");
+  // Tucano::MeshImporter::loadObjFile(mesh, materials,"resources/models/bunny.obj"); // too large
+  // Tucano::MeshImporter::loadObjFile(mesh, materials,"resources/models/dodgeColorTest.obj");
+
 
   // normalize the model (scale to unit cube and center at origin)
   mesh.normalizeModelMatrix();
@@ -50,6 +46,7 @@ void Flyscene::initialize(int width, int height) {
 
   glEnable(GL_DEPTH_TEST);
 
+  /* Initialize our variables */
   scene = new Scene(mesh, materials);
   getAllLeafBoxesInScene();
   show_acceleration = true;
@@ -101,16 +98,9 @@ void Flyscene::simulate(GLFWwindow *window) {
   // events are repeated: https://github.com/glfw/glfw/issues/747. Sucks.
   float dx = (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS ? 1.0 : 0.0) -
              (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS ? 1.0 : 0.0);
-  float dy = (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS ||
-                      glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS
-                  ? 1.0
-                  : 0.0) -
-             (glfwGetKey(window, GLFW_KEY_Z) == GLFW_PRESS ||
-                      glfwGetKey(window, GLFW_KEY_C) == GLFW_PRESS
-                  ? 1.0
-                  : 0.0);
-  float dz = (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS ? 1.0 : 0.0) -
-             (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS ? 1.0 : 0.0);
+  float dy = (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS || glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS ? 1.0 : 0.0) -
+             (glfwGetKey(window, GLFW_KEY_Z) == GLFW_PRESS || glfwGetKey(window, GLFW_KEY_C) == GLFW_PRESS ? 1.0 : 0.0);
+  float dz = (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS ? 1.0 : 0.0) - (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS ? 1.0 : 0.0);
   flycamera.translate(dx, dy, dz);
 }
 
@@ -156,83 +146,6 @@ void Flyscene::raytraceScene(int width, int height) {
   for ( Eigen::Vector3f lightPosition : lights ) 
     scene -> lights.push_back(Light(Eigen::Vector3f(1.0,1.0,1.0), lightPosition));
   
- struct raytraceTask
-  {
-    Eigen::Vector3f *result = nullptr;
-    Ray origin;
-
-    raytraceTask(Eigen::Vector3f *r, Ray &o)
-    {
-      result = r;
-      origin = o;
-    }
-    raytraceTask()
-    {}
-  };
-
-  class TaskQueue
-  {
-    std::queue<raytraceTask> queue;
-    std::mutex m;
-  public:
-    std::size_t totalTasks = 0;
-    std::size_t completedTasks = 0;
-    void push(const raytraceTask &task)
-    {
-      std::lock_guard<std::mutex> lock(m);
-      queue.push(task);
-      totalTasks++;
-    }
-
-    raytraceTask pop()
-    {
-      std::lock_guard<std::mutex> lock(m);
-      if (queue.empty())
-        return raytraceTask();
-      raytraceTask ret = queue.front();
-      queue.pop();
-      completedTasks++;
-      return ret;
-    }
-
-    bool empty()
-    {
-      std::lock_guard<std::mutex> lock(m);
-      return queue.empty();
-    }
-  };
-
-  class Worker
-  {
-  public:
-    TaskQueue *globalQueue;
-    Scene *scene;
-    bool done = false;
-
-    void work()
-    {
-      while (!done)
-      {
-        if (!globalQueue->empty())
-        {
-          raytraceTask cur = globalQueue->pop();
-          if (cur.result == nullptr)
-            continue; //We didn't actually get it, the queue was empty
-          if ( scene -> useAcc ) {
-            scene->traceRayWithAcc(cur.result, cur.origin, 0);
-          } else {
-            scene->traceRay(cur.result, cur.origin, 0);
-          }
-        }
-      }
-    }
-
-    void end()
-    {
-      done = true;
-    }
-  };
-
   TaskQueue globalQueue;
  
   unsigned int num_threads = std::thread::hardware_concurrency();
@@ -242,10 +155,9 @@ void Flyscene::raytraceScene(int width, int height) {
   for (size_t i = 0; i < num_threads; ++i)
   {
     workerPool[i].globalQueue = &globalQueue;
-    workerPool[i].scene = scene;
+    workerPool[i].workerScene = scene;
     threadPool[i] = std::thread(&Worker::work, std::ref(workerPool[i]));
   }
-
 
   // for every pixel shoot a ray from the origin through the pixel coords
   for (int j = 0; j < image_size[1]; ++j) {
@@ -260,11 +172,14 @@ void Flyscene::raytraceScene(int width, int height) {
   }
 
   // Wait for threads to finish
-  while (!globalQueue.empty())
+  auto t1 = std::chrono::high_resolution_clock::now();
+  while (!globalQueue.isEmpty())
   {
     std::cout<<globalQueue.completedTasks<<" / "<<globalQueue.totalTasks<<" rays traced\n";
           std::this_thread::sleep_for(1ms);
   }
+  auto t2 = std::chrono::high_resolution_clock::now();
+  auto duration = std::chrono::duration_cast<std::chrono::microseconds>( t2 - t1 ).count();
   for (size_t i= 0; i < num_threads; ++i)
   {
     workerPool[i].end();
@@ -272,7 +187,7 @@ void Flyscene::raytraceScene(int width, int height) {
   }
   // write the ray tracing result to a PPM image
   Tucano::ImageImporter::writePPMImage("result.ppm", pixel_data);
-  std::cout << "ray tracing done! " << std::endl;
+  std::cout << "ray tracing done with time = " << duration << std::endl;
 }
 
 void Flyscene::getAllLeafBoxesInScene() {
