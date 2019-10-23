@@ -218,7 +218,11 @@ void Flyscene::raytraceScene(int width, int height) {
           raytraceTask cur = globalQueue->pop();
           if (cur.result == nullptr)
             continue; //We didn't actually get it, the queue was empty
-          scene->traceRay(cur.result, cur.origin, 0);
+          if ( scene -> useAcc ) {
+            scene->traceRayWithAcc(cur.result, cur.origin, 0);
+          } else {
+            scene->traceRay(cur.result, cur.origin, 0);
+          }
         }
       }
     }
@@ -273,8 +277,7 @@ void Flyscene::raytraceScene(int width, int height) {
 
 void Flyscene::getAllLeafBoxesInScene() {
   this->leafBoxesInScene.clear();
-  Hitable* firstBoxHitable = scene -> objectsInScene.at(0);
-  Box* firstBox = dynamic_cast<Box*>(firstBoxHitable);
+  Box* firstBox = scene -> boxOverAllTriangles;
   std::vector<Box*> boxes = firstBox -> getLeafBoxes();
   std::cout << "#LEAF_BOXES = " << boxes.size() << std::endl;
   for ( Box* box : boxes ) {
