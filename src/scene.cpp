@@ -1,10 +1,11 @@
+#include <iostream>
+
 #include "scene.hpp"
 #include "triangle.hpp"
 #include "hitable.hpp"
 #include "light.hpp"
 #include "box.hpp"
 
-#include <iostream>
 
 void Scene::traceRay(Eigen::Vector3f *color, Ray &ray, int level) {
   //This variable will hold the value of t on intersection in the formula r(t) = o + t * d 
@@ -21,6 +22,7 @@ void Scene::traceRay(Eigen::Vector3f *color, Ray &ray, int level) {
   *color = shade(*hitObject, ray, tOnIntersection);
 }
 
+// ray tracing with accleration structure
 void Scene::traceRayWithAcc(Eigen::Vector3f *color, Ray &ray, int level) {
   //This variable will hold the value of t on intersection in the formula r(t) = o + t * d 
   float tOnIntersection = std::numeric_limits<float>::infinity();
@@ -73,6 +75,10 @@ Eigen::Vector3f Scene::shade(Hitable &hitObject, const Ray &ray, float t) {
   return directLight + reflectedLight + refractedLight;
 }
 
+/****************************************************************
+ * Compute Light (direct+reflect+refraction)                    *
+ ****************************************************************/
+
 Eigen::Vector3f Scene::computeDirectLight(Hitable& hitObject, Eigen::Vector3f hitPoint) {
   //Get the material properties of the hitable object this ray interesected with 
   Tucano::Material::Mtl faceMaterial = materials -> at(hitObject.material_id);
@@ -122,7 +128,7 @@ Eigen::Vector3f Scene::computeDirectLight(Hitable& hitObject, Eigen::Vector3f hi
       //If this cosinus is smaller than 0, we set it to zero.
       cosinus = cosinus > 0 ? cosinus : 0;
       //Raise the cosinus to the power shininess
-      cosinus = pow(cosinus, shininess);
+      cosinus = std::pow(cosinus, shininess);
       //Compute the specular component
       Eigen::Vector3f specular = currentLight.spectrum.cwiseProduct(ks) * cosinus;
       
@@ -130,3 +136,56 @@ Eigen::Vector3f Scene::computeDirectLight(Hitable& hitObject, Eigen::Vector3f hi
   }
   return color;
 }
+
+/****************************************************************
+ * Multi-threads                                                *
+ ****************************************************************/
+
+void TaskQueue::push(const raytraceTask &task)
+{
+    std::lock_guard<std::mutex> lock(m);
+    queue.push(task);
+    totalTasks++;
+}
+
+raytraceTask TaskQueue::pop()
+{
+    std::lock_guard<std::mutex> lock(m);
+    if (queue.empty())
+    return raytraceTask();
+    raytraceTask ret = queue.front();
+    queue.pop();
+    completedTasks++;
+    return ret;
+}
+
+bool TaskQueue::isEmpty()
+{
+    std::lock_guard<std::mutex> lock(m);
+    return queue.empty();
+}
+
+void Worker::work()
+{
+    while (!this->done)
+    {
+        if (!globalQueue->isEmpty())
+        {
+            raytraceTask cur = globalQueue->pop();
+            if (cur.result == nullptr)
+                continue; //We didn't actually get it, the queue was empty
+            if ( this->workerScene->useAcc )
+                this->workerScene->traceRayWithAcc(cur.result, cur.origin, 0);
+            else
+                this->workerScene->traceRay(cur.result, cur.origin, 0);
+        }
+    }
+}
+
+void Worker::end()
+{
+    done = true;
+}
+
+
+/* End of File */

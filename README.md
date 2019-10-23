@@ -1,2 +1,1 @@
-# CG_Group_22
-
+# Computer Graphics Project - Ray Tracing
