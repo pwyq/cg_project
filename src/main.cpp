@@ -50,6 +50,7 @@ void initialize(void) {
   std::cout << "L    : Add new light source at current camera position."
             << std::endl;
   std::cout << "T    : Ray trace the scene." << std::endl;
+  std::cout << "H    : Show/Hide acceleration structure." << std::endl;
   std::cout << "Esc  : Close application." << std::endl;
   std::cout << " ********************************* " << std::endl;
 }
@@ -66,6 +67,8 @@ void keyCallback(GLFWwindow *window, int key, int scancode, int action,
     flyscene->addLight();
   else if (key == GLFW_KEY_T && action == GLFW_PRESS)
     flyscene->raytraceScene();
+  else if (key == GLFW_KEY_H && action == GLFW_PRESS)
+    flyscene->show_acceleration=!flyscene->show_acceleration;
 }
 
 static void mouseButtonCallback(GLFWwindow *window, int button, int action,

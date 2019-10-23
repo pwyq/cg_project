@@ -48,7 +48,7 @@ void Flyscene::initialize(int width, int height) {
 
   scene = new Scene(mesh, materials);
   getAllLeafBoxesInScene();
-  acceleration_done = true;
+  show_acceleration = true;
 }
 
 void Flyscene::paintGL(void) {
@@ -70,7 +70,7 @@ void Flyscene::paintGL(void) {
 
   //If the acceleration structure is build, it means the leafBoxes are initialed,
   //so we can render them on the screen.
-  if ( acceleration_done ) {
+  if ( show_acceleration ) {
     for ( auto boxInScene : leafBoxesInScene ) {
        boxInScene.render(flycamera, scene_light);
     }

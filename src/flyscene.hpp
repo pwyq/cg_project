@@ -70,6 +70,9 @@ public:
   Tucano::Shapes::Box convertToTucanoBox( Box *box );
   void getAllLeafBoxesInScene();
 
+  //Indicates if the acceleration structure is build or not
+  bool show_acceleration = false;
+
 private:
   // A simple phong shader for rendering meshes
   Tucano::Effects::PhongMaterial phong;
@@ -107,9 +110,6 @@ private:
 
   //All the boxes of the acceleration structure that contain triangles
   std::vector<Tucano::Shapes::Box> leafBoxesInScene;
-
-  //Indicates if the acceleration structure is build or not
-  bool acceleration_done = false;
 };
 
 #endif // FLYSCENE

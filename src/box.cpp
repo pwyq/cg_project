@@ -22,7 +22,7 @@ CASE 2: number of triangles > max number of triangles per box
 */
 Box::Box(vector<Triangle*> &inputTriangles) : Hitable() {
   //Max number of triangles per box  
-  int TRIANGLES_PER_BOX = 100;
+  int TRIANGLES_PER_BOX = 200;
 
   //Set the min max values of the new box to the min and max values
   float xmax = std::numeric_limits<float>::min(), xmin = std::numeric_limits<float>::max();
