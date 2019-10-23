@@ -16,17 +16,11 @@ void Scene::traceRay(Eigen::Vector3f *color, Ray &ray, int level) {
 
   //std::cout << "Loop over all the objects in the scene" << std::endl;
   for (auto &h : this->objectsInScene) {
-    //std::cout << "Check next object" << std::endl;
     Hitable* hit = h->intersect(tOnIntersection, ray);
-    //std::cout << "HIT in scene = " << hit << std::endl;
     if ( hit != NULL ) {
-      std::cout << "We hitted a triangle" << std::endl;
       Triangle* tr = dynamic_cast<Triangle*>(hit);
-      //std::cout << tr->vertex0 << " " << tr->vertex1 << " " << tr->vertex2 << std::endl;
   		hitObject = hit;
-  	} else {
-      //std::cout << "we did not hit anything" << std::endl;
-    }
+  	}
   }
 
   //If tOnIntersection is still infinity, it means this ray did not hit anything, so we return the background color

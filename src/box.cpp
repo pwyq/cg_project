@@ -90,7 +90,6 @@ void Box::splitBox(vector<Triangle*> &inputTriangles) {
 // Determine if incoming ray hit a box
 Hitable* Box::intersect(float &hitPoint, Ray &ray)
 {
-    //std::cout << "Checking intersection with box" << std::endl;
     // substitute ray in all planes to calculate intersection parameters
     float x_min = this->bMin[0];
     float y_min = this->bMin[1];
@@ -99,8 +98,6 @@ Hitable* Box::intersect(float &hitPoint, Ray &ray)
     float x_max = this->bMax[0];
     float y_max = this->bMax[1];
     float z_max = this->bMax[2];
-
-    //std::cout << "  - width: " << std::abs(x_max-x_min) << " height: " << std::abs(y_max-y_min) << "  depth: " << std::abs(z_max-z_min) << std::endl;
 
     float tx_min = (x_min - ray.origin(0)) / ray.direction(0);
     float ty_min = (y_min - ray.origin(1)) / ray.direction(1);
@@ -131,11 +128,6 @@ Hitable* Box::intersect(float &hitPoint, Ray &ray)
     //When we reach this moment, we no the ray will hit this box,
     //so we recursively call the intersect method on the subboxes or triangles.
     Hitable* hitObject = NULL;
-    /*std::cout << "Box intersects ray" << std::endl;
-    if ( isLeaf ) {
-        std::cout << "we reached a leaf box!!" << std::endl;
-    }
-    */
     for (auto &h: this->children) {
         Hitable* hit = h->intersect(hitPoint, ray);
         if ( hit != NULL ) {
