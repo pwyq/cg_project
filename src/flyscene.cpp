@@ -156,7 +156,7 @@ void Flyscene::raytraceScene(int width, int height) {
   for ( Eigen::Vector3f lightPosition : lights ) 
     scene -> lights.push_back(Light(Eigen::Vector3f(1.0,1.0,1.0), lightPosition));
   
-  struct raytraceTask
+ struct raytraceTask
   {
     Eigen::Vector3f *result = nullptr;
     Ray origin;
@@ -175,10 +175,13 @@ void Flyscene::raytraceScene(int width, int height) {
     std::queue<raytraceTask> queue;
     std::mutex m;
   public:
+    std::size_t totalTasks = 0;
+    std::size_t completedTasks = 0;
     void push(const raytraceTask &task)
     {
       std::lock_guard<std::mutex> lock(m);
       queue.push(task);
+      totalTasks++;
     }
 
     raytraceTask pop()
@@ -188,6 +191,7 @@ void Flyscene::raytraceScene(int width, int height) {
         return raytraceTask();
       raytraceTask ret = queue.front();
       queue.pop();
+      completedTasks++;
       return ret;
     }
 
@@ -238,6 +242,7 @@ void Flyscene::raytraceScene(int width, int height) {
     threadPool[i] = std::thread(&Worker::work, std::ref(workerPool[i]));
   }
 
+
   // for every pixel shoot a ray from the origin through the pixel coords
   for (int j = 0; j < image_size[1]; ++j) {
     for (int i = 0; i < image_size[0]; ++i) {
@@ -253,6 +258,7 @@ void Flyscene::raytraceScene(int width, int height) {
   // Wait for threads to finish
   while (!globalQueue.empty())
   {
+    std::cout<<globalQueue.completedTasks<<" / "<<globalQueue.totalTasks<<" rays traced\n";
           std::this_thread::sleep_for(1ms);
   }
   for (size_t i= 0; i < num_threads; ++i)
