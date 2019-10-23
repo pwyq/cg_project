@@ -1,10 +1,3 @@
-/**
- * File              : sphere.cpp
- * Author            : Yanqing Wu <meet.yanqing.wu@gmail.com>
- * Date              : 21.10.2019
- * Last Modified Date: 21.10.2019
- * Last Modified By  : Yanqing Wu <meet.yanqing.wu@gmail.com>
- */
 #include "sphere.hpp"
 
 bool solve_quadratic(const float &a, const float &b, const float &c,
@@ -23,11 +16,13 @@ bool solve_quadratic(const float &a, const float &b, const float &c,
     return true;
 }
 
-Sphere::intersect(float &hitPoint, Ray &ray)
+/* TODO: change return type to Hitable
+bool Sphere::intersect(float &hitPoint, Ray &ray)
 {
     // all variable names refer to:
     // https://www.scratchapixel.com/lessons/3d-basic-rendering/minimal-ray-tracer-rendering-simple-shapes/ray-sphere-intersection
 
+    float t0, t1;
 #if 0
     // geometric solution
     Eigen::Vector3f L = this.center - ray.origin;
@@ -38,13 +33,13 @@ Sphere::intersect(float &hitPoint, Ray &ray)
         return false;
     float thc = std::sqrt(radius_squared - d_squred);
 
-    float t0 = tca - thc;
-    float t1 = tca + thc;
+    t0 = tca - thc;
+    t1 = tca + thc;
 #else
-    Eigen::Vector3f L = ray.origin - this.center;
+    Eigen::Vector3f L = ray.origin - this->center;
     float a = ray.direction.dot(ray.direction);
     float b = 2 * ray.direction.dot(L);
-    float radius_squared = std::pow(this.radius, 2);
+    float radius_squared = std::pow(this->radius, 2);
     float c = L.dot(L) - radius_squared;
     if (solve_quadratic(a,b,c,t0,t1) == false)
         return false;
@@ -58,6 +53,7 @@ Sphere::intersect(float &hitPoint, Ray &ray)
         if (t0 < 0)
             return false;   // both root are -ve
     }
-    t = t0;
+    // t = t0;
     return true;
 }
+*/

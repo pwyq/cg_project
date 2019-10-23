@@ -1,8 +1,8 @@
 #include "scene.hpp"
 #include "triangle.hpp"
 #include "hitable.hpp"
-#include "light.cpp"
-#include "box.cpp"
+#include "light.hpp"
+#include "box.hpp"
 
 #include <iostream>
 

@@ -8,6 +8,7 @@ public:
 	Eigen::Vector3f center;
 	float radius;
 
-	bool intersect(float &hitPoint, Ray &ray);
+    // TODO: need to change return type to Hitable
+	// virtual bool intersect(float &hitPoint, Ray &ray);
 
 };
