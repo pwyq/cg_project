@@ -46,6 +46,7 @@ set(
   ${PROJECT_DIR}/scene.cpp
   ${PROJECT_DIR}/triangle.cpp
   ${PROJECT_DIR}/hitable.cpp
+  ${PROJECT_DIR}/box.cpp
   #${PROJECT_DIR}/raytracing.cpp  
   )
 
