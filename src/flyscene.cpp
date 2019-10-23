@@ -7,9 +7,7 @@
 #include <chrono>
 #include <cmath>
 
-#include "box.hpp"
-
-#define DEPTH = 2;
+// #define DEPTH = 2;  // no use so far
 
 void Flyscene::initialize(int width, int height) {
   // initiliaze the Phong Shading effect for the Opengl Previewer
@@ -21,8 +19,10 @@ void Flyscene::initialize(int width, int height) {
 
   // load the OBJ file and materials
   Tucano::MeshImporter::loadObjFile(mesh, materials,"resources/models/toy.obj");
-  //Tucano::MeshImporter::loadObjFile(mesh, materials,"resources/models/toy.obj");
-  //Tucano::MeshImporter::loadObjFile(mesh, materials,"resources/models/cube.obj");
+  // Tucano::MeshImporter::loadObjFile(mesh, materials,"resources/models/cube.obj");
+  // Tucano::MeshImporter::loadObjFile(mesh, materials,"resources/models/bunny.obj"); // too large
+  // Tucano::MeshImporter::loadObjFile(mesh, materials,"resources/models/dodgeColorTest.obj");
+
 
   // normalize the model (scale to unit cube and center at origin)
   mesh.normalizeModelMatrix();
@@ -50,6 +50,7 @@ void Flyscene::initialize(int width, int height) {
 
   glEnable(GL_DEPTH_TEST);
 
+  /* Initialize our variables */
   scene = new Scene(mesh, materials);
   getAllLeafBoxesInScene();
   show_acceleration = true;
@@ -101,16 +102,9 @@ void Flyscene::simulate(GLFWwindow *window) {
   // events are repeated: https://github.com/glfw/glfw/issues/747. Sucks.
   float dx = (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS ? 1.0 : 0.0) -
              (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS ? 1.0 : 0.0);
-  float dy = (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS ||
-                      glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS
-                  ? 1.0
-                  : 0.0) -
-             (glfwGetKey(window, GLFW_KEY_Z) == GLFW_PRESS ||
-                      glfwGetKey(window, GLFW_KEY_C) == GLFW_PRESS
-                  ? 1.0
-                  : 0.0);
-  float dz = (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS ? 1.0 : 0.0) -
-             (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS ? 1.0 : 0.0);
+  float dy = (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS || glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS ? 1.0 : 0.0) -
+             (glfwGetKey(window, GLFW_KEY_Z) == GLFW_PRESS || glfwGetKey(window, GLFW_KEY_C) == GLFW_PRESS ? 1.0 : 0.0);
+  float dz = (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS ? 1.0 : 0.0) - (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS ? 1.0 : 0.0);
   flycamera.translate(dx, dy, dz);
 }
 

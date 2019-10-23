@@ -1,6 +1,7 @@
 #include "box.hpp"
 #include <limits>
 #include <cmath>
+#include <algorithm>
 
 /*
 We're assuming the input box is AABB (Axis-aligned bounding box)
@@ -8,6 +9,7 @@ post on AABB vs. OBB type bounding box:
     https://www.scratchapixel.com/lessons/3d-basic-rendering/minimal-ray-tracer-rendering-simple-shapes/ray-box-intersection
 */
 
+static const int TRIANGLES_PER_BOX = 50;
 
 /*The constructor of the box takes a list of triangles, it acts differently in 2 different cases
 
@@ -22,7 +24,6 @@ CASE 2: number of triangles > max number of triangles per box
 */
 Box::Box(std::vector<Triangle*> &inputTriangles) : Hitable() {
   //Max number of triangles per box  
-  int TRIANGLES_PER_BOX = 50;
 
   //Set the min max values of the new box to the min and max values
   float xmax = std::numeric_limits<float>::min(), xmin = std::numeric_limits<float>::max();
@@ -43,7 +44,7 @@ Box::Box(std::vector<Triangle*> &inputTriangles) : Hitable() {
 
   //If this box contains more triangles then allowed, split it further
   if ( inputTriangles.size() > TRIANGLES_PER_BOX ) {
-    this->splitBox(inputTriangles);  
+    this->splitBox(inputTriangles);
     this->isLeaf = false;
   } else {
     //At this point we now this box is going to be a leaf box, so add all traingles to to this box
@@ -66,8 +67,9 @@ void Box::splitBox(std::vector<Triangle*> &inputTriangles) {
 
     //Now we determine the median on this dimension
     std::vector<float> trianglePositions;
-    for ( Triangle* triangle : inputTriangles ) trianglePositions.push_back( triangle -> getPosition()(dimensionToSplitOn) );
-    sort(trianglePositions.begin(), trianglePositions.end());
+    for ( Triangle* triangle : inputTriangles )
+        trianglePositions.push_back( triangle -> getPosition()(dimensionToSplitOn) );
+    std::sort(trianglePositions.begin(), trianglePositions.end());
     float median = trianglePositions.at(trianglePositions.size()/2);
 
     //We make two lists of triangles and add the triangles on the appropiate side of the middle to the correct set.
@@ -91,30 +93,22 @@ void Box::splitBox(std::vector<Triangle*> &inputTriangles) {
 Hitable* Box::intersect(float &hitPoint, Ray &ray)
 {
     // substitute ray in all planes to calculate intersection parameters
-    float x_min = this->bMin[0];
-    float y_min = this->bMin[1];
-    float z_min = this->bMin[2];
+    // TODO: do we need to take care of division by 0?
+    float tx_min = (this->bMin[0] - ray.origin(0)) / ray.direction(0);
+    float ty_min = (this->bMin[1] - ray.origin(1)) / ray.direction(1);
+    float tz_min = (this->bMin[2] - ray.origin(2)) / ray.direction(2);
 
-    float x_max = this->bMax[0];
-    float y_max = this->bMax[1];
-    float z_max = this->bMax[2];
-
-    float tx_min = (x_min - ray.origin(0)) / ray.direction(0);
-    float ty_min = (y_min - ray.origin(1)) / ray.direction(1);
-    float tz_min = (z_min - ray.origin(2)) / ray.direction(2);
-
-    float tx_max = (x_max - ray.origin(0)) / ray.direction(0);
-    float ty_max = (y_max - ray.origin(1)) / ray.direction(1);
-    float tz_max = (z_max - ray.origin(2)) / ray.direction(2);
+    float tx_max = (this->bMax[0] - ray.origin(0)) / ray.direction(0);
+    float ty_max = (this->bMax[1] - ray.origin(1)) / ray.direction(1);
+    float tz_max = (this->bMax[2] - ray.origin(2)) / ray.direction(2);
 
     // sort to find in and out
     float t_in_x  = std::min(tx_min, tx_max);
-    float t_out_x = std::max(tx_min, tx_max);
-
     float t_in_y  = std::min(ty_min, ty_max);
-    float t_out_y = std::max(ty_min, ty_max);
-
     float t_in_z  = std::min(ty_min, ty_max);
+
+    float t_out_x = std::max(tx_min, tx_max);
+    float t_out_y = std::max(ty_min, ty_max);
     float t_out_z = std::max(ty_min, ty_max);
 
     // determine when we crossed all _in_ points & at least one _out_ point
@@ -125,7 +119,7 @@ Hitable* Box::intersect(float &hitPoint, Ray &ray)
     if (t_in > t_out || t_out < 0)
         return NULL;
 
-    //When we reach this moment, we no the ray will hit this box,
+    //When we reach this moment, we know the ray will hit this box,
     //so we recursively call the intersect method on the subboxes or triangles.
     Hitable* hitObject = NULL;
     for (auto &h: this->children) {
