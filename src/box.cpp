@@ -20,7 +20,7 @@ CASE 2: number of triangles > max number of triangles per box
   We call the split method, this takes care of the splitting.
   We say this box is NOT a leaf.
 */
-Box::Box(vector<Triangle*> &inputTriangles) : Hitable() {
+Box::Box(std::vector<Triangle*> &inputTriangles) : Hitable() {
   //Max number of triangles per box  
   int TRIANGLES_PER_BOX = 50;
 
@@ -56,7 +56,7 @@ Box::Box(vector<Triangle*> &inputTriangles) : Hitable() {
 This function gets a list of triangles as input and needs to create 2 subboxes over which the triangles are divided.
 Right now, the splitting is at the median of the longest axis.
 */
-void Box::splitBox(vector<Triangle*> &inputTriangles) {
+void Box::splitBox(std::vector<Triangle*> &inputTriangles) {
     //First we get the width, heigtht and depth of this box
     float width  = std::abs(this->bMin(0) - this->bMax(0));
     float height = std::abs(this->bMin(1) - this->bMax(1));
