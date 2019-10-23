@@ -9,7 +9,12 @@ post on AABB vs. OBB type bounding box:
     https://www.scratchapixel.com/lessons/3d-basic-rendering/minimal-ray-tracer-rendering-simple-shapes/ray-box-intersection
 */
 
-static const int TRIANGLES_PER_BOX = 50;
+
+/* GLOBAL const */
+static const int TRIANGLES_PER_BOX_LIMIT = 50;
+
+// default Box constructor implementation
+Box::Box() {};
 
 /*The constructor of the box takes a list of triangles, it acts differently in 2 different cases
 
@@ -43,7 +48,7 @@ Box::Box(std::vector<Triangle*> &inputTriangles) : Hitable() {
   this->bMax = Eigen::Vector3f(xmax, ymax, zmax);
 
   //If this box contains more triangles then allowed, split it further
-  if ( inputTriangles.size() > TRIANGLES_PER_BOX ) {
+  if ( inputTriangles.size() > TRIANGLES_PER_BOX_LIMIT ) {
     this->splitBox(inputTriangles);
     this->isLeaf = false;
   } else {
@@ -67,16 +72,21 @@ void Box::splitBox(std::vector<Triangle*> &inputTriangles) {
 
     //Now we determine the median on this dimension
     std::vector<float> trianglePositions;
-    for ( Triangle* triangle : inputTriangles )
-        trianglePositions.push_back( triangle -> getPosition()(dimensionToSplitOn) );
-    std::sort(trianglePositions.begin(), trianglePositions.end());
-    float median = trianglePositions.at(trianglePositions.size()/2);
+    for ( Triangle* triangle : inputTriangles ) trianglePositions.push_back( triangle -> getPosition()(dimensionToSplitOn) );
+    // yanqing: std::sort() takes O(nlogn) time, std::nth_element takes O(n) time
+    // std::sort(trianglePositions.begin(), trianglePositions.end());
+    // float median = trianglePositions.at(trianglePositions.size()/2.0);
+    size_t mid = trianglePositions.size() / 2;
+    std::nth_element(trianglePositions.begin(), trianglePositions.begin()+mid, trianglePositions.end());
+    float median = trianglePositions[mid];
 
     //We make two lists of triangles and add the triangles on the appropiate side of the middle to the correct set.
     std::vector<Triangle*> left, right;
     for ( Triangle* triangle : inputTriangles ) {
-        if ( triangle -> getPosition()(dimensionToSplitOn) < median ) left.push_back( triangle );
-        else right.push_back( triangle );
+        if ( triangle -> getPosition()(dimensionToSplitOn) < median )
+            left.push_back( triangle );
+        else
+            right.push_back( triangle );
     }
 
     //Now we create the 2 subboxes. Note that we create new boxes by calling the constructor of Box,
