@@ -160,10 +160,13 @@ void Flyscene::raytraceScene(int width, int height) {
     std::queue<raytraceTask> queue;
     std::mutex m;
   public:
+    std::size_t totalTasks = 0;
+    std::size_t completedTasks = 0;
     void push(const raytraceTask &task)
     {
       std::lock_guard<std::mutex> lock(m);
       queue.push(task);
+      totalTasks++;
     }
 
     raytraceTask pop()
@@ -173,6 +176,7 @@ void Flyscene::raytraceScene(int width, int height) {
         return raytraceTask();
       raytraceTask ret = queue.front();
       queue.pop();
+      completedTasks++;
       return ret;
     }
 
@@ -239,6 +243,7 @@ void Flyscene::raytraceScene(int width, int height) {
   // Wait for threads to finish
   while (!globalQueue.empty())
   {
+	  std::cout<<globalQueue.completedTasks<<" / "<<globalQueue.totalTasks<<" rays traced\n";
           std::this_thread::sleep_for(1ms);
   }
   for (size_t i= 0; i < num_threads; ++i)
