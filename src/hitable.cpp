@@ -2,9 +2,9 @@
 
 #include <iostream>
 
-bool Hitable::intersect(float &hitPoint, Ray &ray)
+Hitable* Hitable::intersect(float &hitPoint, Ray &ray)
 {
-	return false;
+	return NULL;
 }
 
 Hitable::Hitable(const Eigen::Vector3f &norm, const int id)

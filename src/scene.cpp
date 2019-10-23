@@ -8,16 +8,25 @@
 
 void Scene::traceRay(Eigen::Vector3f *color, Ray &ray, int level) {
   //This variable will hold the hitable which the ray intersects first.
-  Hitable hitObject;
+  Hitable* hitObject;
   *color = Eigen::Vector3f(1.0, 1.0, 1.0);
 
   //This variable will hold the value of t on intersection in the formula r(t) = o + t * d 
   float tOnIntersection = std::numeric_limits<float>::infinity();
 
-  for (auto &h: this->objectsInScene) {
-  	if ( h->intersect(tOnIntersection, ray) ) {
-  		hitObject = *h;
-  	}
+  //std::cout << "Loop over all the objects in the scene" << std::endl;
+  for (auto &h : this->objectsInScene) {
+    //std::cout << "Check next object" << std::endl;
+    Hitable* hit = h->intersect(tOnIntersection, ray);
+    //std::cout << "HIT in scene = " << hit << std::endl;
+    if ( hit != NULL ) {
+      std::cout << "We hitted a triangle" << std::endl;
+      Triangle* tr = dynamic_cast<Triangle*>(hit);
+      //std::cout << tr->vertex0 << " " << tr->vertex1 << " " << tr->vertex2 << std::endl;
+  		hitObject = hit;
+  	} else {
+      //std::cout << "we did not hit anything" << std::endl;
+    }
   }
 
   //If tOnIntersection is still infinity, it means this ray did not hit anything, so we return the background color
@@ -25,7 +34,7 @@ void Scene::traceRay(Eigen::Vector3f *color, Ray &ray, int level) {
 
   //If we reach this point, it means the ray hitted a object. Now we should compute the color of this object, so we call the shade method.
   
-  *color = shade(hitObject, ray, tOnIntersection);
+  *color = Eigen::Vector3f(0.0,0.0,0.0);//shade(*hitObject, ray, tOnIntersection);
 }
 
 //TODO For now this only copies triangles

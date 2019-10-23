@@ -22,7 +22,7 @@ CASE 2: number of triangles > max number of triangles per box
 */
 Box::Box(vector<Triangle*> &inputTriangles) : Hitable() {
   //Max number of triangles per box  
-  int TRIANGLES_PER_BOX = 200;
+  int TRIANGLES_PER_BOX = 50;
 
   //Set the min max values of the new box to the min and max values
   float xmax = std::numeric_limits<float>::min(), xmin = std::numeric_limits<float>::max();
@@ -88,10 +88,9 @@ void Box::splitBox(vector<Triangle*> &inputTriangles) {
 }
 
 // Determine if incoming ray hit a box
-bool Box::intersect(float &hitPoint, Ray &ray)
+Hitable* Box::intersect(float &hitPoint, Ray &ray)
 {
-    // Lec 8 - Slides 46
-    
+    //std::cout << "Checking intersection with box" << std::endl;
     // substitute ray in all planes to calculate intersection parameters
     float x_min = this->bMin[0];
     float y_min = this->bMin[1];
@@ -100,6 +99,8 @@ bool Box::intersect(float &hitPoint, Ray &ray)
     float x_max = this->bMax[0];
     float y_max = this->bMax[1];
     float z_max = this->bMax[2];
+
+    //std::cout << "  - width: " << std::abs(x_max-x_min) << " height: " << std::abs(y_max-y_min) << "  depth: " << std::abs(z_max-z_min) << std::endl;
 
     float tx_min = (x_min - ray.origin(0)) / ray.direction(0);
     float ty_min = (y_min - ray.origin(1)) / ray.direction(1);
@@ -125,8 +126,23 @@ bool Box::intersect(float &hitPoint, Ray &ray)
 
     // check for intersection
     if (t_in > t_out || t_out < 0)
-        return false;
-    return true;
+        return NULL;
+
+    //When we reach this moment, we no the ray will hit this box,
+    //so we recursively call the intersect method on the subboxes or triangles.
+    Hitable* hitObject = NULL;
+    /*std::cout << "Box intersects ray" << std::endl;
+    if ( isLeaf ) {
+        std::cout << "we reached a leaf box!!" << std::endl;
+    }
+    */
+    for (auto &h: this->children) {
+        Hitable* hit = h->intersect(hitPoint, ray);
+        if ( hit != NULL ) {
+           hitObject = hit;
+        }
+    }
+    return hitObject;
 }
 
 /*

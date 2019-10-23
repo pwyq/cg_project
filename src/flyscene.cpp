@@ -16,7 +16,7 @@ void Flyscene::initialize(int width, int height) {
   flycamera.setViewport(Eigen::Vector2f((float)width, (float)height));
 
   // load the OBJ file and materials
-  Tucano::MeshImporter::loadObjFile(mesh, materials,"resources/models/dodgeColorTest.obj");
+  Tucano::MeshImporter::loadObjFile(mesh, materials,"resources/models/toy.obj");
   //Tucano::MeshImporter::loadObjFile(mesh, materials,"resources/models/toy.obj");
   //Tucano::MeshImporter::loadObjFile(mesh, materials,"resources/models/cube.obj");
 
@@ -178,7 +178,7 @@ void Flyscene::getAllLeafBoxesInScene() {
   for ( Box* box : boxes ) {
     this->leafBoxesInScene.push_back(convertToTucanoBox(box));
   }
-  this->leafBoxesInScene.at(1).setColor(Eigen::Vector4f(0.0, 0.0, 1.0, 0.5));
+  //this->leafBoxesInScene.at(1).setColor(Eigen::Vector4f(0.0, 0.0, 1.0, 0.5));
 }
 
 Tucano::Shapes::Box Flyscene::convertToTucanoBox( Box *box ) {

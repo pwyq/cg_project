@@ -7,7 +7,7 @@
 class Hitable {
 
 public:
-	virtual bool intersect(float &, Ray &);
+	virtual Hitable* intersect(float &, Ray &);
 	Eigen::Vector3f normal;
 	int material_id;
 

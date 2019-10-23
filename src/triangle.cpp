@@ -44,7 +44,7 @@ Eigen::Vector3f Triangle::getPosition() {
 }
 
 
-bool Triangle::intersect(float &hitPoint, Ray &ray) {             
+Hitable* Triangle::intersect(float &hitPoint, Ray &ray) {             
     //Find triangle's plane, plane equation: p * n - D = 0
     float D = this->normal.dot(vertex0);
 
@@ -52,18 +52,18 @@ bool Triangle::intersect(float &hitPoint, Ray &ray) {
     float t = (D - ray.origin.dot(this->normal)) / ray.direction.dot(this->normal);
 
     //If t is negative this means the triange's plane is behind the ray
-    if ( t < 0 ) return false;
+    if ( t < 0 ) return NULL;
     //If t is greater then max, it means that this face is behind some face we already intersected with, so skip this face.
-    if ( t > hitPoint ) return false;  
+    if ( t > hitPoint ) return NULL;  
 
     //Calculate the actual intersection point of the ray with the triangle's plane
     Eigen::Vector3f intersectionPoint = ray.getPoint(t);
 
     if ( isInTriangle(intersectionPoint) ) {
         hitPoint = t;
-        return true;
+        return this;
     }
-    return false;
+    return NULL;
 }
 
 bool Triangle::isInTriangle(Eigen::Vector3f point) {
