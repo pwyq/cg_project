@@ -44,7 +44,10 @@ Eigen::Vector3f Triangle::getPosition() {
 }
 
 
-Hitable* Triangle::intersect(float &hitPoint, Ray &ray) {             
+Hitable* Triangle::intersect(float &hitPoint, Ray &ray) { 
+    //Checks if the ray is parrallel to the triangle, then return NULL
+    if ( this -> normal.dot(ray.direction) == 0 ) return NULL;
+
     //Find triangle's plane, plane equation: p * n - D = 0
     float D = this->normal.dot(vertex0);
 
