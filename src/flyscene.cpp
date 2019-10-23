@@ -1,6 +1,13 @@
 #include "flyscene.hpp"
 #include <GLFW/glfw3.h>
 #include <limits>
+#include <thread>
+#include <queue>
+#include <mutex>
+#include <chrono>
+#include <cmath>
+
+#include "box.hpp"
 
 #define DEPTH = 2;
 
@@ -13,7 +20,9 @@ void Flyscene::initialize(int width, int height) {
   flycamera.setViewport(Eigen::Vector2f((float)width, (float)height));
 
   // load the OBJ file and materials
-  Tucano::MeshImporter::loadObjFile(mesh, materials,"resources/models/cube.obj");
+  Tucano::MeshImporter::loadObjFile(mesh, materials,"resources/models/toy.obj");
+  //Tucano::MeshImporter::loadObjFile(mesh, materials,"resources/models/toy.obj");
+  //Tucano::MeshImporter::loadObjFile(mesh, materials,"resources/models/cube.obj");
 
   // normalize the model (scale to unit cube and center at origin)
   mesh.normalizeModelMatrix();
@@ -42,6 +51,8 @@ void Flyscene::initialize(int width, int height) {
   glEnable(GL_DEPTH_TEST);
 
   scene = new Scene(mesh, materials);
+  getAllLeafBoxesInScene();
+  show_acceleration = true;
 }
 
 void Flyscene::paintGL(void) {
@@ -61,6 +72,14 @@ void Flyscene::paintGL(void) {
   // render the scene using OpenGL and one light source
   phong.render(mesh, flycamera, scene_light);
 
+  //If the acceleration structure is build, it means the leafBoxes are initialed,
+  //so we can render them on the screen.
+  if ( show_acceleration ) {
+    for ( auto boxInScene : leafBoxesInScene ) {
+       boxInScene.render(flycamera, scene_light);
+    }
+  }
+  
   // render the ray and camera representation for ray debug
   ray.render(flycamera, scene_light);
   camerarep.render(flycamera, scene_light);
@@ -137,19 +156,144 @@ void Flyscene::raytraceScene(int width, int height) {
   for ( Eigen::Vector3f lightPosition : lights ) 
     scene -> lights.push_back(Light(Eigen::Vector3f(1.0,1.0,1.0), lightPosition));
   
+ struct raytraceTask
+  {
+    Eigen::Vector3f *result = nullptr;
+    Ray origin;
+
+    raytraceTask(Eigen::Vector3f *r, Ray &o)
+    {
+      result = r;
+      origin = o;
+    }
+    raytraceTask()
+    {}
+  };
+
+  class TaskQueue
+  {
+    std::queue<raytraceTask> queue;
+    std::mutex m;
+  public:
+    std::size_t totalTasks = 0;
+    std::size_t completedTasks = 0;
+    void push(const raytraceTask &task)
+    {
+      std::lock_guard<std::mutex> lock(m);
+      queue.push(task);
+      totalTasks++;
+    }
+
+    raytraceTask pop()
+    {
+      std::lock_guard<std::mutex> lock(m);
+      if (queue.empty())
+        return raytraceTask();
+      raytraceTask ret = queue.front();
+      queue.pop();
+      completedTasks++;
+      return ret;
+    }
+
+    bool empty()
+    {
+      std::lock_guard<std::mutex> lock(m);
+      return queue.empty();
+    }
+  };
+
+  class Worker
+  {
+  public:
+    TaskQueue *globalQueue;
+    Scene *scene;
+    bool done = false;
+
+    void work()
+    {
+      while (!done)
+      {
+        if (!globalQueue->empty())
+        {
+          raytraceTask cur = globalQueue->pop();
+          if (cur.result == nullptr)
+            continue; //We didn't actually get it, the queue was empty
+          if ( scene -> useAcc ) {
+            scene->traceRayWithAcc(cur.result, cur.origin, 0);
+          } else {
+            scene->traceRay(cur.result, cur.origin, 0);
+          }
+        }
+      }
+    }
+
+    void end()
+    {
+      done = true;
+    }
+  };
+
+  TaskQueue globalQueue;
+ 
+  unsigned int num_threads = std::thread::hardware_concurrency();
+  std::vector<Worker> workerPool(num_threads);
+  std::vector<std::thread> threadPool(num_threads);
+ 
+  for (size_t i = 0; i < num_threads; ++i)
+  {
+    workerPool[i].globalQueue = &globalQueue;
+    workerPool[i].scene = scene;
+    threadPool[i] = std::thread(&Worker::work, std::ref(workerPool[i]));
+  }
+
+
   // for every pixel shoot a ray from the origin through the pixel coords
   for (int j = 0; j < image_size[1]; ++j) {
     for (int i = 0; i < image_size[0]; ++i) {
-      std::cout << "Shooting ray from: (" << i << "," << j << ")" << std::endl;
       // create a ray from the camera passing through the pixel (i,j)
       screen_coords = flycamera.screenToWorld(Eigen::Vector2f(i, j));
       // launch raytracing for the given ray and write result to pixel data
       Ray r(origin, screen_coords - origin);
-      pixel_data[i][j] = scene->traceRay(r, 0);
+      globalQueue.push(raytraceTask(&pixel_data[i][j], r));
+      //scene->traceRay(&pixel_data[i][j], r, 0);
     }
   }
 
+  // Wait for threads to finish
+  while (!globalQueue.empty())
+  {
+    std::cout<<globalQueue.completedTasks<<" / "<<globalQueue.totalTasks<<" rays traced\n";
+          std::this_thread::sleep_for(1ms);
+  }
+  for (size_t i= 0; i < num_threads; ++i)
+  {
+    workerPool[i].end();
+    threadPool[i].join();
+  }
   // write the ray tracing result to a PPM image
   Tucano::ImageImporter::writePPMImage("result.ppm", pixel_data);
   std::cout << "ray tracing done! " << std::endl;
+}
+
+void Flyscene::getAllLeafBoxesInScene() {
+  this->leafBoxesInScene.clear();
+  Box* firstBox = scene -> boxOverAllTriangles;
+  std::vector<Box*> boxes = firstBox -> getLeafBoxes();
+  std::cout << "#LEAF_BOXES = " << boxes.size() << std::endl;
+  for ( Box* box : boxes ) {
+    this->leafBoxesInScene.push_back(convertToTucanoBox(box));
+  }
+  //this->leafBoxesInScene.at(1).setColor(Eigen::Vector4f(0.0, 0.0, 1.0, 0.5));
+}
+
+Tucano::Shapes::Box Flyscene::convertToTucanoBox( Box *box ) {
+    float width  = std::abs(box->bMin(0) - box->bMax(0));
+    float height = std::abs(box->bMin(1) - box->bMax(1));
+    float depth  = std::abs(box->bMin(2) - box->bMax(2));
+    Eigen::Vector3f boxCenter = Eigen::Vector3f( (box->bMin(0)+box->bMax(0))/2, (box->bMin(1)+box->bMax(1))/2, (box->bMin(2)+box->bMax(2))/2 );
+    Tucano::Shapes::Box tucanoBox = Tucano::Shapes::Box(width,height,depth);
+    tucanoBox.resetModelMatrix();
+    tucanoBox.modelMatrix()->translate(boxCenter);
+    tucanoBox.setColor(Eigen::Vector4f(1.0, 1.0, 0.0, 0.5));
+    return tucanoBox;
 }

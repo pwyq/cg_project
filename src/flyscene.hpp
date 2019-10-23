@@ -11,11 +11,15 @@
 #include <tucano/shapes/camerarep.hpp>
 #include <tucano/shapes/cylinder.hpp>
 #include <tucano/shapes/sphere.hpp>
+#include <tucano/shapes/box.hpp>
+
 #include <tucano/utils/flycamera.hpp>
 #include <tucano/utils/imageIO.hpp>
 #include <tucano/utils/mtlIO.hpp>
 #include <tucano/utils/objimporter.hpp>
 #include "scene.hpp"
+
+#include <vector>
 
 class Flyscene {
 
@@ -62,6 +66,13 @@ public:
    */
   void raytraceScene(int width = 0, int height = 0);
 
+
+  Tucano::Shapes::Box convertToTucanoBox( Box *box );
+  void getAllLeafBoxesInScene();
+
+  //Indicates if the acceleration structure is build or not
+  bool show_acceleration = false;
+
 private:
   // A simple phong shader for rendering meshes
   Tucano::Effects::PhongMaterial phong;
@@ -96,6 +107,9 @@ private:
 
   //Our scene
   Scene* scene;
+
+  //All the boxes of the acceleration structure that contain triangles
+  std::vector<Tucano::Shapes::Box> leafBoxesInScene;
 };
 
 #endif // FLYSCENE
