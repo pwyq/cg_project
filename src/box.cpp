@@ -119,7 +119,7 @@ Hitable* Box::intersect(float &hitPoint, Ray &ray)
 
     float t_out_x = std::max(tx_min, tx_max);
     float t_out_y = std::max(ty_min, ty_max);
-    float t_out_z = std::max(ty_min, ty_max);
+    float t_out_z = std::max(tz_min, tz_max);
 
     // determine when we crossed all _in_ points & at least one _out_ point
     float t_in  = std::max(std::max(t_in_x, t_in_y),t_in_z);
