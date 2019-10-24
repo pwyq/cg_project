@@ -72,6 +72,7 @@ public:
   void getAllLeafBoxesInScene();
 
   void setSceneLights();
+  void setSphericalLight();
 
   //Indicates if the acceleration structure is build or not
   bool show_acceleration = false;
@@ -110,6 +111,7 @@ private:
 
   //Our scene
   Scene* scene;
+  Light* sceneSphereLights;
 
   //All the boxes of the acceleration structure that contain triangles
   std::vector<Tucano::Shapes::Box> leafBoxesInScene;

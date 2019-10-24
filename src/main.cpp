@@ -40,19 +40,20 @@ void initialize(void) {
   flyscene = new Flyscene();
   flyscene->initialize(WINDOW_WIDTH, WINDOW_HEIGHT);  
 
-  std::cout << endl
-            << endl
-            << " ************ usage ************** " << std::endl;
-  std::cout << "R    : Reset camera." << std::endl;
-  std::cout << "WASD : Move camera in xz plane." << std::endl;
-  std::cout << "QEZC : Move camera along y axis." << std::endl;
-  std::cout << "SPACE: Shoot debug ray from mouse cursor position." << std::endl;
-  std::cout << "L    : Add new light source at current camera position."
-            << std::endl;
-  std::cout << "T    : Ray trace the scene." << std::endl;
-  std::cout << "H    : Show/Hide acceleration structure." << std::endl;
-  std::cout << "Esc  : Close application." << std::endl;
-  std::cout << " ********************************* " << std::endl;
+  std::cout << "\n\n"
+            << "\t ************************ Usage ************************** " << std::endl;
+  std::cout << "\t\tR    : Reset camera" << std::endl;
+  std::cout << "\t\tWASD : Move camera in xz plane" << std::endl;
+  std::cout << "\t\tQEZC : Move camera along y axis" << std::endl;
+  std::cout << "\t\tSPACE: Shoot debug ray from mouse cursor position" << std::endl;
+  std::cout << "\t\tL    : Add new light source at current camera\n"
+            << "\t\t       position" << std::endl;
+  std::cout << "\t\tT    : Ray trace the scene" << std::endl;
+  std::cout << "\t\tH    : Show/Hide acceleration structure" << std::endl;
+  std::cout << "\t\tEsc  : Close application" << std::endl;
+  std::cout << "\t ====================== Our Keys ========================= " << std::endl;
+  std::cout << "\t\tM    : Turn on sphericial light (under test)" << std::endl;
+  std::cout << "\t ********************************************************* " << std::endl;
 }
 
 void keyCallback(GLFWwindow *window, int key, int scancode, int action,
@@ -69,6 +70,8 @@ void keyCallback(GLFWwindow *window, int key, int scancode, int action,
     flyscene->raytraceScene();
   else if (key == GLFW_KEY_H && action == GLFW_PRESS)
     flyscene->show_acceleration=!flyscene->show_acceleration;
+  else if (key == GLFW_KEY_M && action == GLFW_PRESS)
+    flyscene->setSphericalLight();
 }
 
 static void mouseButtonCallback(GLFWwindow *window, int button, int action,

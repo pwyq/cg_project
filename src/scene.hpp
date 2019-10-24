@@ -13,22 +13,26 @@
 
 // Local header files
 #include "ray.hpp"
-// #include "hitable.hpp"
 #include "light.hpp"
-// #include "triangle.hpp"
 #include "box.hpp"
 
 class Scene {
 public:
-	std::vector<Triangle*> trianglesInScene;
+    /* Constructor */
+    Scene(Tucano::Mesh &, std::vector<Tucano::Material::Mtl> &);
+    Scene();
+
+    /* Member Variable */
+	Eigen::Vector3f cameraPosition;
 	Box* boxOverAllTriangles;
 
+	std::vector<Triangle*> trianglesInScene;
 	std::vector<Light> lights;
 	std::vector<Tucano::Material::Mtl>* materials;
-	Eigen::Vector3f cameraPosition;
 
 	bool useAcc = true;
 
+    /* Methods */
 	//Will return a color
 	void traceRay(Eigen::Vector3f *, Ray &, int);
 	void traceRayWithAcc(Eigen::Vector3f *color, Ray &ray, int level);
@@ -38,14 +42,13 @@ public:
 
 	//Will return a color
 	Eigen::Vector3f computeDirectLight(Hitable &hitObject, Eigen::Vector3f hitPoint);
-
-	Scene(Tucano::Mesh &, std::vector<Tucano::Material::Mtl> &);
-	Scene();
 };
+
 
 /****************************************************************
  * Multi-threads                                                *
  ****************************************************************/
+
 
 struct raytraceTask
 {
@@ -60,6 +63,7 @@ struct raytraceTask
 	}
 };
 
+
 class TaskQueue
 {
     std::queue<raytraceTask> queue;
@@ -72,6 +76,7 @@ public:
     raytraceTask pop();
     bool isEmpty();
 };
+
 
 class Worker
 {

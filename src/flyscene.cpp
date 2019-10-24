@@ -39,8 +39,18 @@ void Flyscene::initialize(int width, int height) {
 
   /* Initialize our variables */
   scene = new Scene(mesh, materials);
+  // TODO: find proper init value for spectrum, position
+  sceneSphereLights = new Light(Eigen::Vector3f(0,0,0), Eigen::Vector3f(0,0,0));
   getAllLeafBoxesInScene();
   show_acceleration = true;
+
+  // moved from tucano/objimporter
+  std::cout << "\t ********************* Object Info *********************** " << std::endl;
+  std::cout << "\t\tnumber of vertices    : " << mesh.getNumberOfVertices() << std::endl;
+  std::cout << "\t\tnumber of faces       : " << mesh.getNumberOfElements() << std::endl;
+  std::cout << "\t\tnumber of materials   : " << mesh.getNumberOfMaterials() << std::endl;
+  std::cout << "\t\tnumber of leaf boxes  : " << this->leafBoxesInScene.size() << std::endl;
+  std::cout << "\t ********************************************************* " << std::endl;
 }
 
 
@@ -135,6 +145,11 @@ void Flyscene::setSceneLights() {
 }
 
 
+void Flyscene::setSphericalLight() {
+  sceneSphereLights->sphericalLightOn(lights);
+}
+
+
 void Flyscene::raytraceScene(int width, int height) {
   std::cout << "ray tracing ..." << std::endl;
 
@@ -205,7 +220,6 @@ void Flyscene::getAllLeafBoxesInScene() {
   this->leafBoxesInScene.clear();
   Box* firstBox = scene -> boxOverAllTriangles;
   std::vector<Box*> boxes = firstBox -> getLeafBoxes();
-  std::cout << "#LEAF_BOXES = " << boxes.size() << std::endl;
   for ( Box* box : boxes ) {
     this->leafBoxesInScene.push_back(convertToTucanoBox(box));
   }
