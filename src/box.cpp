@@ -11,7 +11,7 @@ post on AABB vs. OBB type bounding box:
 
 
 /* GLOBAL const */
-static const int TRIANGLES_PER_BOX_LIMIT = 50;
+static const int TRIANGLES_PER_BOX_LIMIT = 200;
 
 // default Box constructor implementation
 Box::Box() {};
