@@ -1,10 +1,6 @@
 #include <iostream>
 
 #include "scene.hpp"
-// #include "triangle.hpp"
-// #include "hitable.hpp"
-// #include "light.hpp"
-// #include "box.hpp"
 
 
 void Scene::traceRay(Eigen::Vector3f *color, Ray &ray, int level) {
@@ -22,6 +18,7 @@ void Scene::traceRay(Eigen::Vector3f *color, Ray &ray, int level) {
   *color = shade(*hitObject, ray, tOnIntersection);
 }
 
+
 // ray tracing with accleration structure
 void Scene::traceRayWithAcc(Eigen::Vector3f *color, Ray &ray, int level) {
   //This variable will hold the value of t on intersection in the formula r(t) = o + t * d 
@@ -38,6 +35,7 @@ void Scene::traceRayWithAcc(Eigen::Vector3f *color, Ray &ray, int level) {
   //If we reach this point, it means the ray hitted a object. Now we should compute the color of this object, so we call the shade method.
   *color = shade(*hitObject, ray, tOnIntersection);
 }
+
 
 //TODO For now this only copies triangles
 Scene::Scene(Tucano::Mesh &mesh, std::vector<Tucano::Material::Mtl> &materials)
@@ -59,8 +57,10 @@ Scene::Scene(Tucano::Mesh &mesh, std::vector<Tucano::Material::Mtl> &materials)
   boxOverAllTriangles = new Box(this->trianglesInScene);  
 }
 
+
 Scene::Scene()
 {}
+
 
 Eigen::Vector3f Scene::shade(Hitable &hitObject, const Ray &ray, float t) {
   //Compute direct light
@@ -75,9 +75,11 @@ Eigen::Vector3f Scene::shade(Hitable &hitObject, const Ray &ray, float t) {
   return directLight + reflectedLight + refractedLight;
 }
 
+
 /****************************************************************
  * Compute Light (direct+reflect+refraction)                    *
  ****************************************************************/
+
 
 Eigen::Vector3f Scene::computeDirectLight(Hitable& hitObject, Eigen::Vector3f hitPoint) {
   //Get the material properties of the hitable object this ray interesected with 
@@ -137,9 +139,11 @@ Eigen::Vector3f Scene::computeDirectLight(Hitable& hitObject, Eigen::Vector3f hi
   return color;
 }
 
+
 /****************************************************************
  * Multi-threads                                                *
  ****************************************************************/
+
 
 void TaskQueue::push(const raytraceTask &task)
 {
@@ -147,6 +151,7 @@ void TaskQueue::push(const raytraceTask &task)
     queue.push(task);
     totalTasks++;
 }
+
 
 raytraceTask TaskQueue::pop()
 {
@@ -159,11 +164,13 @@ raytraceTask TaskQueue::pop()
     return ret;
 }
 
+
 bool TaskQueue::isEmpty()
 {
     std::lock_guard<std::mutex> lock(m);
     return queue.empty();
 }
+
 
 void Worker::work()
 {
@@ -181,6 +188,7 @@ void Worker::work()
         }
     }
 }
+
 
 void Worker::end()
 {

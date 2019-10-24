@@ -2,8 +2,8 @@
 #include <GL/glew.h>
 
 #include <GLFW/glfw3.h>
-#include "flyscene.hpp"
 #include <iostream>
+#include "flyscene.hpp"
 
 #define WINDOW_WIDTH 1000
 #define WINDOW_HEIGHT 1000
@@ -105,7 +105,6 @@ int main(int argc, char *argv[]) {
   }
 
   glfwMakeContextCurrent(main_window);
-
 
   glfwSetKeyCallback(main_window, keyCallback);
   glfwSetMouseButtonCallback(main_window, mouseButtonCallback);

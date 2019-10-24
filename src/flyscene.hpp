@@ -33,6 +33,8 @@ public:
    */
   void initialize(int width, int height);
 
+  void initializeLights();
+
   /**
    * Repaints screen buffer.
    **/
@@ -68,6 +70,8 @@ public:
 
   Tucano::Shapes::Box convertToTucanoBox( Box *box );
   void getAllLeafBoxesInScene();
+
+  void setSceneLights();
 
   //Indicates if the acceleration structure is build or not
   bool show_acceleration = false;
