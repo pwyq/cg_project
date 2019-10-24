@@ -18,6 +18,8 @@ public:
     Box(std::vector<Triangle*> &inputTriangles); 
     
 	virtual Hitable* intersect(float &hitPoint, Ray &ray);
+	virtual bool isIntersecting(float &hitPoint, Ray &ray);
+
 
 	void splitBox(std::vector<Triangle*> &inputTriangles);
 

@@ -12,6 +12,7 @@ public:
 
 	bool isInTriangle(Eigen::Vector3f point); 
 	virtual Hitable* intersect(float &, Ray &);
+	virtual bool isIntersecting(float &hitPoint, Ray &ray);
 
 	Triangle(const Eigen::Vector3f &,
 	         const Eigen::Vector3f &,

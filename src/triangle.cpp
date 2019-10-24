@@ -69,6 +69,31 @@ Hitable* Triangle::intersect(float &hitPoint, Ray &ray) {
     return NULL;
 }
 
+bool Triangle::isIntersecting(float &hitPoint, Ray &ray) { 
+    //Checks if the ray is parrallel to the triangle, then return NULL
+    if ( this -> normal.dot(ray.direction) == 0 ) return false;
+
+    //Find triangle's plane, plane equation: p * n - D = 0
+    float D = this->normal.dot(vertex0);
+
+    //Calculate intersection point of ray with triangle's plane
+    float t = (D - ray.origin.dot(this->normal)) / ray.direction.dot(this->normal);
+
+    //If t is negative this means the triange's plane is behind the ray
+    if ( t < 0 ) return false;
+    //If t is greater then max, it means that this face is behind some face we already intersected with, so skip this face.
+    if ( t > hitPoint ) return false;  
+
+    //Calculate the actual intersection point of the ray with the triangle's plane
+    Eigen::Vector3f intersectionPoint = ray.getPoint(t);
+
+    if ( isInTriangle(intersectionPoint) ) {
+        hitPoint = t;
+        return true;
+    }
+    return false;
+}
+
 bool Triangle::isInTriangle(Eigen::Vector3f point) {
     float areaABC = this->normal.dot( (vertex1 - vertex0).cross(vertex2 - vertex0) );
     float areaPBC = this->normal.dot( (vertex1 - point).cross(vertex2 - point) );

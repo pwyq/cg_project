@@ -8,6 +8,8 @@ class Hitable {
 
 public:
 	virtual Hitable* intersect(float &, Ray &);
+	virtual bool isIntersecting(float &hitPoint, Ray &ray);
+
 	Eigen::Vector3f normal;
 	int material_id;
 

@@ -6,7 +6,7 @@
 #include "light.hpp"
 #include "box.hpp"
 
-static const int MAXLEVEL = 4;
+static const int MAXLEVEL = 0;
 
 void Scene::traceRay(Eigen::Vector3f *color, Ray &ray, int level) {
   //This variable will hold the value of t on intersection in the formula r(t) = o + t * d 
@@ -64,16 +64,18 @@ Scene::Scene()
 {}
 
 Eigen::Vector3f Scene::shade(Hitable &hitObject, Ray &ray, float t, int level) {
+  //return Eigen::Vector3f(1.0,1.0,1.0);
+  
   //Compute direct light
-  Eigen::Vector3f directLight = computeDirectLight(hitObject, ray.origin + t * ray.direction);
+  Eigen::Vector3f directLight = computeDirectLight(hitObject, ray.getPoint(t));
 
   //Compute reflected light
-  Tucano::Material::Mtl hitMaterial = materials -> at(hitObject.material_id);
+  //Tucano::Material::Mtl hitMaterial = materials -> at(hitObject.material_id);
 
   Eigen::Vector3f reflectedLight = Eigen::Vector3f(0.0,0.0,0.0);
-  if ( hitMaterial.getSpecular()(0) == 1 ) {
+  /*if ( hitMaterial.getSpecular()(0) == 1 ) {
     reflectedLight = level >= MAXLEVEL ? Eigen::Vector3f(0.0,0.0,0.0) : computeReflectedLight(hitObject, ray, t, level);
-  }
+  }*/
   //Compute refracted light
   Eigen::Vector3f refractedLight = Eigen::Vector3f(0.0,0.0,0.0);
   // std::cout << reflectedLight << std::endl;
@@ -128,13 +130,11 @@ Eigen::Vector3f Scene::computeDirectLight(Hitable& hitObject, Eigen::Vector3f hi
 
       //Build ray to the light
       Ray rayToLight = Ray(hitPoint, currentLight.position - hitPoint);
-      //rayToLight.origin = rayToLight.getPoint(0.01);
+      rayToLight.origin = rayToLight.getPoint(0.0001);
 
-      //This variable will hold the hitable which the ray intersects first (or NULL if no intersection)
+      //Check if there is an object between the hitpoint and the light, if so skip this light source
       float maxt = 1.0;
-      Hitable* hit = this->boxOverAllTriangles->intersect(maxt, rayToLight);
-      //If the hit is not NULL, it means we hitted something, so we skip this light source
-      if ( hit != NULL && maxt > 0.0001 ) continue;
+      if ( this->boxOverAllTriangles->isIntersecting(maxt, rayToLight) ) continue;
 
       //If we reach this point, it means that the current light can reach the object, so we compute the shading
       
@@ -162,7 +162,7 @@ Eigen::Vector3f Scene::computeDirectLight(Hitable& hitObject, Eigen::Vector3f hi
       //Compute the specular component
       Eigen::Vector3f specular = currentLight.spectrum.cwiseProduct(ks) * cosinus;
       
-      color +=   diffuse + specular;
+      color += diffuse + specular;
   }
   return color;
 }
