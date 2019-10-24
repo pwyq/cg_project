@@ -115,7 +115,7 @@ Hitable* Box::intersect(float &hitPoint, Ray &ray)
     // sort to find in and out
     float t_in_x  = std::min(tx_min, tx_max);
     float t_in_y  = std::min(ty_min, ty_max);
-    float t_in_z  = std::min(ty_min, ty_max);
+    float t_in_z  = std::min(tz_min, tz_max);
 
     float t_out_x = std::max(tx_min, tx_max);
     float t_out_y = std::max(ty_min, ty_max);
