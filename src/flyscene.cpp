@@ -15,6 +15,7 @@ void Flyscene::initialize(int width, int height) {
 
   // load the OBJ file and materials
   Tucano::MeshImporter::loadObjFile(mesh, materials,"resources/models/toy.obj");
+  // Tucano::MeshImporter::loadObjFile(mesh, materials,"resources/models/project.obj");
   // Tucano::MeshImporter::loadObjFile(mesh, materials,"resources/models/cube.obj");
   // Tucano::MeshImporter::loadObjFile(mesh, materials,"resources/models/bunny.obj"); // too large
   // Tucano::MeshImporter::loadObjFile(mesh, materials,"resources/models/dodgeColorTest.obj");

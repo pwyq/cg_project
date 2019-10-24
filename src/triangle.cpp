@@ -1,6 +1,7 @@
-#include "triangle.hpp"
-#include <limits>
 #include <iostream>
+#include <limits>
+
+#include "triangle.hpp"
 
 Triangle::Triangle(const Eigen::Vector3f &a,
                    const Eigen::Vector3f &b,

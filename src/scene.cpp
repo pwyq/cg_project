@@ -1,10 +1,10 @@
 #include <iostream>
 
 #include "scene.hpp"
-#include "triangle.hpp"
-#include "hitable.hpp"
-#include "light.hpp"
-#include "box.hpp"
+// #include "triangle.hpp"
+// #include "hitable.hpp"
+// #include "light.hpp"
+// #include "box.hpp"
 
 
 void Scene::traceRay(Eigen::Vector3f *color, Ray &ray, int level) {

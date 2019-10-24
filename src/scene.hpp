@@ -13,9 +13,9 @@
 
 // Local header files
 #include "ray.hpp"
-#include "hitable.hpp"
+// #include "hitable.hpp"
 #include "light.hpp"
-#include "triangle.hpp"
+// #include "triangle.hpp"
 #include "box.hpp"
 
 class Scene {
