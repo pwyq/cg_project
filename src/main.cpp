@@ -40,6 +40,7 @@ void initialize(void) {
   flyscene = new Flyscene();
   flyscene->initialize(WINDOW_WIDTH, WINDOW_HEIGHT);  
 
+  // Available keys: b f g i j k n o p u v x y
   std::cout << "\n\n"
             << "\t ************************ Usage ************************** " << std::endl;
   std::cout << "\t\tR    : Reset camera" << std::endl;
@@ -49,10 +50,10 @@ void initialize(void) {
   std::cout << "\t\tL    : Add new light source at current camera\n"
             << "\t\t       position" << std::endl;
   std::cout << "\t\tT    : Ray trace the scene" << std::endl;
-  std::cout << "\t\tH    : Show/Hide acceleration structure" << std::endl;
   std::cout << "\t\tEsc  : Close application" << std::endl;
   std::cout << "\t ====================== Our Keys ========================= " << std::endl;
-  std::cout << "\t\tM    : Turn on sphericial light (under test)" << std::endl;
+  std::cout << "\t\tH    : Toggle acceleration structure" << std::endl;
+  std::cout << "\t\tM    : Toggle sphericial light (under test)" << std::endl;
   std::cout << "\t ********************************************************* " << std::endl;
 }
 
