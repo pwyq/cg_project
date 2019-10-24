@@ -6,7 +6,7 @@
 #include "light.hpp"
 #include "box.hpp"
 
-static const int MAXLEVEL = 0;
+static const int MAXLEVEL = 3;
 
 void Scene::traceRay(Eigen::Vector3f *color, Ray &ray, int level) {
   //This variable will hold the value of t on intersection in the formula r(t) = o + t * d 
@@ -70,12 +70,37 @@ Eigen::Vector3f Scene::shade(Hitable &hitObject, Ray &ray, float t, int level) {
   Eigen::Vector3f directLight = computeDirectLight(hitObject, ray.getPoint(t));
 
   //Compute reflected light
-  //Tucano::Material::Mtl hitMaterial = materials -> at(hitObject.material_id);
-
+  /*
+   FROM THE INTERNET:
+   The "illum" statement specifies the illumination model to use in the 
+   material. Illumination models are mathematical equations that represent 
+   various material lighting and shading effects. illum can be a number from 0 to 10.  
+   The illumination models are summarized below; 
+    Illumination    Properties that are turned on in the 
+    model           Property Editor
+    
+    0    Color on and Ambient off
+    1    Color on and Ambient on
+    2    Highlight on
+    3    Reflection on and Ray trace on
+    4    Transparency: Glass on
+         Reflection: Ray trace on
+    5    Reflection: Fresnel on and Ray trace on
+    6    Transparency: Refraction on
+         Reflection: Fresnel off and Ray trace on
+    7    Transparency: Refraction on
+         Reflection: Fresnel on and Ray trace on
+    8    Reflection on and Ray trace off
+    9    Transparency: Glass on
+         Reflection: Ray trace off
+    10   Casts shadows onto invisible surfaces
+  */
+  Tucano::Material::Mtl hitMaterial = materials -> at(hitObject.material_id);
+  float illuminationModel = hitMaterial.getIlluminationModel();
   Eigen::Vector3f reflectedLight = Eigen::Vector3f(0.0,0.0,0.0);
-  /*if ( hitMaterial.getSpecular()(0) == 1 ) {
+  if ( illuminationModel == 4 ) 
     reflectedLight = level >= MAXLEVEL ? Eigen::Vector3f(0.0,0.0,0.0) : computeReflectedLight(hitObject, ray, t, level);
-  }*/
+  
   //Compute refracted light
   Eigen::Vector3f refractedLight = Eigen::Vector3f(0.0,0.0,0.0);
   // std::cout << reflectedLight << std::endl;
@@ -98,7 +123,7 @@ Eigen::Vector3f Scene::computeReflectedLight(Hitable &hitObject, Ray &ray, float
     //Create ray
     Ray reflectedRay = Ray(ray.getPoint(t), ReflectedVec);
     //We set the origin a bit further away, so it does not hit itself!
-    //reflectedRay.origin = reflectedRay.getPoint(0.01);
+    reflectedRay.origin = reflectedRay.getPoint(0.0001);
     //Call correct trace function with the level increased by one.
     if(useAcc){
       Scene::traceRayWithAcc(&color, reflectedRay, level+1);
