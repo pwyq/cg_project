@@ -6,7 +6,7 @@
 #include "light.hpp"
 #include "box.hpp"
 
-static const int MAXLEVEL = 0;
+static const int MAXLEVEL = 2;
 
 void Scene::traceRay(Eigen::Vector3f *color, Ray &ray, int level) {
   //This variable will hold the value of t on intersection in the formula r(t) = o + t * d 
@@ -91,7 +91,8 @@ Eigen::Vector3f Scene::computeReflectedLight(Hitable &hitObject, Ray &ray, float
     
     //Create ray
     Ray reflectedRay = Ray(ray.getPoint(t), ReflectedVec);
-    
+    //We set the origin a bit further away, so it does not hit itself!
+    reflectedRay.origin = reflectedRay.getPoint(0.01);
     //Call correct trace function with the level increased by one.
     if(useAcc){
       Scene::traceRayWithAcc(&color, reflectedRay, level+1);
