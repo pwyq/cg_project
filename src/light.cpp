@@ -32,8 +32,7 @@ float generateRandomFloat(float a, float b)
 }
 
 // change to addSphericalLights()
-void Light::sphericalLightOn(std::vector<Eigen::Vector3f>& lights,
-                             std::vector<Tucano::Camera> scene_lights) {
+void Light::sphericalLightOn(std::vector<Eigen::Vector3f>& lights) {
     isSphericalLightOn = true;
     std::cout << "[INFO] Then God said, \"Let there be light,\" and there was light.\n";
     // clearSphericalLights();
@@ -47,7 +46,7 @@ void Light::sphericalLightOn(std::vector<Eigen::Vector3f>& lights,
     sphericalCount.push_back(std::rand() % COUNT_LIMIT);
     sphericalIntensity.push_back(generateRandomFloat(1.0, INTENSITY_LIMIT) / sphericalCount[index]);
 
-    addSphericalLights(lights, scene_lights, index);
+    addSphericalLights(lights, index);
 }
 
 
@@ -60,9 +59,7 @@ void Light::setTotalSphereLight(unsigned int idx) {
 }
 
 
-void Light::addSphericalLights(std::vector<Eigen::Vector3f>& lights,
-                        std::vector<Tucano::Camera> scene_lights,
-                        unsigned int index) {
+void Light::addSphericalLights(std::vector<Eigen::Vector3f>& lights, unsigned int index) {
     Eigen::Vector3f currLightPos = Eigen::Vector3f(0, 0, 0);
     if (lights.size() > 0) {
         currLightPos = lights.back();

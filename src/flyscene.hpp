@@ -103,7 +103,6 @@ private:
 
   // Scene light represented as a camera
   Tucano::Camera scene_light;
-  std::vector<Tucano::Camera> scene_lights;
 
   /// A very thin cylinder to draw a debug ray
   Tucano::Shapes::Cylinder ray = Tucano::Shapes::Cylinder(0.1, 1.0, 16, 64);

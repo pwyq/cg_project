@@ -33,10 +33,8 @@ public:
 
     /* Methods */
     void clearSphericalLights();
-    void sphericalLightOn(std::vector<Eigen::Vector3f>& lights,
-                          std::vector<Tucano::Camera> scene_lights);
+    void sphericalLightOn(std::vector<Eigen::Vector3f>& lights);
     void addSphericalLights(std::vector<Eigen::Vector3f>& lights,
-                            std::vector<Tucano::Camera> scene_lights,
                             unsigned int index);
     void sphericalLightOff();
     // void pointLightOff();

@@ -124,12 +124,6 @@ void Flyscene::initializeLights() {
 
   // create a first ray-tracing light source at some random position
   lights.push_back(Eigen::Vector3f(-1.0, 1.0, 1.0));
-
-  // following is redundant for now
-  for (int i = 0; i < lights.size(); i++) {
-    Tucano::Camera newSceneLight;
-    scene_lights.push_back(newSceneLight);
-  }
 }
 
 
@@ -210,7 +204,7 @@ void Flyscene::setSceneLights() {
 void Flyscene::setSphericalLight() {
   // TODO: maybe swithc point-light and sphere-light here
   if (false == sceneSphereLights->isSphericalLightOn) {
-    sceneSphereLights->sphericalLightOn(lights, scene_lights);
+    sceneSphereLights->sphericalLightOn(lights);
   }
   else {
     sceneSphereLights->sphericalLightOff();
