@@ -59,6 +59,63 @@ void Flyscene::printObjectInfo() {
 }
 
 
+void Flyscene::paintGL(void) {
+  // update the camera view matrix with the last mouse interactions
+  flycamera.updateViewMatrix();
+  Eigen::Vector4f viewport = flycamera.getViewport();
+
+  // clear the screen and set background color
+  glClearColor(0.9, 0.9, 0.9, 0.0);
+  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+
+  if (sceneSphereLights->isSphericalLightOn == true) {
+    paintGLwithSphereLight();
+  }
+  else {
+    paintGLwithPointLight();
+  }
+
+  // render coordinate system at lower right corner
+  flycamera.renderAtCorner();
+}
+
+
+void Flyscene::simulate(GLFWwindow *window) {
+  // Update the camera.
+  // NOTE(mickvangelderen): GLFW 3.2 has a problem on ubuntu where some key
+  // events are repeated: https://github.com/glfw/glfw/issues/747. Sucks.
+  float dx = (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS ? 1.0 : 0.0) -
+             (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS ? 1.0 : 0.0);
+  float dy = (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS || glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS ? 1.0 : 0.0) -
+             (glfwGetKey(window, GLFW_KEY_Z) == GLFW_PRESS || glfwGetKey(window, GLFW_KEY_C) == GLFW_PRESS ? 1.0 : 0.0);
+  float dz = (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS ? 1.0 : 0.0) - (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS ? 1.0 : 0.0);
+  flycamera.translate(dx, dy, dz);
+}
+
+
+void Flyscene::createDebugRay(const Eigen::Vector2f &mouse_pos) {
+  ray.resetModelMatrix();
+  // from pixel position to world coordinates
+  Eigen::Vector3f screen_pos = flycamera.screenToWorld(mouse_pos);
+
+  // direction from camera center to click position
+  Eigen::Vector3f dir = (screen_pos - flycamera.getCenter()).normalized();
+  
+  // position and orient the cylinder representing the ray
+  ray.setOriginOrientation(flycamera.getCenter(), dir);
+
+  // place the camera representation (frustum) on current camera location, 
+  camerarep.resetModelMatrix();
+  camerarep.setModelMatrix(flycamera.getViewMatrix().inverse());
+}
+
+
+/****************************************************************
+ * Light                                                        *
+ ****************************************************************/
+
+
 void Flyscene::initializeLights() {
   // set the color and size of the sphere to represent the light sources
   // same sphere is used for all sources
@@ -131,63 +188,22 @@ void Flyscene::paintGLwithPointLight() {
 }
 
 
-void Flyscene::paintGL(void) {
-  // update the camera view matrix with the last mouse interactions
-  flycamera.updateViewMatrix();
-  Eigen::Vector4f viewport = flycamera.getViewport();
-
-  // clear the screen and set background color
-  glClearColor(0.9, 0.9, 0.9, 0.0);
-  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-
-  if (sceneSphereLights->isSphericalLightOn == true) {
-    paintGLwithSphereLight();
-  }
-  else {
-    paintGLwithPointLight();
-  }
-
-  // render coordinate system at lower right corner
-  flycamera.renderAtCorner();
-}
-
-
-void Flyscene::simulate(GLFWwindow *window) {
-  // Update the camera.
-  // NOTE(mickvangelderen): GLFW 3.2 has a problem on ubuntu where some key
-  // events are repeated: https://github.com/glfw/glfw/issues/747. Sucks.
-  float dx = (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS ? 1.0 : 0.0) -
-             (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS ? 1.0 : 0.0);
-  float dy = (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS || glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS ? 1.0 : 0.0) -
-             (glfwGetKey(window, GLFW_KEY_Z) == GLFW_PRESS || glfwGetKey(window, GLFW_KEY_C) == GLFW_PRESS ? 1.0 : 0.0);
-  float dz = (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS ? 1.0 : 0.0) - (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS ? 1.0 : 0.0);
-  flycamera.translate(dx, dy, dz);
-}
-
-
-void Flyscene::createDebugRay(const Eigen::Vector2f &mouse_pos) {
-  ray.resetModelMatrix();
-  // from pixel position to world coordinates
-  Eigen::Vector3f screen_pos = flycamera.screenToWorld(mouse_pos);
-
-  // direction from camera center to click position
-  Eigen::Vector3f dir = (screen_pos - flycamera.getCenter()).normalized();
-  
-  // position and orient the cylinder representing the ray
-  ray.setOriginOrientation(flycamera.getCenter(), dir);
-
-  // place the camera representation (frustum) on current camera location, 
-  camerarep.resetModelMatrix();
-  camerarep.setModelMatrix(flycamera.getViewMatrix().inverse());
-}
-
-
 void Flyscene::setSceneLights() {
   // Set the lights in the scene for ray tracing
-  scene->lights.clear();
-  for ( Eigen::Vector3f lightPosition : lights )
-    scene->lights.push_back(Light(Eigen::Vector3f(1.0,1.0,1.0), lightPosition));
+  if (false == sceneSphereLights->isSphericalLightOn) {
+    scene->lights.clear();
+    for ( Eigen::Vector3f lightPosition : lights )
+      scene->lights.push_back(Light(Eigen::Vector3f(1.0,1.0,1.0), lightPosition));
+  }
+  else {
+    // TODO: need double check here; haven't tested
+    sceneSphereLights->clearSphericalLights();
+    for (auto spherelights : sceneSphereLights->sphericalLightsPos) {
+      for (auto l : spherelights) {
+        scene->lights.push_back(Light(Eigen::Vector3f(1.0,1.0,1.0), l));
+      }
+    }
+  }
 }
 
 
@@ -200,6 +216,11 @@ void Flyscene::setSphericalLight() {
     sceneSphereLights->sphericalLightOff();
   }
 }
+
+
+/****************************************************************
+ * Ray Tracing                                                  *
+ ****************************************************************/
 
 
 void Flyscene::raytraceScene(int width, int height) {

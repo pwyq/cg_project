@@ -11,8 +11,13 @@ Light::Light(Eigen::Vector3f spectrum, Eigen::Vector3f position) {
 
 
 void Light::clearSphericalLights() {
-    if (sphericalLightsPos.size() > 0)
+    if (getTotalSphereLight() > 0) {
+        this->sphericalRadius.clear();
+        this->sphericalCount.clear();
+        this->sphericalIntensity.clear();
         this->sphericalLightsPos.clear();
+        setTotalSphereLight(0);
+    }
 }
 
 

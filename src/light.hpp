@@ -7,7 +7,6 @@
 #include <tucano/camera.hpp>
 
 class Light {
-    void clearSphericalLights();
     void allLightsOff();
     unsigned int totalSphereLight = 0;
 public:
@@ -33,6 +32,7 @@ public:
     std::vector<std::vector<Eigen::Vector3f>> sphericalLightsPos;
 
     /* Methods */
+    void clearSphericalLights();
     void sphericalLightOn(std::vector<Eigen::Vector3f>& lights,
                           std::vector<Tucano::Camera> scene_lights);
     void addSphericalLights(std::vector<Eigen::Vector3f>& lights,
