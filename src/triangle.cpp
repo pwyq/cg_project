@@ -44,7 +44,9 @@ Eigen::Vector3f Triangle::getPosition() {
 }
 
 
-Hitable* Triangle::intersect(float &hitPoint, Ray &ray) { 
+Hitable* Triangle::intersect(float &hitPoint, Ray &ray, Hitable* exclude) { 
+    if ( exclude == this ) return NULL;
+
     //Checks if the ray is parrallel to the triangle, then return NULL
     if ( this -> normal.dot(ray.direction) == 0 ) return NULL;
 
@@ -68,6 +70,8 @@ Hitable* Triangle::intersect(float &hitPoint, Ray &ray) {
     }
     return NULL;
 }
+
+
 
 bool Triangle::isInTriangle(Eigen::Vector3f point) {
     float areaABC = this->normal.dot( (vertex1 - vertex0).cross(vertex2 - vertex0) );
