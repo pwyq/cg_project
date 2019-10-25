@@ -218,7 +218,7 @@ void Flyscene::setSphericalLight() {
 
 
 void Flyscene::raytraceScene(int width, int height) {
-  std::cout << "ray tracing ..." << std::endl;
+  std::cout << "[INFO] Start ray tracing ..." << std::endl;
 
   // if no width or height passed, use dimensions of current viewport
   Eigen::Vector2i image_size(width, height);
@@ -281,7 +281,7 @@ void Flyscene::raytraceScene(int width, int height) {
   }
   // write the ray tracing result to a PPM image
   Tucano::ImageImporter::writePPMImage("result.ppm", pixel_data);
-  std::cout << "ray tracing done with time = " << duration << " microseconds." << std::endl;
+  std::cout << "[SUCCESS] ray tracing done with time = " << duration << " microseconds." << std::endl;
 }
 
 

@@ -32,7 +32,7 @@ public:
 
 	//This is a list of all boxes (leafs of boxes tree). 
 	//We have this to conform with the project requirements. We do not use it.
-	std::vector<Box*> leafBoxes;
+	// std::vector<Box*> leafBoxes;
 
 	bool useAcc = true;
 	bool useThreads = true;
