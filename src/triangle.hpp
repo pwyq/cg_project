@@ -11,8 +11,7 @@ public:
 	Eigen::Vector3f vertex2;
 
 	bool isInTriangle(Eigen::Vector3f point); 
-	virtual Hitable* intersect(float &, Ray &);
-	virtual bool isIntersecting(float &hitPoint, Ray &ray);
+	virtual Hitable* intersect(float &, Ray &, Hitable*);
 
 	Triangle(const Eigen::Vector3f &,
 	         const Eigen::Vector3f &,

@@ -31,18 +31,18 @@ public:
 
 
 	//Will return a color
-	void traceRay(Eigen::Vector3f *, Ray &, int);
-	void traceRayWithAcc(Eigen::Vector3f *color, Ray &ray, int level);
+	void traceRay(Eigen::Vector3f *, Ray &, int, Hitable* exclude);
+	void traceRayWithAcc(Eigen::Vector3f *color, Ray &ray, int level, Hitable* exclude);
 
 	//Will return a color
-	Eigen::Vector3f shade(Hitable &hitObject, Ray &, float t, int level);
+	Eigen::Vector3f shade(Hitable *hitObject, Ray &, float t, int level);
 
 	//Will return a color
-	Eigen::Vector3f computeDirectLight(Hitable &hitObject, Eigen::Vector3f hitPoint);
+	Eigen::Vector3f computeDirectLight(Hitable *hitObject, Eigen::Vector3f hitPoint);
 
 	Scene(Tucano::Mesh &, std::vector<Tucano::Material::Mtl> &);
 	Scene();
-	Eigen::Vector3f computeReflectedLight(Hitable &hitObject, Ray &ray, float t, int level);
+	Eigen::Vector3f computeReflectedLight(Hitable *hitObject, Ray &ray, float t, int level);
 };
 
 /****************************************************************

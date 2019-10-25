@@ -100,7 +100,7 @@ void Box::splitBox(std::vector<Triangle*> &inputTriangles) {
 }
 
 // Determine if incoming ray hit a box
-Hitable* Box::intersect(float &hitPoint, Ray &ray)
+Hitable* Box::intersect(float &hitPoint, Ray &ray, Hitable* exclude)
 {
     // substitute ray in all planes to calculate intersection parameters
     // TODO: do we need to take care of division by 0?
@@ -133,49 +133,12 @@ Hitable* Box::intersect(float &hitPoint, Ray &ray)
     //so we recursively call the intersect method on the subboxes or triangles.
     Hitable* hitObject = NULL;
     for (auto &h: this->children) {
-        Hitable* hit = h->intersect(hitPoint, ray);
+        Hitable* hit = h->intersect(hitPoint, ray, exclude);
         if ( hit != NULL ) {
            hitObject = hit;
         }
     }
     return hitObject;
-}
-
-bool Box::isIntersecting(float &hitPoint, Ray &ray) 
-{
-    // substitute ray in all planes to calculate intersection parameters
-    // TODO: do we need to take care of division by 0?
-    float tx_min = (this->bMin[0] - ray.origin(0)) / ray.direction(0);
-    float ty_min = (this->bMin[1] - ray.origin(1)) / ray.direction(1);
-    float tz_min = (this->bMin[2] - ray.origin(2)) / ray.direction(2);
-
-    float tx_max = (this->bMax[0] - ray.origin(0)) / ray.direction(0);
-    float ty_max = (this->bMax[1] - ray.origin(1)) / ray.direction(1);
-    float tz_max = (this->bMax[2] - ray.origin(2)) / ray.direction(2);
-
-    // sort to find in and out
-    float t_in_x  = std::min(tx_min, tx_max);
-    float t_in_y  = std::min(ty_min, ty_max);
-    float t_in_z  = std::min(tz_min, tz_max);
-
-    float t_out_x = std::max(tx_min, tx_max);
-    float t_out_y = std::max(ty_min, ty_max);
-    float t_out_z = std::max(tz_min, tz_max);
-
-    // determine when we crossed all _in_ points & at least one _out_ point
-    float t_in  = std::max(std::max(t_in_x, t_in_y),t_in_z);
-    float t_out = std::min(std::min(t_out_x, t_out_y),t_out_z);
-
-    // check for intersection
-    if (t_in > t_out || t_out < 0)
-        return false;
-
-    //When we reach this moment, we know the ray will hit this box,
-    //so we recursively call the intersect method on the subboxes or triangles.
-    for (auto &h: this->children) 
-        if ( h->intersect(hitPoint, ray)) 
-            return true;
-    return false;
 }
 
 /*

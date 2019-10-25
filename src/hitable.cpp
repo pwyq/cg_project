@@ -2,14 +2,9 @@
 
 #include <iostream>
 
-Hitable* Hitable::intersect(float &hitPoint, Ray &ray)
+Hitable* Hitable::intersect(float &hitPoint, Ray &ray, Hitable* exclude)
 {
 	return NULL;
-}
-
-bool Hitable::isIntersecting(float &hitPoint, Ray &ray)
-{
-	return false;
 }
 
 Hitable::Hitable(const Eigen::Vector3f &norm, const int id)

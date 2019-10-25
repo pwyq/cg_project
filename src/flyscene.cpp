@@ -13,7 +13,7 @@ void Flyscene::initialize(int width, int height) {
   flycamera.setViewport(Eigen::Vector2f((float)width, (float)height));
 
   // load the OBJ file and materials
-  Tucano::MeshImporter::loadObjFile(mesh, materials,"resources/models/boxmirror2.obj");
+  Tucano::MeshImporter::loadObjFile(mesh, materials,"resources/models/mirrors.obj");
   // Tucano::MeshImporter::loadObjFile(mesh, materials,"resources/models/cube.obj");
   // Tucano::MeshImporter::loadObjFile(mesh, materials,"resources/models/bunny.obj"); // too large
   // Tucano::MeshImporter::loadObjFile(mesh, materials,"resources/models/dodgeColorTest.obj");
@@ -32,7 +32,7 @@ void Flyscene::initialize(int width, int height) {
   lightrep.setSize(0.15);
 
   // create a first ray-tracing light source at some random position
-   lights.push_back(Eigen::Vector3f(2.0, 1.5, 1.0));
+  lights.push_back(Eigen::Vector3f(2.0, 1.5, 1.0));
 
   // scale the camera representation (frustum) for the ray debug
   camerarep.shapeMatrix()->scale(0.2);
@@ -166,7 +166,7 @@ void Flyscene::raytraceScene(int width, int height) {
       // launch raytracing for the given ray and write result to pixel data
       Ray r(origin, screen_coords - origin);
       globalQueue.push(raytraceTask(&pixel_data[i][j], r));
-      // scene->traceRay(&pixel_data[i][j], r, 0);
+      //scene->traceRayWithAcc(&pixel_data[i][j], r, 0);
     }
   }
 
