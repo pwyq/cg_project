@@ -4,6 +4,23 @@
 #include "light.hpp"
 
 
+/****************************************************************
+ * Helper functions                                             *
+ ****************************************************************/
+
+
+float generateRandomFloat(float a, float b)
+{
+    return ((b - a) * ((float)rand() / RAND_MAX)) + a;
+}
+
+
+/****************************************************************
+ * Light Class Implementation                                   *
+ ****************************************************************/
+
+
+// Constructor
 Light::Light(Eigen::Vector3f spectrum, Eigen::Vector3f position) {
 	this->spectrum = spectrum;
 	this->position = position;
@@ -20,23 +37,10 @@ void Light::clearSphericalLights() {
     }
 }
 
-
-// void Light::pointLightOff() {
-//     if (lights.size() > 0)
-//         lights.clear();
-// }
-
-float generateRandomFloat(float a, float b)
-{
-    return ((b - a) * ((float)rand() / RAND_MAX)) + a;
-}
-
 // change to addSphericalLights()
 void Light::sphericalLightOn(std::vector<Eigen::Vector3f>& lights) {
     isSphericalLightOn = true;
     std::cout << "[INFO] Then God said, \"Let there be light,\" and there was light.\n";
-    // clearSphericalLights();
-    // pointLightOff();
     unsigned int index = getTotalSphereLight();
     setTotalSphereLight(index+1);
     std::mt19937 randomGenerator(LIGHT_SEED);
@@ -47,15 +51,6 @@ void Light::sphericalLightOn(std::vector<Eigen::Vector3f>& lights) {
     sphericalIntensity.push_back(generateRandomFloat(1.0, INTENSITY_LIMIT) / sphericalCount[index]);
 
     addSphericalLights(lights, index);
-}
-
-
-unsigned int Light::getTotalSphereLight() {
-    return totalSphereLight;
-}
-
-void Light::setTotalSphereLight(unsigned int idx) {
-    totalSphereLight = idx;
 }
 
 
@@ -98,5 +93,21 @@ void Light::sphericalLightOff() {
 void Light::allLightsOff() {
     // TODO
 }
+
+
+/****************************************************************
+ * Getter & Setter                                              *
+ ****************************************************************/
+
+
+unsigned int Light::getTotalSphereLight() {
+    return totalSphereLight;
+}
+
+
+void Light::setTotalSphereLight(unsigned int idx) {
+    totalSphereLight = idx;
+}
+
 
 /* End of File */

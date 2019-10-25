@@ -34,10 +34,9 @@ public:
     /* Methods */
     void clearSphericalLights();
     void sphericalLightOn(std::vector<Eigen::Vector3f>& lights);
+    void sphericalLightOff();
     void addSphericalLights(std::vector<Eigen::Vector3f>& lights,
                             unsigned int index);
-    void sphericalLightOff();
-    // void pointLightOff();
 
     // Getter methods
     unsigned int getTotalSphereLight();
