@@ -3,7 +3,6 @@
 #include <limits>
 #include <cmath>
 
-// #define DEPTH = 2;  // no use so far
 
 void Flyscene::initialize(int width, int height) {
   // initiliaze the Phong Shading effect for the Opengl Previewer
