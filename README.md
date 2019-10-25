@@ -13,8 +13,7 @@
 - [a quick C++ debugging tutorial with GDB debugger](http://www.unknownroad.com/rtfm/gdbtut/gdbsegfault.html)
     - useful for debugging `segmentation fault`
 
+##### Run
 
-    # On root directory
     gdb ./build/raytracing
-
 

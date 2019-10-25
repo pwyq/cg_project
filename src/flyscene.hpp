@@ -75,6 +75,8 @@ public:
 
   void setSceneLights();
   void setSphericalLight();
+  void paintGLwithPointLight();
+  void paintGLwithSphereLight();
 
   //Indicates if the acceleration structure is build or not
   bool show_acceleration = false;
@@ -112,7 +114,7 @@ private:
   /// MTL materials
   std::vector<Tucano::Material::Mtl> materials;
 
-  //Our scene
+  // Our member variables
   Scene* scene;
   Light* sceneSphereLights;
 
