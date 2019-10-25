@@ -15,12 +15,6 @@ public:
     // spectrum, position
 	Light(Eigen::Vector3f, Eigen::Vector3f);
 
-    /* Member Constants */
-    const int LIGHT_SEED = 42;   // hardcoded random seed
-    const int COUNT_LIMIT = 50;
-    const float INTENSITY_LIMIT = 100.0;
-    const float RADIUS_LIMIT = 3.0;
-
     /* Member Variables */
 	Eigen::Vector3f spectrum;
 	Eigen::Vector3f position;

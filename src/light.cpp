@@ -4,6 +4,11 @@
 #include "light.hpp"
 
 
+static const int LIGHT_SEED = 42;   // hardcoded random seed
+static const int COUNT_LIMIT = 50;
+static const float INTENSITY_LIMIT = 100.0;
+static const float RADIUS_LIMIT = 3.0;
+
 /****************************************************************
  * Helper functions                                             *
  ****************************************************************/
@@ -62,7 +67,7 @@ void Light::addSphericalLights(std::vector<Eigen::Vector3f>& lights, unsigned in
     }
 
     // http://corysimon.github.io/articles/uniformdistn-on-sphere/
-    std::mt19937 randomGenerator(this->LIGHT_SEED);
+    std::mt19937 randomGenerator(LIGHT_SEED);
     std::uniform_real_distribution<float> uniform01(0.0, 1.0);
 
     std::vector<Eigen::Vector3f> newPointLights;
