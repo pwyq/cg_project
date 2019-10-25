@@ -43,9 +43,7 @@ public:
 
 	//Will return a color
 	Eigen::Vector3f computeDirectLight(Hitable *hitObject, Eigen::Vector3f hitPoint);
-  Eigen::Vector3f computeReflectedLight(Hitable *hitObject, Ray &ray, float t, int level);
-	Scene(Tucano::Mesh &, std::vector<Tucano::Material::Mtl> &);
-	Scene();
+    Eigen::Vector3f computeReflectedLight(Hitable *hitObject, Ray &ray, float t, int level);
 };
 
 
