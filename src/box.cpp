@@ -12,7 +12,7 @@ post on AABB vs. OBB type bounding box:
 
 
 /* GLOBAL const */
-static const int TRIANGLES_PER_BOX_LIMIT = 50;
+static const int TRIANGLES_PER_BOX_LIMIT = 10;
 
 // default Box constructor implementation
 Box::Box() {};
@@ -101,7 +101,7 @@ void Box::splitBox(std::vector<Triangle*> &inputTriangles) {
 }
 
 // Determine if incoming ray hit a box
-Hitable* Box::intersect(float &hitPoint, Ray &ray)
+Hitable* Box::intersect(float &hitPoint, Ray &ray, Hitable* exclude)
 {
     // substitute ray in all planes to calculate intersection parameters
     // TODO: do we need to take care of division by 0?
@@ -116,11 +116,11 @@ Hitable* Box::intersect(float &hitPoint, Ray &ray)
     // sort to find in and out
     float t_in_x  = std::min(tx_min, tx_max);
     float t_in_y  = std::min(ty_min, ty_max);
-    float t_in_z  = std::min(ty_min, ty_max);
+    float t_in_z  = std::min(tz_min, tz_max);
 
     float t_out_x = std::max(tx_min, tx_max);
     float t_out_y = std::max(ty_min, ty_max);
-    float t_out_z = std::max(ty_min, ty_max);
+    float t_out_z = std::max(tz_min, tz_max);
 
     // determine when we crossed all _in_ points & at least one _out_ point
     float t_in  = std::max(std::max(t_in_x, t_in_y),t_in_z);
@@ -134,7 +134,7 @@ Hitable* Box::intersect(float &hitPoint, Ray &ray)
     //so we recursively call the intersect method on the subboxes or triangles.
     Hitable* hitObject = NULL;
     for (auto &h: this->children) {
-        Hitable* hit = h->intersect(hitPoint, ray);
+        Hitable* hit = h->intersect(hitPoint, ray, exclude);
         if ( hit != NULL ) {
            hitObject = hit;
         }

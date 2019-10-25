@@ -17,7 +17,7 @@ public:
     //Constructor creates a box around the given list of triangles
     Box(std::vector<Triangle*> &inputTriangles); 
     
-	virtual Hitable* intersect(float &hitPoint, Ray &ray);
+	virtual Hitable* intersect(float &hitPoint, Ray &ray, Hitable* exclude);
 
 	void splitBox(std::vector<Triangle*> &inputTriangles);
 

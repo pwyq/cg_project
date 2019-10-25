@@ -5,8 +5,8 @@
 #include <iostream>
 #include "flyscene.hpp"
 
-#define WINDOW_WIDTH 1000
-#define WINDOW_HEIGHT 1000
+#define WINDOW_WIDTH 700  
+#define WINDOW_HEIGHT 700
 
 Flyscene *flyscene;
 Eigen::Vector2f mouse_pos = Eigen::Vector2f::Zero();

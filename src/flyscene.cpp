@@ -13,7 +13,7 @@ void Flyscene::initialize(int width, int height) {
   flycamera.setViewport(Eigen::Vector2f((float)width, (float)height));
 
   // load the OBJ file and materials
-  Tucano::MeshImporter::loadObjFile(mesh, materials,"resources/models/toy.obj");
+  Tucano::MeshImporter::loadObjFile(mesh, materials,"resources/models/mirrors.obj");
   // Tucano::MeshImporter::loadObjFile(mesh, materials,"resources/models/cube.obj");
   // Tucano::MeshImporter::loadObjFile(mesh, materials,"resources/models/dodgeColorTest.obj");
 
@@ -123,7 +123,7 @@ void Flyscene::initializeLights() {
   lightrep.setSize(0.1);
 
   // create a first ray-tracing light source at some random position
-  lights.push_back(Eigen::Vector3f(-1.0, 1.0, 1.0));
+  lights.push_back(Eigen::Vector3f(2.0, 1.5, 1.0));
 }
 
 
@@ -258,8 +258,10 @@ void Flyscene::raytraceScene(int width, int height) {
       screen_coords = flycamera.screenToWorld(Eigen::Vector2f(i, j));
       // launch raytracing for the given ray and write result to pixel data
       Ray r(origin, screen_coords - origin);
-      globalQueue.push(raytraceTask(&pixel_data[i][j], r));   // with multi-threading
-      //scene->traceRay(&pixel_data[i][j], r, 0);             // without multi-threading
+      if ( scene -> useThreads)
+        globalQueue.push(raytraceTask(&pixel_data[i][j], r));
+      else
+        scene->traceRayWithAcc(&pixel_data[i][j], r, 0, NULL);
     }
   }
 
