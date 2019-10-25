@@ -13,23 +13,27 @@
 
 // Local header files
 #include "ray.hpp"
-#include "hitable.hpp"
 #include "light.hpp"
-#include "triangle.hpp"
 #include "box.hpp"
 
 class Scene {
 public:
-	std::vector<Triangle*> trianglesInScene;
+    /* Constructor */
+    Scene(Tucano::Mesh &, std::vector<Tucano::Material::Mtl> &);
+    Scene();
+
+    /* Member Variable */
+	Eigen::Vector3f cameraPosition;
 	Box* boxOverAllTriangles;
 
+	std::vector<Triangle*> trianglesInScene;
 	std::vector<Light> lights;
 	std::vector<Tucano::Material::Mtl>* materials;
-	Eigen::Vector3f cameraPosition;
 
 	bool useAcc = true;
 	bool useThreads = true;
 
+    /* Methods */
 	//Will return a color
 	void traceRay(Eigen::Vector3f *, Ray &, int, Hitable* exclude);
 	void traceRayWithAcc(Eigen::Vector3f *color, Ray &ray, int level, Hitable* exclude);
@@ -39,15 +43,16 @@ public:
 
 	//Will return a color
 	Eigen::Vector3f computeDirectLight(Hitable *hitObject, Eigen::Vector3f hitPoint);
-
+  Eigen::Vector3f computeReflectedLight(Hitable *hitObject, Ray &ray, float t, int level);
 	Scene(Tucano::Mesh &, std::vector<Tucano::Material::Mtl> &);
 	Scene();
-	Eigen::Vector3f computeReflectedLight(Hitable *hitObject, Ray &ray, float t, int level);
 };
+
 
 /****************************************************************
  * Multi-threads                                                *
  ****************************************************************/
+
 
 struct raytraceTask
 {
@@ -62,6 +67,7 @@ struct raytraceTask
 	}
 };
 
+
 class TaskQueue
 {
     std::queue<raytraceTask> queue;
@@ -74,6 +80,7 @@ public:
     raytraceTask pop();
     bool isEmpty();
 };
+
 
 class Worker
 {

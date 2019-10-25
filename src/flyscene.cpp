@@ -1,7 +1,7 @@
-#include "flyscene.hpp"
-
 #include <limits>
 #include <cmath>
+
+#include "flyscene.hpp"
 
 
 void Flyscene::initialize(int width, int height) {
@@ -15,7 +15,6 @@ void Flyscene::initialize(int width, int height) {
   // load the OBJ file and materials
   Tucano::MeshImporter::loadObjFile(mesh, materials,"resources/models/mirrors.obj");
   // Tucano::MeshImporter::loadObjFile(mesh, materials,"resources/models/cube.obj");
-  // Tucano::MeshImporter::loadObjFile(mesh, materials,"resources/models/bunny.obj"); // too large
   // Tucano::MeshImporter::loadObjFile(mesh, materials,"resources/models/dodgeColorTest.obj");
 
   // normalize the model (scale to unit cube and center at origin)
@@ -25,13 +24,7 @@ void Flyscene::initialize(int width, int height) {
   for (int i = 0; i < materials.size(); ++i)
     phong.addMaterial(materials[i]);
 
-  // set the color and size of the sphere to represent the light sources
-  // same sphere is used for all sources
-  lightrep.setColor(Eigen::Vector4f(1.0, 1.0, 0.0, 1.0));
-  lightrep.setSize(0.15);
-
-  // create a first ray-tracing light source at some random position
-  lights.push_back(Eigen::Vector3f(2.0, 1.5, 1.0));
+  initializeLights();
 
   // scale the camera representation (frustum) for the ray debug
   camerarep.shapeMatrix()->scale(0.2);
@@ -46,12 +39,27 @@ void Flyscene::initialize(int width, int height) {
 
   /* Initialize our variables */
   scene = new Scene(mesh, materials);
+  // TODO: find proper init value for spectrum, position
+  sceneSphereLights = new Light(Eigen::Vector3f(0,0,0), Eigen::Vector3f(0,0,0));
   getAllLeafBoxesInScene();
   show_acceleration = true;
+
+  printObjectInfo();
 }
 
-void Flyscene::paintGL(void) {
 
+void Flyscene::printObjectInfo() {
+  // moved from tucano/objimporter
+  std::cout << "\t ********************* Object Info *********************** " << std::endl;
+  std::cout << "\t\tnumber of vertices    : " << mesh.getNumberOfVertices() << std::endl;
+  std::cout << "\t\tnumber of faces       : " << mesh.getNumberOfElements() << std::endl;
+  std::cout << "\t\tnumber of materials   : " << mesh.getNumberOfMaterials() << std::endl;
+  std::cout << "\t\tnumber of leaf boxes  : " << this->leafBoxesInScene.size() << std::endl;
+  std::cout << "\t ********************************************************* " << std::endl;
+}
+
+
+void Flyscene::paintGL(void) {
   // update the camera view matrix with the last mouse interactions
   flycamera.updateViewMatrix();
   Eigen::Vector4f viewport = flycamera.getViewport();
@@ -60,6 +68,92 @@ void Flyscene::paintGL(void) {
   glClearColor(0.9, 0.9, 0.9, 0.0);
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+
+  if (sceneSphereLights->isSphericalLightOn == true) {
+    paintGLwithSphereLight();
+  }
+  else {
+    paintGLwithPointLight();
+  }
+
+  // render coordinate system at lower right corner
+  flycamera.renderAtCorner();
+}
+
+
+void Flyscene::simulate(GLFWwindow *window) {
+  // Update the camera.
+  // NOTE(mickvangelderen): GLFW 3.2 has a problem on ubuntu where some key
+  // events are repeated: https://github.com/glfw/glfw/issues/747. Sucks.
+  float dx = (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS ? 1.0 : 0.0) -
+             (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS ? 1.0 : 0.0);
+  float dy = (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS || glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS ? 1.0 : 0.0) -
+             (glfwGetKey(window, GLFW_KEY_Z) == GLFW_PRESS || glfwGetKey(window, GLFW_KEY_C) == GLFW_PRESS ? 1.0 : 0.0);
+  float dz = (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS ? 1.0 : 0.0) - (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS ? 1.0 : 0.0);
+  flycamera.translate(dx, dy, dz);
+}
+
+
+void Flyscene::createDebugRay(const Eigen::Vector2f &mouse_pos) {
+  ray.resetModelMatrix();
+  // from pixel position to world coordinates
+  Eigen::Vector3f screen_pos = flycamera.screenToWorld(mouse_pos);
+
+  // direction from camera center to click position
+  Eigen::Vector3f dir = (screen_pos - flycamera.getCenter()).normalized();
+  
+  // position and orient the cylinder representing the ray
+  ray.setOriginOrientation(flycamera.getCenter(), dir);
+
+  // place the camera representation (frustum) on current camera location, 
+  camerarep.resetModelMatrix();
+  camerarep.setModelMatrix(flycamera.getViewMatrix().inverse());
+}
+
+
+/****************************************************************
+ * Light                                                        *
+ ****************************************************************/
+
+
+void Flyscene::initializeLights() {
+  // set the color and size of the sphere to represent the light sources
+  // same sphere is used for all sources
+  lightrep.setColor(Eigen::Vector4f(1.0, 1.0, 0.0, 1.0));
+  lightrep.setSize(0.1);
+
+  // create a first ray-tracing light source at some random position
+  lights.push_back(Eigen::Vector3f(2.0, 1.5, 1.0));
+}
+
+
+void Flyscene::paintGLwithSphereLight() {
+  for (int m = 0; m < sceneSphereLights->getTotalSphereLight(); m++) {      
+    scene_light.resetViewMatrix();
+    // TODO: now only renders the last light from spherical lights
+    scene_light.viewMatrix()->translate(-sceneSphereLights->sphericalLightsPos[m].back());
+
+    phong.render(mesh, flycamera, scene_light);
+
+    if ( show_acceleration ) {
+      for ( auto boxInScene : leafBoxesInScene ) {
+         boxInScene.render(flycamera, scene_light);
+      }
+    }
+    
+    ray.render(flycamera, scene_light);
+    camerarep.render(flycamera, scene_light);
+
+    for (int i = 0; i < sceneSphereLights->sphericalLightsPos[m].size(); ++i) {
+      lightrep.resetModelMatrix();
+      lightrep.modelMatrix()->translate(sceneSphereLights->sphericalLightsPos[m][i]);
+      lightrep.render(flycamera, scene_light);
+    }
+  }
+}
+
+
+void Flyscene::paintGLwithPointLight() {
   // position the scene light at the last ray-tracing light source
   scene_light.resetViewMatrix();
   scene_light.viewMatrix()->translate(-lights.back());
@@ -85,38 +179,43 @@ void Flyscene::paintGL(void) {
     lightrep.modelMatrix()->translate(lights[i]);
     lightrep.render(flycamera, scene_light);
   }
-
-  // render coordinate system at lower right corner
-  flycamera.renderAtCorner();
 }
 
-void Flyscene::simulate(GLFWwindow *window) {
-  // Update the camera.
-  // NOTE(mickvangelderen): GLFW 3.2 has a problem on ubuntu where some key
-  // events are repeated: https://github.com/glfw/glfw/issues/747. Sucks.
-  float dx = (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS ? 1.0 : 0.0) -
-             (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS ? 1.0 : 0.0);
-  float dy = (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS || glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS ? 1.0 : 0.0) -
-             (glfwGetKey(window, GLFW_KEY_Z) == GLFW_PRESS || glfwGetKey(window, GLFW_KEY_C) == GLFW_PRESS ? 1.0 : 0.0);
-  float dz = (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS ? 1.0 : 0.0) - (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS ? 1.0 : 0.0);
-  flycamera.translate(dx, dy, dz);
+
+void Flyscene::setSceneLights() {
+  // Set the lights in the scene for ray tracing
+  if (false == sceneSphereLights->isSphericalLightOn) {
+    scene->lights.clear();
+    for ( Eigen::Vector3f lightPosition : lights )
+      scene->lights.push_back(Light(Eigen::Vector3f(1.0,1.0,1.0), lightPosition));
+  }
+  else {
+    // TODO: need double check here; haven't tested
+    sceneSphereLights->clearSphericalLights();
+    for (auto spherelights : sceneSphereLights->sphericalLightsPos) {
+      for (auto l : spherelights) {
+        scene->lights.push_back(Light(Eigen::Vector3f(1.0,1.0,1.0), l));
+      }
+    }
+  }
 }
 
-void Flyscene::createDebugRay(const Eigen::Vector2f &mouse_pos) {
-  ray.resetModelMatrix();
-  // from pixel position to world coordinates
-  Eigen::Vector3f screen_pos = flycamera.screenToWorld(mouse_pos);
 
-  // direction from camera center to click position
-  Eigen::Vector3f dir = (screen_pos - flycamera.getCenter()).normalized();
-  
-  // position and orient the cylinder representing the ray
-  ray.setOriginOrientation(flycamera.getCenter(), dir);
-
-  // place the camera representation (frustum) on current camera location, 
-  camerarep.resetModelMatrix();
-  camerarep.setModelMatrix(flycamera.getViewMatrix().inverse());
+void Flyscene::setSphericalLight() {
+  // TODO: maybe swithc point-light and sphere-light here
+  if (false == sceneSphereLights->isSphericalLightOn) {
+    sceneSphereLights->sphericalLightOn(lights);
+  }
+  else {
+    sceneSphereLights->sphericalLightOff();
+  }
 }
+
+
+/****************************************************************
+ * Ray Tracing                                                  *
+ ****************************************************************/
+
 
 void Flyscene::raytraceScene(int width, int height) {
   std::cout << "ray tracing ..." << std::endl;
@@ -133,19 +232,11 @@ void Flyscene::raytraceScene(int width, int height) {
   for (int i = 0; i < image_size[1]; ++i)
     pixel_data[i].resize(image_size[0]);
 
-  // origin of the ray is always the camera center
-  Eigen::Vector3f origin = flycamera.getCenter();
-  Eigen::Vector3f screen_coords;
-
   //Set the camera in the scene
   scene -> cameraPosition = flycamera.getCenter();
-  //Set the lights in the scene
-  scene -> lights.clear();
-  for ( Eigen::Vector3f lightPosition : lights ) 
-    scene -> lights.push_back(Light(Eigen::Vector3f(1.0,1.0,1.0), lightPosition));
+  setSceneLights();
   
   TaskQueue globalQueue;
- 
   unsigned int num_threads = std::thread::hardware_concurrency();
   std::vector<Worker> workerPool(num_threads);
   std::vector<std::thread> threadPool(num_threads);
@@ -157,6 +248,9 @@ void Flyscene::raytraceScene(int width, int height) {
     threadPool[i] = std::thread(&Worker::work, std::ref(workerPool[i]));
   }
 
+  // origin of the ray is always the camera center
+  Eigen::Vector3f origin = flycamera.getCenter();
+  Eigen::Vector3f screen_coords;
   // for every pixel shoot a ray from the origin through the pixel coords
   for (int j = 0; j < image_size[1]; ++j) {
     for (int i = 0; i < image_size[0]; ++i) {
@@ -164,8 +258,10 @@ void Flyscene::raytraceScene(int width, int height) {
       screen_coords = flycamera.screenToWorld(Eigen::Vector2f(i, j));
       // launch raytracing for the given ray and write result to pixel data
       Ray r(origin, screen_coords - origin);
-      if ( scene -> useThreads) globalQueue.push(raytraceTask(&pixel_data[i][j], r));
-      else scene->traceRayWithAcc(&pixel_data[i][j], r, 0, NULL);
+      if ( scene -> useThreads)
+        globalQueue.push(raytraceTask(&pixel_data[i][j], r));
+      else
+        scene->traceRayWithAcc(&pixel_data[i][j], r, 0, NULL);
     }
   }
 
@@ -174,7 +270,7 @@ void Flyscene::raytraceScene(int width, int height) {
   while (!globalQueue.isEmpty())
   {
     std::cout<<globalQueue.completedTasks<<" / "<<globalQueue.totalTasks<<" rays traced\n";
-          std::this_thread::sleep_for(1ms);
+    std::this_thread::sleep_for(1ms);
   }
   auto t2 = std::chrono::high_resolution_clock::now();
   auto duration = std::chrono::duration_cast<std::chrono::microseconds>( t2 - t1 ).count();
@@ -185,19 +281,20 @@ void Flyscene::raytraceScene(int width, int height) {
   }
   // write the ray tracing result to a PPM image
   Tucano::ImageImporter::writePPMImage("result.ppm", pixel_data);
-  std::cout << "ray tracing done with time = " << duration << std::endl;
+  std::cout << "ray tracing done with time = " << duration << " microseconds." << std::endl;
 }
+
 
 void Flyscene::getAllLeafBoxesInScene() {
   this->leafBoxesInScene.clear();
   Box* firstBox = scene -> boxOverAllTriangles;
   std::vector<Box*> boxes = firstBox -> getLeafBoxes();
-  std::cout << "#LEAF_BOXES = " << boxes.size() << std::endl;
   for ( Box* box : boxes ) {
     this->leafBoxesInScene.push_back(convertToTucanoBox(box));
   }
   //this->leafBoxesInScene.at(1).setColor(Eigen::Vector4f(0.0, 0.0, 1.0, 0.5));
 }
+
 
 Tucano::Shapes::Box Flyscene::convertToTucanoBox( Box *box ) {
     float width  = std::abs(box->bMin(0) - box->bMax(0));
@@ -210,3 +307,5 @@ Tucano::Shapes::Box Flyscene::convertToTucanoBox( Box *box ) {
     tucanoBox.setColor(Eigen::Vector4f(1.0, 1.0, 0.0, 0.5));
     return tucanoBox;
 }
+
+/* End of file */

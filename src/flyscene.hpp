@@ -33,6 +33,8 @@ public:
    */
   void initialize(int width, int height);
 
+  void initializeLights();
+
   /**
    * Repaints screen buffer.
    **/
@@ -69,6 +71,13 @@ public:
   Tucano::Shapes::Box convertToTucanoBox( Box *box );
   void getAllLeafBoxesInScene();
 
+  void printObjectInfo();
+
+  void setSceneLights();
+  void setSphericalLight();
+  void paintGLwithPointLight();
+  void paintGLwithSphereLight();
+
   //Indicates if the acceleration structure is build or not
   bool show_acceleration = false;
 
@@ -104,8 +113,9 @@ private:
   /// MTL materials
   std::vector<Tucano::Material::Mtl> materials;
 
-  //Our scene
+  // Our member variables
   Scene* scene;
+  Light* sceneSphereLights;
 
   //All the boxes of the acceleration structure that contain triangles
   std::vector<Tucano::Shapes::Box> leafBoxesInScene;

@@ -273,10 +273,12 @@ static void loadObjFile (Tucano::Mesh& mesh, vector<Tucano::Material::Mtl>& mtls
     // sets the default locations for accesing attributes in shaders
     mesh.setDefaultAttribLocations();
 
+    /*
     std::cout << "OBJ info:" << std::endl;
     std::cout << "number vertices : " << mesh.getNumberOfVertices() << std::endl;
     std::cout << "number faces : " << mesh.getNumberOfElements() << std::endl;
     std::cout << "number materials : " << mesh.getNumberOfMaterials() << std::endl;
+    */
 
     #ifdef TUCANODEBUG
     Misc::errorCheckFunc(__FILE__, __LINE__);

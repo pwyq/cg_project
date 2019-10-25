@@ -1,7 +1,8 @@
-#include "box.hpp"
 #include <limits>
 #include <cmath>
 #include <algorithm>
+
+#include "box.hpp"
 
 /*
 We're assuming the input box is AABB (Axis-aligned bounding box)
