@@ -40,19 +40,20 @@ void initialize(void) {
   flyscene = new Flyscene();
   flyscene->initialize(WINDOW_WIDTH, WINDOW_HEIGHT);  
 
-  // Available keys: b f g i j k n o p u v x y
+  // Available keys: b f g j k n o p u v x y
   std::cout << "\n\n"
             << "\t ************************ Usage ************************** " << std::endl;
   std::cout << "\t\tR    : Reset camera" << std::endl;
   std::cout << "\t\tWASD : Move camera in xz plane" << std::endl;
   std::cout << "\t\tQEZC : Move camera along y axis" << std::endl;
   std::cout << "\t\tSPACE: Shoot debug ray from mouse cursor position" << std::endl;
-  std::cout << "\t\tL    : Add new light source at current camera\n"
-            << "\t\t       position" << std::endl;
+  std::cout << "\t\tL    : Add new point light source at current\n"
+            << "\t\t       canera position" << std::endl;
   std::cout << "\t\tT    : Ray trace the scene" << std::endl;
   std::cout << "\t\tEsc  : Close application" << std::endl;
   std::cout << "\t ====================== Our Keys ========================= " << std::endl;
   std::cout << "\t\tH    : Toggle acceleration structure" << std::endl;
+  std::cout << "\t\tI    : Output object informaiton to terminal" << std::endl;
   std::cout << "\t\tM    : Toggle sphericial light (under test)" << std::endl;
   std::cout << "\t ********************************************************* " << std::endl;
 }
@@ -71,6 +72,8 @@ void keyCallback(GLFWwindow *window, int key, int scancode, int action,
     flyscene->raytraceScene();
   else if (key == GLFW_KEY_H && action == GLFW_PRESS)
     flyscene->show_acceleration=!flyscene->show_acceleration;
+  else if (key == GLFW_KEY_I && action == GLFW_PRESS)
+    flyscene->printObjectInfo();
   else if (key == GLFW_KEY_M && action == GLFW_PRESS)
     flyscene->setSphericalLight();
 }

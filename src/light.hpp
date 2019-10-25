@@ -1,10 +1,11 @@
 #pragma once
 
-#include <Eigen/Dense>
+#include <iostream>
 #include <vector>
-#include <iostream> // remove this later
 
+#include <Eigen/Dense>
 #include <tucano/camera.hpp>
+
 
 class Light {
     void allLightsOff();
