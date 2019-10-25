@@ -6,18 +6,17 @@
 #include "light.hpp"
 #include "box.hpp"
 
-static const int MAXLEVEL = 3;
+static const int MAXLEVEL = 4;
 
 void Scene::traceRay(Eigen::Vector3f *color, Ray &ray, int level, Hitable* exclude) {
   //This variable will hold the value of t on intersection in the formula r(t) = o + t * d 
   float tOnIntersection = std::numeric_limits<float>::infinity();
 
   Hitable* hitObject;
-  for ( Triangle* t : this->trianglesInScene ) {
-    if ( t->intersect(tOnIntersection,ray,exclude) != NULL ) {
+  for ( Triangle* t : this->trianglesInScene ) 
+    if ( t->intersect(tOnIntersection,ray,exclude) != NULL ) 
       hitObject = t;
-    }
-  }
+
   //If we reach this point, it means the ray hitted a object. Now we should compute the color of this object, so we call the shade method.
   *color = shade(hitObject, ray, tOnIntersection, level);
 }
@@ -29,8 +28,10 @@ void Scene::traceRayWithAcc(Eigen::Vector3f *color, Ray &ray, int level, Hitable
 
   //This variable will hold the hitable which the ray intersects first (or NULL if no intersection)
   Hitable* hitObject = this->boxOverAllTriangles->intersect(tOnIntersection, ray, exclude);
+
   //If the hitObject is not set to anything, we know we did not hit anything, so use background color and return
-  if ( hitObject == NULL ) {
+  if ( hitObject == NULL ) 
+  {
     *color = Eigen::Vector3f(0.0, 0.0, 0.0);
     return;
   }
@@ -63,47 +64,18 @@ Scene::Scene()
 {}
 
 Eigen::Vector3f Scene::shade(Hitable *hitObject, Ray &ray, float t, int level) {
-  //return Eigen::Vector3f(1.0,1.0,1.0);
+  Eigen::Vector3f color = Eigen::Vector3f(0.0,0.0,0.0);
 
   //Compute direct light
-  Eigen::Vector3f directLight = computeDirectLight(hitObject, ray.getPoint(t));
+  color += computeDirectLight(hitObject, ray.getPoint(t));
+
   //Compute reflected light
-  /*
-   FROM THE INTERNET:
-   The "illum" statement specifies the illumination model to use in the 
-   material. Illumination models are mathematical equations that represent 
-   various material lighting and shading effects. illum can be a number from 0 to 10.  
-   The illumination models are summarized below; 
-    Illumination    Properties that are turned on in the 
-    model           Property Editor
-    
-    0    Color on and Ambient off
-    1    Color on and Ambient on
-    2    Highlight on
-    3    Reflection on and Ray trace on
-    4    Transparency: Glass on
-         Reflection: Ray trace on
-    5    Reflection: Fresnel on and Ray trace on
-    6    Transparency: Refraction on
-         Reflection: Fresnel off and Ray trace on
-    7    Transparency: Refraction on
-         Reflection: Fresnel on and Ray trace on
-    8    Reflection on and Ray trace off
-    9    Transparency: Glass on
-         Reflection: Ray trace off
-    10   Casts shadows onto invisible surfaces
-  */
   Tucano::Material::Mtl hitMaterial = materials -> at(hitObject->material_id);
   float illuminationModel = hitMaterial.getIlluminationModel();
-  Eigen::Vector3f reflectedLight = Eigen::Vector3f(0.0,0.0,0.0);
-  if ( illuminationModel == 4 ) 
-    reflectedLight = level >= MAXLEVEL ? Eigen::Vector3f(0.0,0.0,0.0) : computeReflectedLight(hitObject, ray, t, level);
+  if ( illuminationModel == 4 && level < MAXLEVEL ) 
+    color += computeReflectedLight(hitObject, ray, t, level);
   
-  //Compute refracted light
-  Eigen::Vector3f refractedLight = Eigen::Vector3f(0.0,0.0,0.0);
-  // std::cout << reflectedLight << std::endl;
-  // cin.get();
-  return directLight + reflectedLight + refractedLight;
+  return color;
 }
 
 
@@ -128,9 +100,6 @@ Eigen::Vector3f Scene::computeReflectedLight(Hitable *hitObject, Ray &ray, float
     }
     return color;
 }
-
-
-
 
 Eigen::Vector3f Scene::computeDirectLight(Hitable *hitObject, Eigen::Vector3f hitPoint) {
   //Get the material properties of the hitable object this ray interesected with 
@@ -161,7 +130,6 @@ Eigen::Vector3f Scene::computeDirectLight(Hitable *hitObject, Eigen::Vector3f hi
       Eigen::Vector3f directionNormalized = rayToLight.direction.normalized();
       //Normalized vector from the hitpoint to the eye (camera)
       Eigen::Vector3f eyeDirection = (cameraPosition-hitPoint).normalized();
-
         
       //Compute the cosinus of the angle between the face normal and the ray to the light
       float cosinus = faceNormal.dot(directionNormalized);

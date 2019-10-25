@@ -18,7 +18,6 @@ void Flyscene::initialize(int width, int height) {
   // Tucano::MeshImporter::loadObjFile(mesh, materials,"resources/models/bunny.obj"); // too large
   // Tucano::MeshImporter::loadObjFile(mesh, materials,"resources/models/dodgeColorTest.obj");
 
-
   // normalize the model (scale to unit cube and center at origin)
   mesh.normalizeModelMatrix();
 
@@ -165,8 +164,8 @@ void Flyscene::raytraceScene(int width, int height) {
       screen_coords = flycamera.screenToWorld(Eigen::Vector2f(i, j));
       // launch raytracing for the given ray and write result to pixel data
       Ray r(origin, screen_coords - origin);
-      globalQueue.push(raytraceTask(&pixel_data[i][j], r));
-      //scene->traceRayWithAcc(&pixel_data[i][j], r, 0);
+      if ( scene -> useThreads) globalQueue.push(raytraceTask(&pixel_data[i][j], r));
+      else scene->traceRayWithAcc(&pixel_data[i][j], r, 0, NULL);
     }
   }
 

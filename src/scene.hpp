@@ -28,7 +28,7 @@ public:
 	Eigen::Vector3f cameraPosition;
 
 	bool useAcc = true;
-
+	bool useThreads = true;
 
 	//Will return a color
 	void traceRay(Eigen::Vector3f *, Ray &, int, Hitable* exclude);
