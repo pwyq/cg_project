@@ -55,7 +55,8 @@ Scene::Scene(Tucano::Mesh &mesh, std::vector<Tucano::Material::Mtl> &materials)
 		  f.normal.head<3>(),
       f.material_id));
 	}
-  boxOverAllTriangles = new Box(this->trianglesInScene);  
+  boxOverAllTriangles = new Box(this->trianglesInScene); 
+  this->leafBoxes = firstBox -> getLeafBoxes(); 
 }
 
 
