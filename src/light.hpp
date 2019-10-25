@@ -4,9 +4,12 @@
 #include <vector>
 #include <iostream> // remove this later
 
+#include <tucano/camera.hpp>
+
 class Light {
     void clearSphericalLights();
     void allLightsOff();
+    unsigned int totalSphereLight = 0;
 public:
     /* Constructor */
     // spectrum, position
@@ -14,19 +17,35 @@ public:
 
     /* Member Constants */
     const int LIGHT_SEED = 42;   // hardcoded random seed
+    const int COUNT_LIMIT = 50;
+    const float INTENSITY_LIMIT = 100.0;
+    const float RADIUS_LIMIT = 3.0;
 
     /* Member Variables */
 	Eigen::Vector3f spectrum;
 	Eigen::Vector3f position;
+    bool isSphericalLightOn = false;
 
-    std::vector<float> sphericalRadius;
-    std::vector<int> sphericalCount;
-    std::vector<float> sphericalIntensity;
+    // Use vector, in case we may need multiple sphere lights
+    std::vector<float> sphericalRadius;     // radius of each sphere
+    std::vector<int> sphericalCount;        // number of point of each sphere
+    std::vector<float> sphericalIntensity;  // intensity of each sphere
     std::vector<std::vector<Eigen::Vector3f>> sphericalLightsPos;
 
     /* Methods */
-    void sphericalLightOn(std::vector<Eigen::Vector3f>& lights);
+    void sphericalLightOn(std::vector<Eigen::Vector3f>& lights,
+                          std::vector<Tucano::Camera> scene_lights);
+    void addSphericalLights(std::vector<Eigen::Vector3f>& lights,
+                            std::vector<Tucano::Camera> scene_lights,
+                            unsigned int index);
     void sphericalLightOff();
+    // void pointLightOff();
+
+    // Getter methods
+    unsigned int getTotalSphereLight();
+
+    // Setter methods
+    void setTotalSphereLight(unsigned int);
 };
 
 /* End of File */
