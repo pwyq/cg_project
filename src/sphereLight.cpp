@@ -3,8 +3,7 @@
 
 static const int LIGHT_SEED = 42;   // hardcoded random seed
 static const int COUNT_LIMIT = 3;
-static const float INTENSITY_LIMIT = 100.0;
-static const float RADIUS_LIMIT = 1.0;
+static const float RADIUS_LIMIT = 0.2;
 
 /****************************************************************
  * Helper functions                                             *
@@ -28,7 +27,7 @@ void SphereLight::createSphereLight() {
     std::mt19937 randomGenerator(LIGHT_SEED);
     std::srand(LIGHT_SEED);
     //Generate a random radius for this sphere light.
-    sphericalRadius = generateRandomFloat(1.0, RADIUS_LIMIT);
+    sphericalRadius = RADIUS_LIMIT;//generateRandomFloat(1.0, RADIUS_LIMIT);
     //Generate a random amount of point lights which will be in this sphere light
     sphericalCount  = COUNT_LIMIT;//std::rand() % COUNT_LIMIT;
 
