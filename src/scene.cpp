@@ -2,7 +2,7 @@
 
 #include "scene.hpp"
 
-static const int MAXLEVEL = 4;
+static const int MAX_LEVEL = 4;
 
 void Scene::traceRay(Eigen::Vector3f *color, Ray &ray, int level, Hitable* exclude) {
   //This variable will hold the value of t on intersection in the formula r(t) = o + t * d 
@@ -65,15 +65,22 @@ Scene::Scene()
 
 Eigen::Vector3f Scene::shade(Hitable *hitObject, Ray &ray, float t, int level) {
   Eigen::Vector3f color = Eigen::Vector3f(0.0,0.0,0.0);
-  //Compute direct light
+  // Compute direct light
   color += computeDirectLight(hitObject, ray.getPoint(t));
 
-  //Compute reflected light
+  // Compute reflected light
   Tucano::Material::Mtl hitMaterial = materials -> at(hitObject->material_id);
   float illuminationModel = hitMaterial.getIlluminationModel();
-  if ( illuminationModel == 4 && level < MAXLEVEL ) 
+  if ( illuminationModel == 4 && level < MAX_LEVEL ) 
     color += computeReflectedLight(hitObject, ray, t, level);
   
+  // Compute refracted light
+  // if (illuminationModel == 6 && level < MAX_LEVEL) {
+  if (level < MAX_LEVEL) {
+    float n1 = 1.0; // air
+    float n2 = hitMaterial.getOpticalDensity();
+    color += computeRefractedLight(hitObject, ray, t, level, n1, n2);
+  }
   return color;
 }
 
@@ -82,18 +89,43 @@ Eigen::Vector3f Scene::shade(Hitable *hitObject, Ray &ray, float t, int level) {
  ****************************************************************/
 
 
-Eigen::Vector3f Scene::computeReflectedLight(Hitable *hitObject, Ray &ray, float t, int level){
+Eigen::Vector3f Scene::computeRefractedLight(Hitable *hitObject, Ray &ray, float t, int level, float n1, float n2) {
+  Eigen::Vector3f color = Eigen::Vector3f(0, 0, 0);
+  Eigen::Vector3f in = ray.direction.normalized();
+  Eigen::Vector3f norm = hitObject->normal.normalized();
+
+  float cosTheta = in.dot(norm);
+  float coeff = n1 / n2;
+  Eigen::Vector3f part1 = coeff * (in -  cosTheta * norm);
+  Eigen::Vector3f part2 = norm * std::sqrt(1 - std::pow(coeff, 2)*(1-std::pow(cosTheta, 2)));
+  Eigen::Vector3f refractedVec = part1 - part2;
+
+  Ray refractedRay = Ray(ray.getPoint(t), refractedVec);
+
+  if (useAcc) {
+    Scene::traceRayWithAcc(&color, refractedRay, level+1, hitObject);
+  }
+  else {
+    Scene::traceRay(&color, refractedRay, level+1, hitObject);
+  }
+  return color;
+}
+
+
+Eigen::Vector3f Scene::computeReflectedLight(Hitable *hitObject, Ray &ray, float t, int level) {
     Eigen::Vector3f color = Eigen::Vector3f(0.0,0.0,0.0);
     
     //Calculate the outgoing vector 
-    Eigen::Vector3f ReflectedVec = ray.direction.normalized() - 2 *(ray.direction.normalized().dot(hitObject->normal.normalized()))*hitObject->normal.normalized();
+    // R = V - 2 * (VN)N
+    Eigen::Vector3f reflectedVec = ray.direction.normalized() - 2 *(ray.direction.normalized().dot(hitObject->normal.normalized()))*hitObject->normal.normalized();
     
     //Create ray
-    Ray reflectedRay = Ray(ray.getPoint(t), ReflectedVec);
+    Ray reflectedRay = Ray(ray.getPoint(t), reflectedVec);
     //Call correct trace function with the level increased by one.
-    if(useAcc){
+    if (useAcc) {
       Scene::traceRayWithAcc(&color, reflectedRay, level+1, hitObject);
-    }else{
+    }
+    else {
       Scene::traceRay(&color, reflectedRay, level+1, hitObject);
     }
     return color;

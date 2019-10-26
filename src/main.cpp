@@ -54,7 +54,7 @@ void initialize(void) {
   std::cout << "\t ====================== Our Keys ========================= " << std::endl;
   std::cout << "\t\tH    : Toggle acceleration structure" << std::endl;
   std::cout << "\t\tI    : Output object informaiton to terminal" << std::endl;
-  std::cout << "\t\tM    : Toggle sphericial light (under test)" << std::endl;
+  std::cout << "\t\tM    : Add sphericial light" << std::endl;
   std::cout << "\t ********************************************************* " << std::endl;
 }
 

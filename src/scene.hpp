@@ -48,6 +48,7 @@ public:
 	//Will return a color
 	Eigen::Vector3f computeDirectLight(Hitable *hitObject, Eigen::Vector3f hitPoint);
     Eigen::Vector3f computeReflectedLight(Hitable *hitObject, Ray &ray, float t, int level);
+    Eigen::Vector3f computeRefractedLight(Hitable *hitObject, Ray &ray, float t, int level, float n1, float n2);
 };
 
 

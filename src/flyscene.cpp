@@ -37,7 +37,6 @@ void Flyscene::initialize(int width, int height) {
   /* Initialize our variables */
   scene = new Scene(mesh, materials);
   //Initialize the lights
-  std::cout << "INit lights" << std::endl;
   initializeLights();
 
   getAllLeafBoxesInScene();
@@ -130,7 +129,7 @@ void Flyscene::initializeLights() {
 
   // create a first ray-tracing light source at some random position (point light)
   // scene->lights.push_back(new Light(Eigen::Vector3f(1.0,1.0,1.0),Eigen::Vector3f(2.0, 1.5, 1.0)));
-  std::cout << "Created first light" << std::endl;
+  // std::cout << "Created first light" << std::endl;
 }
 
 void Flyscene::renderLights() {
