@@ -49,6 +49,8 @@ set(
   ${PROJECT_DIR}/box.cpp
   ${PROJECT_DIR}/light.cpp
   ${PROJECT_DIR}/sphere.cpp
+  ${PROJECT_DIR}/sphereLight.cpp
+	
   #${PROJECT_DIR}/raytracing.cpp  
   )
 

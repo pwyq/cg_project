@@ -67,7 +67,7 @@ void keyCallback(GLFWwindow *window, int key, int scancode, int action,
   else if (key == GLFW_KEY_SPACE && action == GLFW_PRESS)
     flyscene->createDebugRay(mouse_pos);
   else if (key == GLFW_KEY_L && action == GLFW_PRESS)
-    flyscene->addLight();
+    flyscene->addPointLight();
   else if (key == GLFW_KEY_T && action == GLFW_PRESS)
     flyscene->raytraceScene();
   else if (key == GLFW_KEY_H && action == GLFW_PRESS)
@@ -75,7 +75,7 @@ void keyCallback(GLFWwindow *window, int key, int scancode, int action,
   else if (key == GLFW_KEY_I && action == GLFW_PRESS)
     flyscene->printObjectInfo();
   else if (key == GLFW_KEY_M && action == GLFW_PRESS)
-    flyscene->setSphericalLight();
+    flyscene->addSphericalLight();
 }
 
 static void mouseButtonCallback(GLFWwindow *window, int button, int action,

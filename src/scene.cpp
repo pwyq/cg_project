@@ -116,10 +116,10 @@ Eigen::Vector3f Scene::computeDirectLight(Hitable *hitObject, Eigen::Vector3f hi
   //Loop over all the lights in the scene
   for ( int i = 0; i < lights.size(); i++ ) {
       //Get the current light
-      Light currentLight = lights.at(i);
+      Light* currentLight = lights.at(i);
 
       //Build ray to the light
-      Ray rayToLight = Ray(hitPoint, currentLight.position - hitPoint);
+      Ray rayToLight = Ray(hitPoint, currentLight->position - hitPoint);
       //Check if there is an object between the hitpoint and the light, if so skip this light source
       float maxt = 1.0;
       Hitable* hit = this->boxOverAllTriangles->intersect(maxt, rayToLight, hitObject);
@@ -137,7 +137,7 @@ Eigen::Vector3f Scene::computeDirectLight(Hitable *hitObject, Eigen::Vector3f hi
       //If this cosinus is smaller than 0, we set it to zero.
       cosinus = cosinus > 0 ? cosinus : 0;
       //Compute the diffuse component
-      Eigen::Vector3f diffuse = currentLight.spectrum.cwiseProduct(kd) * cosinus;
+      Eigen::Vector3f diffuse = currentLight->spectrum.cwiseProduct(kd) * cosinus;
       
       //Compute the normalized vector of the reflected light ray (reflected in the normal)
       Eigen::Vector3f reflectedLight = (2 * faceNormal.dot(directionNormalized) * faceNormal - directionNormalized).normalized();
@@ -148,7 +148,7 @@ Eigen::Vector3f Scene::computeDirectLight(Hitable *hitObject, Eigen::Vector3f hi
       //Raise the cosinus to the power shininess
       cosinus = std::pow(cosinus, shininess);
       //Compute the specular component
-      Eigen::Vector3f specular = currentLight.spectrum.cwiseProduct(ks) * cosinus;
+      Eigen::Vector3f specular = currentLight->spectrum.cwiseProduct(ks) * cosinus;
       
       color += diffuse + specular;
   }

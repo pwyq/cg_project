@@ -27,7 +27,7 @@ public:
 	Box* boxOverAllTriangles;
 
 	std::vector<Triangle*> trianglesInScene;
-	std::vector<Light> lights;
+	std::vector<Light*> lights;
 	std::vector<Tucano::Material::Mtl>* materials;
 
 	bool useAcc = true;
