@@ -76,9 +76,6 @@ Eigen::Vector3f Scene::shade(Hitable *hitObject, Ray &ray, float t, int level) {
   return color;
 }
 
-
-
-
 /****************************************************************
  * Compute Light (direct+reflect+refraction)                    *
  ****************************************************************/
@@ -117,40 +114,46 @@ Eigen::Vector3f Scene::computeDirectLight(Hitable *hitObject, Eigen::Vector3f hi
   for ( int i = 0; i < lights.size(); i++ ) {
       //Get the current light
       Light* currentLight = lights.at(i);
+      std::vector<Eigen::Vector3f> pointLights = currentLight->getAllPointLights();
+      Eigen::Vector3f shading = Eigen::Vector3f(0.0,0.0,0.0);
 
-      //Build ray to the light
-      Ray rayToLight = Ray(hitPoint, currentLight->position - hitPoint);
-      //Check if there is an object between the hitpoint and the light, if so skip this light source
-      float maxt = 1.0;
-      Hitable* hit = this->boxOverAllTriangles->intersect(maxt, rayToLight, hitObject);
-      if ( hit != NULL ) continue;
-
-      //If we reach this point, it means that the current light can reach the object, so we compute the shading
-      
-      //Normailized vector from the hitpoint to the light
-      Eigen::Vector3f directionNormalized = rayToLight.direction.normalized();
-      //Normalized vector from the hitpoint to the eye (camera)
-      Eigen::Vector3f eyeDirection = (cameraPosition-hitPoint).normalized();
+      for ( int j = 0; j < pointLights.size(); j++ ) {
+        //Build ray to the light
+        Ray rayToLight = Ray(hitPoint, pointLights.at(j) - hitPoint);
+        //Check if there is an object between the hitpoint and the light, if so skip this light source
+        float maxt = 1.0;
+        Hitable* hit = this->boxOverAllTriangles->intersect(maxt, rayToLight, hitObject);
+        if ( hit != NULL ) continue;
         
-      //Compute the cosinus of the angle between the face normal and the ray to the light
-      float cosinus = faceNormal.dot(directionNormalized);
-      //If this cosinus is smaller than 0, we set it to zero.
-      cosinus = cosinus > 0 ? cosinus : 0;
-      //Compute the diffuse component
-      Eigen::Vector3f diffuse = currentLight->spectrum.cwiseProduct(kd) * cosinus;
+        //If we reach this point, it means that the current light can reach the object, so we compute the shading
+        Eigen::Vector3f lightSpectrum = currentLight->spectrum / pointLights.size();
+
+        //Normailized vector from the hitpoint to the light
+        Eigen::Vector3f directionNormalized = rayToLight.direction.normalized();
+        //Normalized vector from the hitpoint to the eye (camera)
+        Eigen::Vector3f eyeDirection = (cameraPosition-hitPoint).normalized();
+        
+        //Compute the cosinus of the angle between the face normal and the ray to the light
+        float cosinus = faceNormal.dot(directionNormalized);
+        //If this cosinus is smaller than 0, we set it to zero.
+        cosinus = cosinus > 0 ? cosinus : 0;
+        //Compute the diffuse component
+        Eigen::Vector3f diffuse = lightSpectrum.cwiseProduct(kd) * cosinus;
       
-      //Compute the normalized vector of the reflected light ray (reflected in the normal)
-      Eigen::Vector3f reflectedLight = (2 * faceNormal.dot(directionNormalized) * faceNormal - directionNormalized).normalized();
-      //Compute the cosinus of the angle between the reflected light and the eye direction
-      cosinus = reflectedLight.dot( eyeDirection );
-      //If this cosinus is smaller than 0, we set it to zero.
-      cosinus = cosinus > 0 ? cosinus : 0;
-      //Raise the cosinus to the power shininess
-      cosinus = std::pow(cosinus, shininess);
-      //Compute the specular component
-      Eigen::Vector3f specular = currentLight->spectrum.cwiseProduct(ks) * cosinus;
+        //Compute the normalized vector of the reflected light ray (reflected in the normal)
+        Eigen::Vector3f reflectedLight = (2 * faceNormal.dot(directionNormalized) * faceNormal - directionNormalized).normalized();
+        //Compute the cosinus of the angle between the reflected light and the eye direction
+        cosinus = reflectedLight.dot( eyeDirection );
+        //If this cosinus is smaller than 0, we set it to zero.
+        cosinus = cosinus > 0 ? cosinus : 0;
+        //Raise the cosinus to the power shininess
+        cosinus = std::pow(cosinus, shininess);
+        //Compute the specular component
+        Eigen::Vector3f specular = lightSpectrum.cwiseProduct(ks) * cosinus;
       
-      color += diffuse + specular;
+        shading += diffuse + specular;
+      }
+      color += shading;
   }
   return color;
 }

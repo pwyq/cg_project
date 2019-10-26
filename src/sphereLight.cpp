@@ -2,9 +2,9 @@
 #include "sphereLight.hpp"
 
 static const int LIGHT_SEED = 42;   // hardcoded random seed
-static const int COUNT_LIMIT = 50;
+static const int COUNT_LIMIT = 3;
 static const float INTENSITY_LIMIT = 100.0;
-static const float RADIUS_LIMIT = 3.0;
+static const float RADIUS_LIMIT = 1.0;
 
 /****************************************************************
  * Helper functions                                             *
@@ -30,9 +30,7 @@ void SphereLight::createSphereLight() {
     //Generate a random radius for this sphere light.
     sphericalRadius = generateRandomFloat(1.0, RADIUS_LIMIT);
     //Generate a random amount of point lights which will be in this sphere light
-    sphericalCount  = std::rand() % COUNT_LIMIT;
-    //Divide the intensity of the sphere along all point lights
-    intensity =  spectrum / sphericalCount; 
+    sphericalCount  = COUNT_LIMIT;//std::rand() % COUNT_LIMIT;
 
     std::uniform_real_distribution<float> uniform01(0.0, 1.0);
     std::vector<Eigen::Vector3f> newPointLights;
@@ -52,9 +50,7 @@ void SphereLight::createSphereLight() {
     this->sphericalLightsPos=newPointLights; 
 }
 
-/*
-float SphereLight::getVisibility(Eigen::Vector3f) {
-    return 0.0;
-}*/
-
+std::vector<Eigen::Vector3f> SphereLight::getAllPointLights() {
+    return sphericalLightsPos;
+}
 /* End of File */

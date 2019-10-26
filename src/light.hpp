@@ -16,7 +16,7 @@ public:
 	Eigen::Vector3f spectrum;
 	Eigen::Vector3f position;
 
-    virtual float getVisibility(Eigen::Vector3f) { return 0.0; }
+    virtual std::vector<Eigen::Vector3f> getAllPointLights();
 };
 
 /* End of File */

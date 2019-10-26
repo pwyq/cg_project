@@ -12,7 +12,7 @@ void Flyscene::initialize(int width, int height) {
   flycamera.setViewport(Eigen::Vector2f((float)width, (float)height));
 
   // load the OBJ file and materials
-  Tucano::MeshImporter::loadObjFile(mesh, materials,"resources/models/cube.obj");
+  Tucano::MeshImporter::loadObjFile(mesh, materials,"resources/models/boxmirror2.obj");
   // Tucano::MeshImporter::loadObjFile(mesh, materials,"resources/models/cube.obj");
   // Tucano::MeshImporter::loadObjFile(mesh, materials,"resources/models/dodgeColorTest.obj");
 
@@ -129,7 +129,7 @@ void Flyscene::initializeLights() {
   lightrep.setSize(0.1);
 
   // create a first ray-tracing light source at some random position (point light)
-  scene->lights.push_back(new Light(Eigen::Vector3f(1.0,1.0,1.0),Eigen::Vector3f(2.0, 1.5, 1.0)));
+  // scene->lights.push_back(new Light(Eigen::Vector3f(1.0,1.0,1.0),Eigen::Vector3f(2.0, 1.5, 1.0)));
   std::cout << "Created first light" << std::endl;
 }
 
