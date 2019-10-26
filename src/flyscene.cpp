@@ -3,7 +3,6 @@
 
 #include "flyscene.hpp"
 
-
 void Flyscene::initialize(int width, int height) {
   // initiliaze the Phong Shading effect for the Opengl Previewer
   phong.initialize();
@@ -13,7 +12,7 @@ void Flyscene::initialize(int width, int height) {
   flycamera.setViewport(Eigen::Vector2f((float)width, (float)height));
 
   // load the OBJ file and materials
-  Tucano::MeshImporter::loadObjFile(mesh, materials,"resources/models/mirrors.obj");
+  Tucano::MeshImporter::loadObjFile(mesh, materials,"resources/models/boxmirror2.obj");
   // Tucano::MeshImporter::loadObjFile(mesh, materials,"resources/models/cube.obj");
   // Tucano::MeshImporter::loadObjFile(mesh, materials,"resources/models/dodgeColorTest.obj");
 
@@ -23,8 +22,6 @@ void Flyscene::initialize(int width, int height) {
   // pass all the materials to the Phong Shader
   for (int i = 0; i < materials.size(); ++i)
     phong.addMaterial(materials[i]);
-
-  initializeLights();
 
   // scale the camera representation (frustum) for the ray debug
   camerarep.shapeMatrix()->scale(0.2);
@@ -39,8 +36,10 @@ void Flyscene::initialize(int width, int height) {
 
   /* Initialize our variables */
   scene = new Scene(mesh, materials);
-  // TODO: find proper init value for spectrum, position
-  sceneSphereLights = new Light(Eigen::Vector3f(0,0,0), Eigen::Vector3f(0,0,0));
+  //Initialize the lights
+  std::cout << "INit lights" << std::endl;
+  initializeLights();
+
   getAllLeafBoxesInScene();
   show_acceleration = true;
 
@@ -68,13 +67,20 @@ void Flyscene::paintGL(void) {
   glClearColor(0.9, 0.9, 0.9, 0.0);
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+  //Render the lights in the scene 
+  renderLights();
 
-  if (sceneSphereLights->isSphericalLightOn == true) {
-    paintGLwithSphereLight();
+  // render the scene using OpenGL and one light source
+  phong.render(mesh, flycamera, scene_light);
+
+  if ( show_acceleration ) {
+    for ( auto boxInScene : leafBoxesInScene ) {
+      boxInScene.render(flycamera, scene_light);
+    }
   }
-  else {
-    paintGLwithPointLight();
-  }
+    
+  ray.render(flycamera, scene_light);
+  camerarep.render(flycamera, scene_light);
 
   // render coordinate system at lower right corner
   flycamera.renderAtCorner();
@@ -122,93 +128,42 @@ void Flyscene::initializeLights() {
   lightrep.setColor(Eigen::Vector4f(1.0, 1.0, 0.0, 1.0));
   lightrep.setSize(0.1);
 
-  // create a first ray-tracing light source at some random position
-  lights.push_back(Eigen::Vector3f(2.0, 1.5, 1.0));
+  // create a first ray-tracing light source at some random position (point light)
+  // scene->lights.push_back(new Light(Eigen::Vector3f(1.0,1.0,1.0),Eigen::Vector3f(2.0, 1.5, 1.0)));
+  std::cout << "Created first light" << std::endl;
 }
 
-
-void Flyscene::paintGLwithSphereLight() {
-  for (int m = 0; m < sceneSphereLights->getTotalSphereLight(); m++) {      
+void Flyscene::renderLights() {
+  for ( int i = 0; i < scene->lights.size(); i++ ) {
+    Light* currentLight = scene->lights.at(i);
     scene_light.resetViewMatrix();
-    // TODO: now only renders the last light from spherical lights
-    scene_light.viewMatrix()->translate(-sceneSphereLights->sphericalLightsPos[m].back());
+    scene_light.viewMatrix()->translate(-currentLight->position);
 
-    phong.render(mesh, flycamera, scene_light);
-
-    if ( show_acceleration ) {
-      for ( auto boxInScene : leafBoxesInScene ) {
-         boxInScene.render(flycamera, scene_light);
+    //Two cases for drawing a light, either it is a normal point light, or it is a sphereLight
+    SphereLight* sphereLight = dynamic_cast<SphereLight*>(currentLight);
+    if ( sphereLight ) {
+      for ( int j = 0; j < sphereLight->sphericalLightsPos.size(); j++ ) {
+        lightrep.resetModelMatrix();
+        lightrep.modelMatrix()->translate(sphereLight->sphericalLightsPos.at(j));
+        lightrep.render(flycamera, scene_light);
       }
+    } else {
+        lightrep.resetModelMatrix();
+        lightrep.modelMatrix()->translate(currentLight->position);
+        lightrep.render(flycamera, scene_light);
     }
-    
-    ray.render(flycamera, scene_light);
-    camerarep.render(flycamera, scene_light);
 
-    for (int i = 0; i < sceneSphereLights->sphericalLightsPos[m].size(); ++i) {
-      lightrep.resetModelMatrix();
-      lightrep.modelMatrix()->translate(sceneSphereLights->sphericalLightsPos[m][i]);
-      lightrep.render(flycamera, scene_light);
-    }
   }
 }
 
-
-void Flyscene::paintGLwithPointLight() {
-  // position the scene light at the last ray-tracing light source
-  scene_light.resetViewMatrix();
-  scene_light.viewMatrix()->translate(-lights.back());
-
-  // render the scene using OpenGL and one light source
-  phong.render(mesh, flycamera, scene_light);
-
-  //If the acceleration structure is build, it means the leafBoxes are initialed,
-  //so we can render them on the screen.
-  if ( show_acceleration ) {
-    for ( auto boxInScene : leafBoxesInScene ) {
-       boxInScene.render(flycamera, scene_light);
-    }
-  }
-  
-  // render the ray and camera representation for ray debug
-  ray.render(flycamera, scene_light);
-  camerarep.render(flycamera, scene_light);
-
-  // render ray tracing light sources as yellow spheres
-  for (int i = 0; i < lights.size(); ++i) {
-    lightrep.resetModelMatrix();
-    lightrep.modelMatrix()->translate(lights[i]);
-    lightrep.render(flycamera, scene_light);
-  }
+void Flyscene::addPointLight() {
+  Eigen::Vector3f position = flycamera.getCenter();
+  scene->lights.push_back(new Light(Eigen::Vector3f(1.0,1.0,1.0), position));
 }
 
-
-void Flyscene::setSceneLights() {
-  // Set the lights in the scene for ray tracing
-  if (false == sceneSphereLights->isSphericalLightOn) {
-    scene->lights.clear();
-    for ( Eigen::Vector3f lightPosition : lights )
-      scene->lights.push_back(Light(Eigen::Vector3f(1.0,1.0,1.0), lightPosition));
-  }
-  else {
-    // TODO: need double check here; haven't tested
-    sceneSphereLights->clearSphericalLights();
-    for (auto spherelights : sceneSphereLights->sphericalLightsPos) {
-      for (auto l : spherelights) {
-        scene->lights.push_back(Light(Eigen::Vector3f(1.0,1.0,1.0), l));
-      }
-    }
-  }
-}
-
-
-void Flyscene::setSphericalLight() {
-  // TODO: maybe swithc point-light and sphere-light here
-  if (false == sceneSphereLights->isSphericalLightOn) {
-    sceneSphereLights->sphericalLightOn(lights);
-  }
-  else {
-    sceneSphereLights->sphericalLightOff();
-  }
+void Flyscene::addSphericalLight() {
+  Eigen::Vector3f position = flycamera.getCenter();
+  scene->lights.push_back(new SphereLight(Eigen::Vector3f(1.0,1.0,1.0), position)); 
 }
 
 
@@ -234,7 +189,6 @@ void Flyscene::raytraceScene(int width, int height) {
 
   //Set the camera in the scene
   scene -> cameraPosition = flycamera.getCenter();
-  setSceneLights();
   
   TaskQueue globalQueue;
   unsigned int num_threads = std::thread::hardware_concurrency();

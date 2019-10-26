@@ -17,7 +17,10 @@
 #include <tucano/utils/imageIO.hpp>
 #include <tucano/utils/mtlIO.hpp>
 #include <tucano/utils/objimporter.hpp>
+
+#include "sphereLight.hpp"
 #include "scene.hpp"
+
 
 #include <vector>
 
@@ -32,8 +35,6 @@ public:
    * @param height Window height in pixels
    */
   void initialize(int width, int height);
-
-  void initializeLights();
 
   /**
    * Repaints screen buffer.
@@ -52,11 +53,6 @@ public:
   Tucano::Flycamera *getCamera(void) { return &flycamera; }
 
   /**
-   * @brief Add a new light source
-   */
-  void addLight(void) { lights.push_back(flycamera.getCenter()); }
-
-  /**
    * @brief Create a debug ray at the current camera location and passing
    * through pixel that mouse is over
    * @param mouse_pos Mouse cursor position in pixels
@@ -73,10 +69,10 @@ public:
 
   void printObjectInfo();
 
-  void setSceneLights();
-  void setSphericalLight();
-  void paintGLwithPointLight();
-  void paintGLwithSphereLight();
+  void initializeLights();
+  void renderLights();
+  void addPointLight();
+  void addSphericalLight();
 
   //Indicates if the acceleration structure is build or not
   bool show_acceleration = false;
@@ -98,9 +94,6 @@ private:
   // a frustum to represent the camera in the scene
   Tucano::Shapes::Sphere lightrep;
 
-  // light sources for ray tracing
-  std::vector<Eigen::Vector3f> lights;
-
   // Scene light represented as a camera
   Tucano::Camera scene_light;
 
@@ -115,7 +108,6 @@ private:
 
   // Our member variables
   Scene* scene;
-  Light* sceneSphereLights;
 
   //All the boxes of the acceleration structure that contain triangles
   std::vector<Tucano::Shapes::Box> leafBoxesInScene;
