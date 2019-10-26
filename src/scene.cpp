@@ -75,6 +75,7 @@ Eigen::Vector3f Scene::shade(Hitable *hitObject, Ray &ray, float t, int level) {
     color += computeReflectedLight(hitObject, ray, t, level);
   
   // Compute refracted light
+  // if (illuminationModel == 6 && level < MAX_LEVEL) {
   if (level < MAX_LEVEL) {
     float n1 = 1.0; // air
     float n2 = hitMaterial.getOpticalDensity();
