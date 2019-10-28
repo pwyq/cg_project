@@ -26,11 +26,6 @@ void Flyscene::initialize(int width, int height) {
   // scale the camera representation (frustum) for the ray debug
   camerarep.shapeMatrix()->scale(0.2);
 
-  // the debug ray is a cylinder, set the radius and length of the cylinder
-  ray.setSize(0.005, 10.0);
-
-  // craete a first debug ray pointing at the center of the screen
-  createDebugRay(Eigen::Vector2f(width / 2.0, height / 2.0));
 
   glEnable(GL_DEPTH_TEST);
 
@@ -43,6 +38,9 @@ void Flyscene::initialize(int width, int height) {
   show_acceleration = true;
 
   printObjectInfo();
+
+  // create a first debug ray pointing at the center of the screen
+  createDebugRay(Eigen::Vector2f(width / 2.0, height / 2.0));
 }
 
 
@@ -78,7 +76,8 @@ void Flyscene::paintGL(void) {
     }
   }
     
-  ray.render(flycamera, scene_light);
+  for ( auto& ray : debugRays )
+          ray.render(flycamera, scene_light);
   camerarep.render(flycamera, scene_light);
 
   // render coordinate system at lower right corner
@@ -100,15 +99,27 @@ void Flyscene::simulate(GLFWwindow *window) {
 
 
 void Flyscene::createDebugRay(const Eigen::Vector2f &mouse_pos) {
-  ray.resetModelMatrix();
+  // Flush all previus debug rays
+  debugRays.clear();
   // from pixel position to world coordinates
   Eigen::Vector3f screen_pos = flycamera.screenToWorld(mouse_pos);
 
   // direction from camera center to click position
   Eigen::Vector3f dir = (screen_pos - flycamera.getCenter()).normalized();
-  
+
+  // Holds the length of the debug ray
+  float rayLength = std::numeric_limits<float>::infinity();
+  // Holds the debug ray traced in the scene
+  Ray r(flycamera.getCenter(), screen_pos - flycamera.getCenter());
+  // Get distance to first hit
+  Hitable *buffer = scene -> boxOverAllTriangles -> intersect(rayLength, r, NULL);
+  rayLength = (buffer == NULL ? DEBUG_RAY_LENGTH_ON_MISS : rayLength);
+
+  Tucano::Shapes::Cylinder newDebugRay(DEBUG_RAY_RADIUS, rayLength, 16, 64);
+  newDebugRay.resetModelMatrix();
   // position and orient the cylinder representing the ray
-  ray.setOriginOrientation(flycamera.getCenter(), dir);
+  newDebugRay.setOriginOrientation(flycamera.getCenter(), dir);
+  debugRays.push_back(newDebugRay);
 
   // place the camera representation (frustum) on current camera location, 
   camerarep.resetModelMatrix();

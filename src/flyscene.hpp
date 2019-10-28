@@ -78,6 +78,9 @@ public:
   bool show_acceleration = false;
 
 private:
+  // The shape of the cylinder, used as a debug ray
+  const float DEBUG_RAY_RADIUS = 0.01f;
+  const float DEBUG_RAY_LENGTH_ON_MISS = 10.0f;
   // A simple phong shader for rendering meshes
   Tucano::Effects::PhongMaterial phong;
 
@@ -97,8 +100,8 @@ private:
   // Scene light represented as a camera
   Tucano::Camera scene_light;
 
-  /// A very thin cylinder to draw a debug ray
-  Tucano::Shapes::Cylinder ray = Tucano::Shapes::Cylinder(0.1, 1.0, 16, 64);
+  /// Holds all currently displayed debug rays
+  std::vector<Tucano::Shapes::Cylinder> debugRays;
 
   // Scene meshes
   Tucano::Mesh mesh;
