@@ -2,7 +2,7 @@
 
 Hitable *TriangleList::intersect(float &hitPoint, Ray &ray, Hitable *exclude)
 {
-  Hitable *hitObject;
+  Hitable *hitObject = nullptr;
 
   for (Triangle *t : this->triangleList)
     if(t->intersect(hitPoint, ray, exclude))

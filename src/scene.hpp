@@ -37,8 +37,8 @@ public:
   //We have this to conform with the project requirements. We do not use it.
   // std::vector<Box*> leafBoxes;
 
-  bool useAcc = true;
-  bool useThreads = true;
+  bool useAcc = false;
+  bool useThreads = false;
 
   /* Methods */
   //Will return a color
