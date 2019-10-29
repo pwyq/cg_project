@@ -107,19 +107,23 @@ void Flyscene::createDebugRay(const Eigen::Vector2f &mouse_pos) {
   // direction from camera center to click position
   Eigen::Vector3f dir = (screen_pos - flycamera.getCenter()).normalized();
 
-  // Holds the length of the debug ray
-  float rayLength = std::numeric_limits<float>::infinity();
-  // Holds the debug ray traced in the scene
   Ray r(flycamera.getCenter(), screen_pos - flycamera.getCenter());
-  // Get distance to first hit
-  Hitable *buffer = scene -> boxOverAllTriangles -> intersect(rayLength, r, NULL);
-  rayLength = (buffer == NULL ? DEBUG_RAY_LENGTH_ON_MISS : rayLength);
 
-  Tucano::Shapes::Cylinder newDebugRay(DEBUG_RAY_RADIUS, rayLength, 16, 64);
-  newDebugRay.resetModelMatrix();
-  // position and orient the cylinder representing the ray
-  newDebugRay.setOriginOrientation(flycamera.getCenter(), dir);
-  debugRays.push_back(newDebugRay);
+  // Holds the debug ray traced in the scene
+  std::vector<Ray> rayList;
+  // Holds the length of the debug ray
+  std::vector<float> tList;
+
+  Eigen::Vector3f buffer;
+  scene->traceRay(&buffer, r, 0, NULL, &rayList, &tList);
+  for (size_t i = 0; i < rayList.size(); ++i)
+  {
+    Tucano::Shapes::Cylinder newDebugRay(DEBUG_RAY_RADIUS, tList[i], 16, 64);
+    newDebugRay.resetModelMatrix();
+    // position and orient the cylinder representing the ray
+    newDebugRay.setOriginOrientation(rayList[i].origin, rayList[i].direction.normalized());
+    debugRays.push_back(newDebugRay);
+  }
 
   // place the camera representation (frustum) on current camera location, 
   camerarep.resetModelMatrix();
@@ -213,7 +217,7 @@ void Flyscene::raytraceScene(int width, int height) {
       if ( scene -> useThreads)
         multithreading.globalQueue.push(raytraceTask(&pixel_data[i][j], r));
       else
-        scene->traceRay(&pixel_data[i][j], r, 0, NULL);
+        scene->traceRay(&pixel_data[i][j], r, 0, NULL, nullptr, nullptr);
     }
   }
 

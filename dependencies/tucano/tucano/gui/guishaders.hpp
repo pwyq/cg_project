@@ -33,7 +33,7 @@ namespace GUI
 
 /// Default fragment shader for rendering gui elments
 const string gui_fragment_code = "\n"
-        "#version 430\n"
+        "#version 330\n"
         "in vec4 color;\n"
         "in vec4 texcoords;\n"
         "out vec4 out_Color;\n"
@@ -48,7 +48,7 @@ const string gui_fragment_code = "\n"
 
 /// Default vertex shader for rendering gui elements
 const string gui_vertex_code = "\n"
-        "#version 430\n"
+        "#version 330\n"
         "in vec4 in_Position;\n"
         "in vec4 in_TexCoords;\n"
         "out vec4 color;\n"
