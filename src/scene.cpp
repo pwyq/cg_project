@@ -2,7 +2,7 @@
 
 #include "scene.hpp"
 
-static const int MAX_LEVEL = 4;
+static const int MAX_LEVEL = 6;
 
 void Scene::traceRay(Eigen::Vector3f *color, Ray &ray, int level, Hitable* exclude) {
   //This variable will hold the value of t on intersection in the formula r(t) = o + t * d 
@@ -76,11 +76,11 @@ Eigen::Vector3f Scene::shade(Hitable *hitObject, Ray &ray, float t, int level) {
   
   // Compute refracted light
   // if (illuminationModel == 6 && level < MAX_LEVEL) {
-  if (level < MAX_LEVEL) {
+  /*if (level < MAX_LEVEL) {
     float n1 = 1.0; // air
     float n2 = hitMaterial.getOpticalDensity();
     color += computeRefractedLight(hitObject, ray, t, level, n1, n2);
-  }
+  }*/
   return color;
 }
 
