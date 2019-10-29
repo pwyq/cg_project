@@ -213,7 +213,7 @@ void Flyscene::raytraceScene(int width, int height) {
       if ( scene -> useThreads)
         multithreading.globalQueue.push(raytraceTask(&pixel_data[i][j], r));
       else
-        scene->traceRayWithAcc(&pixel_data[i][j], r, 0, NULL);
+        scene->traceRay(&pixel_data[i][j], r, 0, NULL);
     }
   }
 

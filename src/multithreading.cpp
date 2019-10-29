@@ -18,10 +18,7 @@ void Worker::work()
       raytraceTask cur = globalQueue->pop();
       if (cur.result == nullptr)
         continue; //We didn't actually get it, the queue was empty
-      if ( this->workerScene->useAcc )
-        this->workerScene->traceRayWithAcc(cur.result, cur.origin, 0, NULL);
-      else
-        this->workerScene->traceRay(cur.result, cur.origin, 0, NULL);
+      this->workerScene->traceRay(cur.result, cur.origin, 0, NULL);
     }
   }
 }

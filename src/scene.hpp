@@ -41,7 +41,6 @@ public:
   /* Methods */
   //Will return a color
   void traceRay(Eigen::Vector3f *, Ray &, int, Hitable *);
-  void traceRayWithAcc(Eigen::Vector3f *, Ray &, int level, Hitable *);
 
   //Will return a color
   Eigen::Vector3f shade(Hitable *, Ray &, float t, int level);

@@ -7,34 +7,25 @@ void Scene::traceRay(Eigen::Vector3f *color, Ray &ray, int level, Hitable* exclu
   float tOnIntersection = std::numeric_limits<float>::infinity();
 
   Hitable* hitObject;
-  for ( Triangle* t : this->trianglesInScene ) 
-    if ( t->intersect(tOnIntersection,ray,exclude) != NULL ) 
-      hitObject = t;
 
-  //If we reach this point, it means the ray hitted a object. Now we should compute the color of this object, so we call the shade method.
-  *color = shade(hitObject, ray, tOnIntersection, level);
-}
-
-
-// ray tracing with accleration structure
-void Scene::traceRayWithAcc(Eigen::Vector3f *color, Ray &ray, int level, Hitable* exclude) {
-  //This variable will hold the value of t on intersection in the formula r(t) = o + t * d 
-  float tOnIntersection = std::numeric_limits<float>::infinity();
-
-  //This variable will hold the hitable which the ray intersects first (or NULL if no intersection)
-  Hitable* hitObject = this->boxOverAllTriangles->intersect(tOnIntersection, ray, exclude);
-
-  //If the hitObject is not set to anything, we know we did not hit anything, so use background color and return
-  if ( hitObject == NULL ) 
+  if (useAcc)
   {
-    *color = Eigen::Vector3f(0.0, 0.0, 0.0);
-    return;
+    hitObject = this->boxOverAllTriangles->intersect(tOnIntersection, ray, exclude);
+    if (!hitObject)
+    {
+      *color = Eigen::Vector3f(0.0, 0.0, 0.0);
+      return;
+    }
+  } else
+  {
+    for (Triangle* t : this->trianglesInScene)
+      if (t->intersect(tOnIntersection,ray,exclude))
+        hitObject = t;
   }
 
   //If we reach this point, it means the ray hitted a object. Now we should compute the color of this object, so we call the shade method.
   *color = shade(hitObject, ray, tOnIntersection, level);
 }
-
 
 //TODO For now this only copies triangles
 Scene::Scene(Tucano::Mesh &mesh, std::vector<Tucano::Material::Mtl> &materials)
@@ -100,12 +91,7 @@ Eigen::Vector3f Scene::computeRefractedLight(Hitable *hitObject, Ray &ray, float
 
   Ray refractedRay = Ray(ray.getPoint(t), refractedVec);
 
-  if (useAcc) {
-    Scene::traceRayWithAcc(&color, refractedRay, level+1, hitObject);
-  }
-  else {
-    Scene::traceRay(&color, refractedRay, level+1, hitObject);
-  }
+  Scene::traceRay(&color, refractedRay, level+1, hitObject);
   return color;
 }
 
@@ -119,13 +105,7 @@ Eigen::Vector3f Scene::computeReflectedLight(Hitable *hitObject, Ray &ray, float
   
   //Create ray
   Ray reflectedRay = Ray(ray.getPoint(t), reflectedVec);
-  //Call correct trace function with the level increased by one.
-  if (useAcc) {
-    Scene::traceRayWithAcc(&color, reflectedRay, level+1, hitObject);
-  }
-  else {
-    Scene::traceRay(&color, reflectedRay, level+1, hitObject);
-  }
+  Scene::traceRay(&color, reflectedRay, level+1, hitObject);
   return color;
 }
 
