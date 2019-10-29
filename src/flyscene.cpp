@@ -14,7 +14,7 @@ void Flyscene::initialize(int width, int height) {
   // load the OBJ file and materials
 
   //This is the cube
-  Tucano::MeshImporter::loadObjFile(mesh, materials,"resources/models/init-models/cube.obj");
+  //Tucano::MeshImporter::loadObjFile(mesh, materials,"resources/models/init-models/cube.obj");
 
   //This is the toy. Note: turn of shading, since there is no material file for toy!
   //Tucano::MeshImporter::loadObjFile(mesh, materials,"resources/models/init-models/toy.obj");
@@ -26,7 +26,7 @@ void Flyscene::initialize(int width, int height) {
   //Tucano::MeshImporter::loadObjFile(mesh, materials,"resources/models/mirrors-box/mirrors-box.obj");
   
   //This is the final scene
-  //Tucano::MeshImporter::loadObjFile(mesh, materials,"resources/models/final-scene/finalscene.obj");
+  Tucano::MeshImporter::loadObjFile(mesh, materials,"resources/models/final-scene/finalscene2.obj");
 
   // normalize the model (scale to unit cube and center at origin)
   mesh.normalizeModelMatrix();
@@ -101,11 +101,11 @@ void Flyscene::simulate(GLFWwindow *window) {
   // Update the camera.
   // NOTE(mickvangelderen): GLFW 3.2 has a problem on ubuntu where some key
   // events are repeated: https://github.com/glfw/glfw/issues/747. Sucks.
-  float dx = (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS ? 1.0 : 0.0) -
-             (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS ? 1.0 : 0.0);
-  float dy = (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS || glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS ? 1.0 : 0.0) -
-             (glfwGetKey(window, GLFW_KEY_Z) == GLFW_PRESS || glfwGetKey(window, GLFW_KEY_C) == GLFW_PRESS ? 1.0 : 0.0);
-  float dz = (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS ? 1.0 : 0.0) - (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS ? 1.0 : 0.0);
+  float dx = (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS ? 0.2 : 0.0) -
+             (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS ? 0.2 : 0.0);
+  float dy = (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS || glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS ? 0.2 : 0.0) -
+             (glfwGetKey(window, GLFW_KEY_Z) == GLFW_PRESS || glfwGetKey(window, GLFW_KEY_C) == GLFW_PRESS ? 0.2 : 0.0);
+  float dz = (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS ? 0.2 : 0.0) - (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS ? 1.0 : 0.0);
   flycamera.translate(dx, dy, dz);
 }
 
