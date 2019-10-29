@@ -8,22 +8,14 @@ void Scene::traceRay(Eigen::Vector3f *color, Ray &ray, int level, Hitable* exclu
 
   Hitable* hitObject;
 
-  if (useAcc)
+  hitObject = this->structure->intersect(tOnIntersection, ray, exclude);
+  if (!hitObject)
   {
-    hitObject = this->boxOverAllTriangles->intersect(tOnIntersection, ray, exclude);
-    if (!hitObject)
-    {
-      *color = Eigen::Vector3f(0.0, 0.0, 0.0);
-      return;
-    }
-  } else
-  {
-    for (Triangle* t : this->trianglesInScene)
-      if (t->intersect(tOnIntersection,ray,exclude))
-        hitObject = t;
+    *color = Eigen::Vector3f(0.0, 0.0, 0.0);
+    return;
   }
 
-  //If we reach this point, it means the ray hitted a object. Now we should compute the color of this object, so we call the shade method.
+   //If we reach this point, it means the ray hitted a object. Now we should compute the color of this object, so we call the shade method.
   *color = shade(hitObject, ray, tOnIntersection, level);
 }
 
@@ -44,8 +36,15 @@ Scene::Scene(Tucano::Mesh &mesh, std::vector<Tucano::Material::Mtl> &materials)
       f.normal.head<3>(),
       f.material_id));
   }
-  boxOverAllTriangles = new Box(this->trianglesInScene); 
-  // this->leafBoxes = firstBox -> getLeafBoxes(); 
+
+  if (useAcc)
+  {
+    boxOverAllTriangles = new Box(this->trianglesInScene);
+    structure = boxOverAllTriangles;
+  } else
+  {
+    structure = new TriangleList(this->trianglesInScene);
+  }
 }
 
 
@@ -133,7 +132,7 @@ Eigen::Vector3f Scene::computeDirectLight(Hitable *hitObject, Eigen::Vector3f hi
       Ray rayToLight = Ray(hitPoint, pointLights.at(j) - hitPoint);
       //Check if there is an object between the hitpoint and the light, if so skip this light source
       float maxt = 1.0;
-      Hitable* hit = this->boxOverAllTriangles->intersect(maxt, rayToLight, hitObject);
+      Hitable* hit = this->structure->intersect(maxt, rayToLight, hitObject);
       if ( hit != NULL ) continue;
       
       //If we reach this point, it means that the current light can reach the object, so we compute the shading

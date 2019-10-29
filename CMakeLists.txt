@@ -51,6 +51,7 @@ set(
   ${PROJECT_DIR}/sphere.cpp
   ${PROJECT_DIR}/sphereLight.cpp
   ${PROJECT_DIR}/multithreading.cpp
+  ${PROJECT_DIR}/triangleList.cpp
 	
   #${PROJECT_DIR}/raytracing.cpp  
   )

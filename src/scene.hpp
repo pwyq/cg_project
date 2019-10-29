@@ -15,6 +15,7 @@
 #include "ray.hpp"
 #include "light.hpp"
 #include "box.hpp"
+#include "triangleList.hpp"
 
 class Scene {
   const int MAX_LEVEL = 4;
@@ -26,6 +27,7 @@ public:
   /* Member Variable */
   Eigen::Vector3f cameraPosition;
   Box* boxOverAllTriangles;
+  Hitable* structure;
 
   std::vector<Triangle*> trianglesInScene;
   std::vector<Light*> lights;
