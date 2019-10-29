@@ -34,8 +34,11 @@ void Flyscene::initialize(int width, int height) {
   //Initialize the lights
   initializeLights();
 
-  getAllLeafBoxesInScene();
-  show_acceleration = true;
+  if (scene->useAcc)
+  {
+    getAllLeafBoxesInScene();
+    show_acceleration = true;
+  }
 
   printObjectInfo();
 
