@@ -12,7 +12,7 @@ post on AABB vs. OBB type bounding box:
 
 
 /* GLOBAL const */
-static const int TRIANGLES_PER_BOX_LIMIT = 50;
+static const int TRIANGLES_PER_BOX_LIMIT = 20;
 
 // default Box constructor implementation
 Box::Box() {};
@@ -68,26 +68,45 @@ void Box::splitBox(std::vector<Triangle*> &inputTriangles) {
     float width  = std::abs(this->bMin(0) - this->bMax(0));
     float height = std::abs(this->bMin(1) - this->bMax(1));
     float depth  = std::abs(this->bMin(2) - this->bMax(2));
-    //This is a bit of a complex statement, but it determines which dimension to split on, 0, 1 or 2.
-    int dimensionToSplitOn = width > height ? (width > depth ? 0 : 2) : (height > depth ? 1 : 2);
 
-    //Now we determine the median on this dimension
+    int bestDifference = std::numeric_limits<int>::infinity();
+    int bestDimensionToSplitOn = 0;
+    for ( int dimensionToSplitOn = 0; dimensionToSplitOn < 3; dimensionToSplitOn++ ) {
+      //Now we determine the median on this dimension
+      std::vector<float> trianglePositions;
+      for ( Triangle* triangle : inputTriangles ) trianglePositions.push_back( triangle -> getPosition()(dimensionToSplitOn) );
+      
+      size_t mid = trianglePositions.size() / 2;
+      std::nth_element(trianglePositions.begin(), trianglePositions.begin()+mid, trianglePositions.end());
+      float median = trianglePositions[mid];  
+      //We make two lists of triangles and add the triangles on the appropiate side of the middle to the correct set.
+      std::vector<Triangle*> leftTemp, rightTemp;
+      for ( Triangle* triangle : inputTriangles ) {
+          if ( triangle -> getPosition()(dimensionToSplitOn) <= median )
+              leftTemp.push_back( triangle );
+          else
+              rightTemp.push_back( triangle );
+      }
+      int diff = (leftTemp.size()-rightTemp.size()) * (leftTemp.size()-rightTemp.size());
+      if ( diff < bestDifference ) {
+        bestDifference = diff;
+        bestDimensionToSplitOn = dimensionToSplitOn;
+      }
+    }
+
+    //Now we split on the actual best dimension
+
     std::vector<float> trianglePositions;
-    for ( Triangle* triangle : inputTriangles ) trianglePositions.push_back( triangle -> getPosition()(dimensionToSplitOn) );
-    // yanqing: std::sort() takes O(nlogn) time, std::nth_element takes O(n) time
-    // std::sort(trianglePositions.begin(), trianglePositions.end());
-    // float median = trianglePositions.at(trianglePositions.size()/2.0);
+    for ( Triangle* triangle : inputTriangles ) trianglePositions.push_back( triangle -> getPosition()(bestDimensionToSplitOn) );
     size_t mid = trianglePositions.size() / 2;
     std::nth_element(trianglePositions.begin(), trianglePositions.begin()+mid, trianglePositions.end());
-    float median = trianglePositions[mid];
-
-    //We make two lists of triangles and add the triangles on the appropiate side of the middle to the correct set.
+    float median = trianglePositions[mid];  
     std::vector<Triangle*> left, right;
     for ( Triangle* triangle : inputTriangles ) {
-        if ( triangle -> getPosition()(dimensionToSplitOn) < median )
-            left.push_back( triangle );
-        else
-            right.push_back( triangle );
+      if ( triangle -> getPosition()(bestDimensionToSplitOn) <= median )
+        left.push_back( triangle );
+      else
+        right.push_back( triangle );
     }
 
     //Now we create the 2 subboxes. Note that we create new boxes by calling the constructor of Box,
