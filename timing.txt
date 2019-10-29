@@ -1,0 +1,99 @@
+# 1 Baseline measurement for with-acc
+- cube.obj
+- 864e2347c5857a4633c2cd57a250f7b342c8d4ed
+- acc = on
+- thread = on
+- multi light
+- 100x100
+- triangle limit = 10
+		number of vertices    : 8
+		number of faces       : 36
+		number of materials   : 6
+		number of leaf boxes  : 2
+
+13076305
+12833683
+12932494
+
+# 2 Triangle limit (10 vs 50)
+- cube.obj
+- 864e2347c5857a4633c2cd57a250f7b342c8d4ed
+- acc = on
+- thread = on
+- multi light
+- 100x100
+- triangle limit = 50
+		number of vertices    : 8
+		number of faces       : 36
+		number of materials   : 6
+		number of leaf boxes  : 1
+13146653
+13091351
+12745732
+12760788
+
+# 3 Resolution (100x100 vs. 200x200)
+- cube.obj
+- 864e2347c5857a4633c2cd57a250f7b342c8d4ed
+- acc = on
+- thread = on
+- multi light
+- 200x200
+- triangle limit = 10
+		number of vertices    : 8
+		number of faces       : 36
+		number of materials   : 6
+		number of leaf boxes  : 2
+51249084
+51770585
+51236300
+
+# 4 Acceleration (on vs. off); also as the baseline of no-acc
+- cube.obj
+- 864e2347c5857a4633c2cd57a250f7b342c8d4ed
+- acc = off
+- thread = on
+- multi light
+- 100x100
+- triangle limit = 10
+		number of vertices    : 8
+		number of faces       : 36
+		number of materials   : 6
+		number of leaf boxes  : 0
+
+15178828
+13021977
+14178780
+
+# 5 no-acc triangle-limit (10 vs. 50)
+- cube.obj
+- 864e2347c5857a4633c2cd57a250f7b342c8d4ed
+- acc = off
+- thread = on
+- multi light
+- 100x100
+- triangle limit = 50
+		number of vertices    : 8
+		number of faces       : 36
+		number of materials   : 6
+		number of leaf boxes  : 0
+
+12739823
+12676239
+12873221
+
+# 6 no-acc resolution (100x100 vs. 200x200)
+- cube.obj
+- 864e2347c5857a4633c2cd57a250f7b342c8d4ed
+- acc = off
+- thread = on
+- multi light
+- 200x200
+- triangle limit = 10
+		number of vertices    : 8
+		number of faces       : 36
+		number of materials   : 6
+		number of leaf boxes  : 0
+
+49147951
+52132927
