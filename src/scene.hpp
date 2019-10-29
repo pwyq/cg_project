@@ -45,10 +45,10 @@ public:
   void traceRay(Eigen::Vector3f *, Ray &, int, Hitable *);
 
   //Will return a color
-  Eigen::Vector3f shade(Hitable *, Ray &, float t, int level);
+  inline Eigen::Vector3f shade(Hitable *, Ray &, float t, int level);
 
   //Will return a color
-  Eigen::Vector3f computeDirectLight(Hitable *, Eigen::Vector3f);
-  Eigen::Vector3f computeReflectedLight(Hitable *, Ray &, float , int);
-  Eigen::Vector3f computeRefractedLight(Hitable *, Ray &, float , int , float , float);
+  inline Eigen::Vector3f computeDirectLight(Hitable *, Eigen::Vector3f);
+  inline Eigen::Vector3f computeReflectedLight(Hitable *, Ray &, float , int);
+  inline Eigen::Vector3f computeRefractedLight(Hitable *, Ray &, float , int , float , float);
 };

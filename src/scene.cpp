@@ -51,7 +51,7 @@ Scene::Scene(Tucano::Mesh &mesh, std::vector<Tucano::Material::Mtl> &materials)
 Scene::Scene()
 {}
 
-Eigen::Vector3f Scene::shade(Hitable *hitObject, Ray &ray, float t, int level) {
+inline Eigen::Vector3f Scene::shade(Hitable *hitObject, Ray &ray, float t, int level) {
   Eigen::Vector3f color = Eigen::Vector3f(0.0,0.0,0.0);
   // Compute direct light
   color += computeDirectLight(hitObject, ray.getPoint(t));
@@ -77,7 +77,7 @@ Eigen::Vector3f Scene::shade(Hitable *hitObject, Ray &ray, float t, int level) {
  ****************************************************************/
 
 
-Eigen::Vector3f Scene::computeRefractedLight(Hitable *hitObject, Ray &ray, float t, int level, float n1, float n2) {
+inline Eigen::Vector3f Scene::computeRefractedLight(Hitable *hitObject, Ray &ray, float t, int level, float n1, float n2) {
   Eigen::Vector3f color = Eigen::Vector3f(0, 0, 0);
   Eigen::Vector3f in = ray.direction.normalized();
   Eigen::Vector3f norm = hitObject->normal.normalized();
@@ -95,7 +95,7 @@ Eigen::Vector3f Scene::computeRefractedLight(Hitable *hitObject, Ray &ray, float
 }
 
 
-Eigen::Vector3f Scene::computeReflectedLight(Hitable *hitObject, Ray &ray, float t, int level) {
+inline Eigen::Vector3f Scene::computeReflectedLight(Hitable *hitObject, Ray &ray, float t, int level) {
   Eigen::Vector3f color = Eigen::Vector3f(0.0,0.0,0.0);
   
   //Calculate the outgoing vector 
@@ -109,7 +109,7 @@ Eigen::Vector3f Scene::computeReflectedLight(Hitable *hitObject, Ray &ray, float
 }
 
 
-Eigen::Vector3f Scene::computeDirectLight(Hitable *hitObject, Eigen::Vector3f hitPoint) {
+inline Eigen::Vector3f Scene::computeDirectLight(Hitable *hitObject, Eigen::Vector3f hitPoint) {
   //Get the material properties of the hitable object this ray interesected with 
   Tucano::Material::Mtl faceMaterial = materials -> at(hitObject->material_id);
   Eigen::Vector3f kd = faceMaterial.getDiffuse();
