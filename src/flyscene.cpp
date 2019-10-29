@@ -12,9 +12,21 @@ void Flyscene::initialize(int width, int height) {
   flycamera.setViewport(Eigen::Vector2f((float)width, (float)height));
 
   // load the OBJ file and materials
-  Tucano::MeshImporter::loadObjFile(mesh, materials,"resources/models/boxmirror2.obj");
-  // Tucano::MeshImporter::loadObjFile(mesh, materials,"resources/models/cube.obj");
-  // Tucano::MeshImporter::loadObjFile(mesh, materials,"resources/models/dodgeColorTest.obj");
+
+  //This is the cube
+  Tucano::MeshImporter::loadObjFile(mesh, materials,"resources/models/init-models/cube.obj");
+
+  //This is the toy. Note: turn of shading, since there is no material file for toy!
+  //Tucano::MeshImporter::loadObjFile(mesh, materials,"resources/models/init-models/toy.obj");
+
+  //This is the cube in front of the big mirror with frame
+  //Tucano::MeshImporter::loadObjFile(mesh, materials,"resources/models/mirror-box/mirror-box.obj");
+  
+  //This it the cube in between two big mirrors with frame
+  //Tucano::MeshImporter::loadObjFile(mesh, materials,"resources/models/mirrors-box/mirrors-box.obj");
+  
+  //This is the final scene
+  //Tucano::MeshImporter::loadObjFile(mesh, materials,"resources/models/final-scene/finalscene.obj");
 
   // normalize the model (scale to unit cube and center at origin)
   mesh.normalizeModelMatrix();
