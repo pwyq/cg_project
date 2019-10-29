@@ -6,21 +6,20 @@
 
 class Box : public Hitable {
 public:
-	Eigen::Vector3f bMin;
-	Eigen::Vector3f bMax;
-	std::vector<Hitable*> children; //either smaller boxes or triangles
-	bool isLeaf; //if true, children will contain triangles
+  Eigen::Vector3f bMin;
+  Eigen::Vector3f bMax;
+  std::vector<Hitable*> children; //either smaller boxes or triangles
+  bool isLeaf; //if true, children will contain triangles
 
-    // default Box constructor
-    Box();
+  // default Box constructor
+  Box();
 
-    //Constructor creates a box around the given list of triangles
-    Box(std::vector<Triangle*> &inputTriangles); 
-    
-	virtual Hitable* intersect(float &hitPoint, Ray &ray, Hitable* exclude);
+  //Constructor creates a box around the given list of triangles
+  Box(std::vector<Triangle*> &inputTriangles); 
 
-	void splitBox(std::vector<Triangle*> &inputTriangles);
+  virtual Hitable* intersect(float &hitPoint, Ray &ray, Hitable* exclude);
 
-	std::vector<Box*> getLeafBoxes();
+  void splitBox(std::vector<Triangle*> &inputTriangles);
 
+  std::vector<Box*> getLeafBoxes();
 };

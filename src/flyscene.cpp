@@ -26,7 +26,6 @@ void Flyscene::initialize(int width, int height) {
   // scale the camera representation (frustum) for the ray debug
   camerarep.shapeMatrix()->scale(0.2);
 
-
   glEnable(GL_DEPTH_TEST);
 
   /* Initialize our variables */
@@ -77,7 +76,7 @@ void Flyscene::paintGL(void) {
   }
     
   for ( auto& ray : debugRays )
-          ray.render(flycamera, scene_light);
+    ray.render(flycamera, scene_light);
   camerarep.render(flycamera, scene_light);
 
   // render coordinate system at lower right corner
@@ -130,8 +129,6 @@ void Flyscene::createDebugRay(const Eigen::Vector2f &mouse_pos) {
 /****************************************************************
  * Light                                                        *
  ****************************************************************/
-
-
 void Flyscene::initializeLights() {
   // set the color and size of the sphere to represent the light sources
   // same sphere is used for all sources
@@ -261,15 +258,15 @@ void Flyscene::getAllLeafBoxesInScene() {
 
 
 Tucano::Shapes::Box Flyscene::convertToTucanoBox( Box *box ) {
-    float width  = std::abs(box->bMin(0) - box->bMax(0));
-    float height = std::abs(box->bMin(1) - box->bMax(1));
-    float depth  = std::abs(box->bMin(2) - box->bMax(2));
-    Eigen::Vector3f boxCenter = Eigen::Vector3f( (box->bMin(0)+box->bMax(0))/2, (box->bMin(1)+box->bMax(1))/2, (box->bMin(2)+box->bMax(2))/2 );
-    Tucano::Shapes::Box tucanoBox = Tucano::Shapes::Box(width,height,depth);
-    tucanoBox.resetModelMatrix();
-    tucanoBox.modelMatrix()->translate(boxCenter);
-    tucanoBox.setColor(Eigen::Vector4f(1.0, 1.0, 0.0, 0.5));
-    return tucanoBox;
+  float width  = std::abs(box->bMin(0) - box->bMax(0));
+  float height = std::abs(box->bMin(1) - box->bMax(1));
+  float depth  = std::abs(box->bMin(2) - box->bMax(2));
+  Eigen::Vector3f boxCenter = Eigen::Vector3f( (box->bMin(0)+box->bMax(0))/2, (box->bMin(1)+box->bMax(1))/2, (box->bMin(2)+box->bMax(2))/2 );
+  Tucano::Shapes::Box tucanoBox = Tucano::Shapes::Box(width,height,depth);
+  tucanoBox.resetModelMatrix();
+  tucanoBox.modelMatrix()->translate(boxCenter);
+  tucanoBox.setColor(Eigen::Vector4f(1.0, 1.0, 0.0, 0.5));
+  return tucanoBox;
 }
 
 /* End of file */

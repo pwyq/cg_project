@@ -18,37 +18,37 @@
 
 class Scene {
 public:
-    /* Constructor */
-    Scene(Tucano::Mesh &, std::vector<Tucano::Material::Mtl> &);
-    Scene();
+  /* Constructor */
+  Scene(Tucano::Mesh &, std::vector<Tucano::Material::Mtl> &);
+  Scene();
 
-    /* Member Variable */
-	Eigen::Vector3f cameraPosition;
-	Box* boxOverAllTriangles;
+  /* Member Variable */
+  Eigen::Vector3f cameraPosition;
+  Box* boxOverAllTriangles;
 
-	std::vector<Triangle*> trianglesInScene;
-	std::vector<Light*> lights;
-	std::vector<Tucano::Material::Mtl>* materials;
+  std::vector<Triangle*> trianglesInScene;
+  std::vector<Light*> lights;
+  std::vector<Tucano::Material::Mtl>* materials;
 
-	//This is a list of all boxes (leafs of boxes tree). 
-	//We have this to conform with the project requirements. We do not use it.
-	// std::vector<Box*> leafBoxes;
+  //This is a list of all boxes (leafs of boxes tree). 
+  //We have this to conform with the project requirements. We do not use it.
+  // std::vector<Box*> leafBoxes;
 
-	bool useAcc = true;
-	bool useThreads = true;
+  bool useAcc = true;
+  bool useThreads = true;
 
-    /* Methods */
-	//Will return a color
-	void traceRay(Eigen::Vector3f *, Ray &, int, Hitable* exclude);
-	void traceRayWithAcc(Eigen::Vector3f *color, Ray &ray, int level, Hitable* exclude);
+  /* Methods */
+  //Will return a color
+  void traceRay(Eigen::Vector3f *, Ray &, int, Hitable* exclude);
+  void traceRayWithAcc(Eigen::Vector3f *color, Ray &ray, int level, Hitable* exclude);
 
-	//Will return a color
-	Eigen::Vector3f shade(Hitable *hitObject, Ray &, float t, int level);
+  //Will return a color
+  Eigen::Vector3f shade(Hitable *hitObject, Ray &, float t, int level);
 
-	//Will return a color
-	Eigen::Vector3f computeDirectLight(Hitable *hitObject, Eigen::Vector3f hitPoint);
-    Eigen::Vector3f computeReflectedLight(Hitable *hitObject, Ray &ray, float t, int level);
-    Eigen::Vector3f computeRefractedLight(Hitable *hitObject, Ray &ray, float t, int level, float n1, float n2);
+  //Will return a color
+  Eigen::Vector3f computeDirectLight(Hitable *hitObject, Eigen::Vector3f hitPoint);
+  Eigen::Vector3f computeReflectedLight(Hitable *hitObject, Ray &ray, float t, int level);
+  Eigen::Vector3f computeRefractedLight(Hitable *hitObject, Ray &ray, float t, int level, float n1, float n2);
 };
 
 
@@ -59,41 +59,41 @@ public:
 
 struct raytraceTask
 {
-    Eigen::Vector3f *result = nullptr;
-    Ray origin;
-	raytraceTask() {}
+  Eigen::Vector3f *result = nullptr;
+  Ray origin;
+  raytraceTask() {}
 
-	raytraceTask(Eigen::Vector3f *r, Ray &o)
-	{
-	    result = r;
-	    origin = o;
-	}
+  raytraceTask(Eigen::Vector3f *r, Ray &o)
+  {
+    result = r;
+    origin = o;
+  }
 };
 
 
 class TaskQueue
 {
-    std::queue<raytraceTask> queue;
-    std::mutex m;
+  std::queue<raytraceTask> queue;
+  std::mutex m;
 public:
-    std::size_t totalTasks = 0;
-    std::size_t completedTasks = 0;
+  std::size_t totalTasks = 0;
+  std::size_t completedTasks = 0;
 
-    void push(const raytraceTask &task);
-    raytraceTask pop();
-    bool isEmpty();
+  void push(const raytraceTask &task);
+  raytraceTask pop();
+  bool isEmpty();
 };
 
 
 class Worker
 {
 public:
-    TaskQueue *globalQueue;
-    Scene *workerScene;
-    bool done = false;
+  TaskQueue *globalQueue;
+  Scene *workerScene;
+  bool done = false;
 
-    void work();
-    void end();
+  void work();
+  void end();
 };
 
 
