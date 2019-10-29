@@ -1,5 +1,6 @@
 #include <limits>
 #include <cmath>
+#include <ctime>
 
 #include "flyscene.hpp"
 #include "multithreading.hpp"
@@ -206,6 +207,8 @@ void Flyscene::raytraceScene(int width, int height) {
   scene -> cameraPosition = flycamera.getCenter();
   
   Multithreading multithreading(scene);
+
+  std::time_t start = std::time(nullptr);
  
   // origin of the ray is always the camera center
   Eigen::Vector3f origin = flycamera.getCenter();
@@ -225,18 +228,17 @@ void Flyscene::raytraceScene(int width, int height) {
   }
 
   // Wait for threads to finish
-  auto t1 = std::chrono::high_resolution_clock::now();
   while (!multithreading.globalQueue.isEmpty())
   {
     std::cout<<multithreading.globalQueue.completedTasks<<" / "<<multithreading.globalQueue.totalTasks<<" rays traced\n";
     std::this_thread::sleep_for(1ms);
   }
-  auto t2 = std::chrono::high_resolution_clock::now();
-  auto duration = std::chrono::duration_cast<std::chrono::microseconds>( t2 - t1 ).count();
+  std::time_t end = std::time(nullptr);
+  time_t duration = end - start;
   
   // write the ray tracing result to a PPM image
   Tucano::ImageImporter::writePPMImage("result.ppm", pixel_data);
-  std::cout << "[SUCCESS] ray tracing done with time = " << duration << " microseconds." << std::endl;
+  std::cout << "[SUCCESS] ray tracing done with time = " << duration << " seconds." << std::endl;
 }
 
 
