@@ -75,8 +75,8 @@ EXTENSIONS
 Pitures: code
 
 2. Multicore support of the ray tracer (implementing additional threads).
-	Lazer
-Picture: CPU Cores running
+	
+Picture: ![](./final-renders/E2.png)
 
 3. A numerical evaluation of the performance of your ray tracer.
 	Lazer
