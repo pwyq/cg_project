@@ -6,27 +6,27 @@
 
 class Triangle : public Hitable {
 public:
-	Eigen::Vector3f vertex0;
-	Eigen::Vector3f vertex1;
-	Eigen::Vector3f vertex2;
+  Eigen::Vector3f vertex0;
+  Eigen::Vector3f vertex1;
+  Eigen::Vector3f vertex2;
 
-	bool isInTriangle(Eigen::Vector3f point); 
-	virtual Hitable* intersect(float &, Ray &, Hitable*);
+  bool isInTriangle(Eigen::Vector3f point); 
+  virtual Hitable* intersect(float &, Ray &, Hitable*);
 
-	Triangle(const Eigen::Vector3f &,
-	         const Eigen::Vector3f &,
-	         const Eigen::Vector3f &,
-	         const Eigen::Vector3f &,
-	         const int);
+  Triangle(const Eigen::Vector3f &,
+           const Eigen::Vector3f &,
+           const Eigen::Vector3f &,
+           const Eigen::Vector3f &,
+           const int);
 
-	Eigen::Vector3f getPosition();
+  Eigen::Vector3f getPosition();
 
-	float getMaxCoordinate(int dimension);
-	float getMinCoordinate(int dimension);
-	float getMaxX();
-	float getMaxY();
-	float getMaxZ();
-	float getMinX();
-	float getMinY();
-	float getMinZ();
+  float getMaxCoordinate(int dimension);
+  float getMinCoordinate(int dimension);
+  float getMaxX();
+  float getMaxY();
+  float getMaxZ();
+  float getMinX();
+  float getMinY();
+  float getMinZ();
 };
