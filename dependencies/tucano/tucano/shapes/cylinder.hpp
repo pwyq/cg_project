@@ -35,7 +35,7 @@ namespace Shapes
 
 /// Default fragment shader for rendering cylinder 
 const string cylinder_fragment_code = "\n"
-        "#version 430\n"
+        "#version 330\n"
         "in vec4 color;\n"
 		"in vec3 normal;\n"
 		"in vec4 vert;\n"
@@ -60,7 +60,7 @@ const string cylinder_fragment_code = "\n"
 
 /// Default vertex shader for rendering cylinder 
 const string cylinder_vertex_code = "\n"
-        "#version 430\n"
+        "#version 330\n"
 		"in vec4 in_Position;\n"
 		"in vec4 in_Normal;\n"
         "out vec4 color;\n"

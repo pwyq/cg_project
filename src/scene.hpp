@@ -42,13 +42,13 @@ public:
 
   /* Methods */
   //Will return a color
-  void traceRay(Eigen::Vector3f *, Ray &, int, Hitable *);
+  void traceRay(Eigen::Vector3f *, Ray &, int, Hitable *, std::vector<Ray> *, std::vector<float> *);
 
   //Will return a color
-  inline Eigen::Vector3f shade(Hitable *, Ray &, float t, int level);
+  inline Eigen::Vector3f shade(Hitable *, Ray &, float t, int level, std::vector<Ray> *, std::vector<float> *);
 
   //Will return a color
-  inline Eigen::Vector3f computeDirectLight(Hitable *, Eigen::Vector3f);
-  inline Eigen::Vector3f computeReflectedLight(Hitable *, Ray &, float , int);
-  inline Eigen::Vector3f computeRefractedLight(Hitable *, Ray &, float , int , float , float);
+  inline Eigen::Vector3f computeDirectLight(Hitable *, Eigen::Vector3f, std::vector<Ray> *, std::vector<float> *);
+  inline Eigen::Vector3f computeReflectedLight(Hitable *, Ray &, float , int, std::vector<Ray> *, std::vector<float> *);
+  inline Eigen::Vector3f computeRefractedLight(Hitable *, Ray &, float , int , float , float, std::vector<Ray> *, std::vector<float> *);
 };

@@ -2,7 +2,7 @@
 
 #include "scene.hpp"
 
-void Scene::traceRay(Eigen::Vector3f *color, Ray &ray, int level, Hitable* exclude) {
+void Scene::traceRay(Eigen::Vector3f *color, Ray &ray, int level, Hitable* exclude, std::vector<Ray> *rayTrace, std::vector<float> *tTrace) {
   //This variable will hold the value of t on intersection in the formula r(t) = o + t * d 
   float tOnIntersection = std::numeric_limits<float>::infinity();
 
@@ -12,11 +12,21 @@ void Scene::traceRay(Eigen::Vector3f *color, Ray &ray, int level, Hitable* exclu
   if (!hitObject)
   {
     *color = Eigen::Vector3f(0.0, 0.0, 0.0);
+
+    if (rayTrace != nullptr)
+      rayTrace->push_back(ray);
+    if (tTrace != nullptr)
+      tTrace->push_back(10);
+
     return;
   }
 
+  if (rayTrace != nullptr)
+    rayTrace->push_back(ray);
+  if (tTrace != nullptr)
+    tTrace->push_back(tOnIntersection);
    //If we reach this point, it means the ray hitted a object. Now we should compute the color of this object, so we call the shade method.
-  *color = shade(hitObject, ray, tOnIntersection, level);
+  *color = shade(hitObject, ray, tOnIntersection, level, rayTrace, tTrace);
 }
 
 //TODO For now this only copies triangles
@@ -51,23 +61,23 @@ Scene::Scene(Tucano::Mesh &mesh, std::vector<Tucano::Material::Mtl> &materials)
 Scene::Scene()
 {}
 
-inline Eigen::Vector3f Scene::shade(Hitable *hitObject, Ray &ray, float t, int level) {
+inline Eigen::Vector3f Scene::shade(Hitable *hitObject, Ray &ray, float t, int level, std::vector<Ray> *rayTrace, std::vector<float> *tTrace) {
   Eigen::Vector3f color = Eigen::Vector3f(0.0,0.0,0.0);
   // Compute direct light
-  color += computeDirectLight(hitObject, ray.getPoint(t));
+  color += computeDirectLight(hitObject, ray.getPoint(t), rayTrace, tTrace);
 
   // Compute reflected light
   Tucano::Material::Mtl hitMaterial = materials -> at(hitObject->material_id);
   float illuminationModel = hitMaterial.getIlluminationModel();
   if ( illuminationModel == 4 && level < MAX_LEVEL ) 
-    color += computeReflectedLight(hitObject, ray, t, level);
+    color += computeReflectedLight(hitObject, ray, t, level, rayTrace, tTrace);
   
   // Compute refracted light
   // if (illuminationModel == 6 && level < MAX_LEVEL) {
   if (level < MAX_LEVEL) {
     float n1 = 1.0; // air
     float n2 = hitMaterial.getOpticalDensity();
-    color += computeRefractedLight(hitObject, ray, t, level, n1, n2);
+    color += computeRefractedLight(hitObject, ray, t, level, n1, n2, rayTrace, tTrace);
   }
   return color;
 }
@@ -77,7 +87,7 @@ inline Eigen::Vector3f Scene::shade(Hitable *hitObject, Ray &ray, float t, int l
  ****************************************************************/
 
 
-inline Eigen::Vector3f Scene::computeRefractedLight(Hitable *hitObject, Ray &ray, float t, int level, float n1, float n2) {
+inline Eigen::Vector3f Scene::computeRefractedLight(Hitable *hitObject, Ray &ray, float t, int level, float n1, float n2, std::vector<Ray> *rayTrace, std::vector<float> *tTrace) {
   Eigen::Vector3f color = Eigen::Vector3f(0, 0, 0);
   Eigen::Vector3f in = ray.direction.normalized();
   Eigen::Vector3f norm = hitObject->normal.normalized();
@@ -90,12 +100,12 @@ inline Eigen::Vector3f Scene::computeRefractedLight(Hitable *hitObject, Ray &ray
 
   Ray refractedRay = Ray(ray.getPoint(t), refractedVec);
 
-  Scene::traceRay(&color, refractedRay, level+1, hitObject);
+  Scene::traceRay(&color, refractedRay, level+1, hitObject, rayTrace, tTrace);
   return color;
 }
 
 
-inline Eigen::Vector3f Scene::computeReflectedLight(Hitable *hitObject, Ray &ray, float t, int level) {
+inline Eigen::Vector3f Scene::computeReflectedLight(Hitable *hitObject, Ray &ray, float t, int level, std::vector<Ray> *rayTrace, std::vector<float> *tTrace) {
   Eigen::Vector3f color = Eigen::Vector3f(0.0,0.0,0.0);
   
   //Calculate the outgoing vector 
@@ -104,12 +114,12 @@ inline Eigen::Vector3f Scene::computeReflectedLight(Hitable *hitObject, Ray &ray
   
   //Create ray
   Ray reflectedRay = Ray(ray.getPoint(t), reflectedVec);
-  Scene::traceRay(&color, reflectedRay, level+1, hitObject);
+  Scene::traceRay(&color, reflectedRay, level+1, hitObject, rayTrace, tTrace);
   return color;
 }
 
 
-inline Eigen::Vector3f Scene::computeDirectLight(Hitable *hitObject, Eigen::Vector3f hitPoint) {
+inline Eigen::Vector3f Scene::computeDirectLight(Hitable *hitObject, Eigen::Vector3f hitPoint, std::vector<Ray> *rayTrace, std::vector<float> *tTrace) {
   //Get the material properties of the hitable object this ray interesected with 
   Tucano::Material::Mtl faceMaterial = materials -> at(hitObject->material_id);
   Eigen::Vector3f kd = faceMaterial.getDiffuse();
@@ -133,7 +143,19 @@ inline Eigen::Vector3f Scene::computeDirectLight(Hitable *hitObject, Eigen::Vect
       //Check if there is an object between the hitpoint and the light, if so skip this light source
       float maxt = 1.0;
       Hitable* hit = this->structure->intersect(maxt, rayToLight, hitObject);
-      if ( hit != NULL ) continue;
+      if ( hit != NULL )
+      {
+        if (rayTrace != nullptr)
+          rayTrace->push_back(rayToLight);
+        if (tTrace != nullptr)
+          tTrace->push_back(10);
+        continue;
+      }
+
+      if (rayTrace != nullptr)
+        rayTrace->push_back(rayToLight);
+      if (tTrace != nullptr)
+        tTrace->push_back(maxt);
       
       //If we reach this point, it means that the current light can reach the object, so we compute the shading
       Eigen::Vector3f lightSpectrum = currentLight->spectrum / pointLights.size();
