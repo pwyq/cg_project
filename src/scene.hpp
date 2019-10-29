@@ -40,14 +40,14 @@ public:
 
   /* Methods */
   //Will return a color
-  void traceRay(Eigen::Vector3f *, Ray &, int, Hitable* exclude);
-  void traceRayWithAcc(Eigen::Vector3f *color, Ray &ray, int level, Hitable* exclude);
+  void traceRay(Eigen::Vector3f *, Ray &, int, Hitable *);
+  void traceRayWithAcc(Eigen::Vector3f *, Ray &, int level, Hitable *);
 
   //Will return a color
-  Eigen::Vector3f shade(Hitable *hitObject, Ray &, float t, int level);
+  Eigen::Vector3f shade(Hitable *, Ray &, float t, int level);
 
   //Will return a color
-  Eigen::Vector3f computeDirectLight(Hitable *hitObject, Eigen::Vector3f hitPoint);
-  Eigen::Vector3f computeReflectedLight(Hitable *hitObject, Ray &ray, float t, int level);
-  Eigen::Vector3f computeRefractedLight(Hitable *hitObject, Ray &ray, float t, int level, float n1, float n2);
+  Eigen::Vector3f computeDirectLight(Hitable *, Eigen::Vector3f);
+  Eigen::Vector3f computeReflectedLight(Hitable *, Ray &, float , int);
+  Eigen::Vector3f computeRefractedLight(Hitable *, Ray &, float , int , float , float);
 };
