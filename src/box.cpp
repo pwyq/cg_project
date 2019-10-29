@@ -10,10 +10,6 @@ post on AABB vs. OBB type bounding box:
     https://www.scratchapixel.com/lessons/3d-basic-rendering/minimal-ray-tracer-rendering-simple-shapes/ray-box-intersection
 */
 
-
-/* GLOBAL const */
-static const int TRIANGLES_PER_BOX_LIMIT = 10;
-
 // default Box constructor implementation
 Box::Box() {};
 
@@ -84,10 +80,10 @@ void Box::splitBox(std::vector<Triangle*> &inputTriangles) {
   //We make two lists of triangles and add the triangles on the appropiate side of the middle to the correct set.
   std::vector<Triangle*> left, right;
   for ( Triangle* triangle : inputTriangles ) {
-      if ( triangle -> getPosition()(dimensionToSplitOn) < median )
-          left.push_back( triangle );
-      else
-          right.push_back( triangle );
+    if ( triangle -> getPosition()(dimensionToSplitOn) < median )
+      left.push_back( triangle );
+    else
+      right.push_back( triangle );
   }
 
   //Now we create the 2 subboxes. Note that we create new boxes by calling the constructor of Box,
@@ -128,16 +124,16 @@ Hitable* Box::intersect(float &hitPoint, Ray &ray, Hitable* exclude)
 
   // check for intersection
   if (t_in > t_out || t_out < 0)
-      return NULL;
+    return NULL;
 
   //When we reach this moment, we know the ray will hit this box,
   //so we recursively call the intersect method on the subboxes or triangles.
   Hitable* hitObject = NULL;
   for (auto &h: this->children) {
-      Hitable* hit = h->intersect(hitPoint, ray, exclude);
-      if ( hit != NULL ) {
-         hitObject = hit;
-      }
+    Hitable* hit = h->intersect(hitPoint, ray, exclude);
+    if ( hit != NULL ) {
+      hitObject = hit;
+    }
   }
   return hitObject;
 }
@@ -152,12 +148,12 @@ std::vector<Box*> Box::getLeafBoxes() {
   //If this is the leaf box return this box
   if ( this->isLeaf ) leafBoxes.push_back(this);
   else {
-      //Loop over all the children (which are boxes) and get the leaf boxes for each child.
-      for ( Hitable* child : this->children ) {
-          Box* subBox = dynamic_cast<Box*>(child);
-          std::vector<Box*> leafBoxesOfSubBox = subBox -> getLeafBoxes();
-          leafBoxes.insert( leafBoxes.end(), leafBoxesOfSubBox.begin(), leafBoxesOfSubBox.end() );
-      }
+    //Loop over all the children (which are boxes) and get the leaf boxes for each child.
+    for ( Hitable* child : this->children ) {
+      Box* subBox = dynamic_cast<Box*>(child);
+      std::vector<Box*> leafBoxesOfSubBox = subBox -> getLeafBoxes();
+      leafBoxes.insert( leafBoxes.end(), leafBoxesOfSubBox.begin(), leafBoxesOfSubBox.end() );
+    }
   }
   return leafBoxes;
 }

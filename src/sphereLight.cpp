@@ -1,10 +1,6 @@
 #include <random>
 #include "sphereLight.hpp"
 
-static const int LIGHT_SEED = 42;   // hardcoded random seed
-static const int COUNT_LIMIT = 3;
-static const float RADIUS_LIMIT = 0.2;
-
 /****************************************************************
  * Helper functions                                             *
  ****************************************************************/

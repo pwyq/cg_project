@@ -17,6 +17,7 @@
 #include "box.hpp"
 
 class Scene {
+  const int MAX_LEVEL = 4;
 public:
   /* Constructor */
   Scene(Tucano::Mesh &, std::vector<Tucano::Material::Mtl> &);

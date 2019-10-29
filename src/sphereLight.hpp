@@ -3,6 +3,9 @@
 #include "light.hpp"
 
 class SphereLight : public Light {
+  const int LIGHT_SEED = 42; // hardcoded random seed
+  const int COUNT_LIMIT = 3;
+  const int RADIUS_LIMIT = 0.2;
 public:
   float sphericalRadius; //radius of sphere
   int sphericalCount;    //number of point lights in sphere

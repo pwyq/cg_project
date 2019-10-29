@@ -5,6 +5,7 @@
 #include <vector>
 
 class Box : public Hitable {
+  const int TRIANGLES_PER_BOX_LIMIT = 10;
 public:
   Eigen::Vector3f bMin;
   Eigen::Vector3f bMax;

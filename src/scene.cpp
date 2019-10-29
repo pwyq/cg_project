@@ -2,8 +2,6 @@
 
 #include "scene.hpp"
 
-static const int MAX_LEVEL = 4;
-
 void Scene::traceRay(Eigen::Vector3f *color, Ray &ray, int level, Hitable* exclude) {
   //This variable will hold the value of t on intersection in the formula r(t) = o + t * d 
   float tOnIntersection = std::numeric_limits<float>::infinity();
