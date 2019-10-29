@@ -51,6 +51,7 @@ Two pcitures: pic with soft shadows
 6. Show an interactive display in OpenGL of the 3D scene and a debug ray tracer. A ray from a chosen pixel should be shown via OpenGL, illustrating the interactions with the surfaces. 
 	Lazer
 Picture: lazer
+![](./final-renders/M6E6.png)
 
 
 7. Implement a (simple) acceleration structure. 
