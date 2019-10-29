@@ -2,6 +2,7 @@
 #include <cmath>
 
 #include "flyscene.hpp"
+#include "multithreading.hpp"
 
 void Flyscene::initialize(int width, int height) {
   // initiliaze the Phong Shading effect for the Opengl Previewer
@@ -197,18 +198,8 @@ void Flyscene::raytraceScene(int width, int height) {
   //Set the camera in the scene
   scene -> cameraPosition = flycamera.getCenter();
   
-  TaskQueue globalQueue;
-  unsigned int num_threads = std::thread::hardware_concurrency();
-  std::vector<Worker> workerPool(num_threads);
-  std::vector<std::thread> threadPool(num_threads);
+  Multithreading multithreading(scene);
  
-  for (size_t i = 0; i < num_threads; ++i)
-  {
-    workerPool[i].globalQueue = &globalQueue;
-    workerPool[i].workerScene = scene;
-    threadPool[i] = std::thread(&Worker::work, std::ref(workerPool[i]));
-  }
-
   // origin of the ray is always the camera center
   Eigen::Vector3f origin = flycamera.getCenter();
   Eigen::Vector3f screen_coords;
@@ -220,7 +211,7 @@ void Flyscene::raytraceScene(int width, int height) {
       // launch raytracing for the given ray and write result to pixel data
       Ray r(origin, screen_coords - origin);
       if ( scene -> useThreads)
-        globalQueue.push(raytraceTask(&pixel_data[i][j], r));
+        multithreading.globalQueue.push(raytraceTask(&pixel_data[i][j], r));
       else
         scene->traceRayWithAcc(&pixel_data[i][j], r, 0, NULL);
     }
@@ -228,18 +219,14 @@ void Flyscene::raytraceScene(int width, int height) {
 
   // Wait for threads to finish
   auto t1 = std::chrono::high_resolution_clock::now();
-  while (!globalQueue.isEmpty())
+  while (!multithreading.globalQueue.isEmpty())
   {
-    std::cout<<globalQueue.completedTasks<<" / "<<globalQueue.totalTasks<<" rays traced\n";
+    std::cout<<multithreading.globalQueue.completedTasks<<" / "<<multithreading.globalQueue.totalTasks<<" rays traced\n";
     std::this_thread::sleep_for(1ms);
   }
   auto t2 = std::chrono::high_resolution_clock::now();
   auto duration = std::chrono::duration_cast<std::chrono::microseconds>( t2 - t1 ).count();
-  for (size_t i= 0; i < num_threads; ++i)
-  {
-    workerPool[i].end();
-    threadPool[i].join();
-  }
+  
   // write the ray tracing result to a PPM image
   Tucano::ImageImporter::writePPMImage("result.ppm", pixel_data);
   std::cout << "[SUCCESS] ray tracing done with time = " << duration << " microseconds." << std::endl;
