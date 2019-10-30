@@ -31,7 +31,7 @@
 
 2. Computate shading at the first impact point (difuse and specular).
 	Joaquin, Jacob
-![](./final-renders/finalrender800.jpg)
+![](./final-renders/final-scene/result4.png)
 
 
 3. Perform recursive raytracing for refections to simulate specular materials. 
