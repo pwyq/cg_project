@@ -60,7 +60,9 @@
 
 8. Show a scene created by the group, exported as a wavefront object (OBJ) and directly loaded into the application.
 	Shivani, Joaquin, Yanqing
-![](./final-renders/finalrender800.jpg)
+![](./final-renders/final-scene/result3.png)
+![](./final-renders/final-scene/result5.png)
+![](./final-renders/final-scene/result7.png)
 
 
 
