@@ -18,7 +18,7 @@
     gdb ./build/raytracing
 
 
-REPORT
+
 
 
 REPORT
@@ -38,7 +38,7 @@ Picture: Two pictures (with and without shading) for comparison
 
 3. Perform recursive raytracing for re?ections to simulate specular materials. 
 	Joaquin, Jacob, lazer
-Picture: debug ray
+![](./final-renders/M3-mirror-teapot.jpg)
 
 4. Calculate hard shadows from a point light. 
 	Joaquin, Lazer, Moshiur, Yanqing, Jacob, Shivani
@@ -50,7 +50,7 @@ Two pcitures: pic with soft shadows
 
 6. Show an interactive display in OpenGL of the 3D scene and a debug ray tracer. A ray from a chosen pixel should be shown via OpenGL, illustrating the interactions with the surfaces. 
 	Lazer
-Picture: lazer
+
 ![](./final-renders/M6E6.png)
 
 
