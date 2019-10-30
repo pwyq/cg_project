@@ -100,6 +100,8 @@ average time: 12947494
 ![](./final-renders/accelerationonvoff.JPG)
 ![](./final-renders/triangle10v50.JPG)
 ![](./final-renders/resolution100v200.JPG)
+![](./final-renders/noaccresolution100v200.JPG)
+![](./final-renders/noAccTriangle10v50.JPG)
 
 
 
