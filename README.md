@@ -81,12 +81,11 @@ Pitures: code
 3. A numerical evaluation of the performance of your ray tracer.
 	Lazer
 
-Picture: terminal
-
-
 4. An illustration of interesting test or corner cases. 
 	Joaquin, Shivani, Jacob, Yanqing
-![](./final-renders/E5.jpg)
+
+![](./final-renders/E2.png)
+
 
 
 5. Extending the debugger to show the nth refection of a ray via the keyboard, or triggering a ray highlighting and showing command line output of the selected ray’s properties. 
