@@ -84,7 +84,7 @@ Pitures: code
 4. An illustration of interesting test or corner cases. 
 	Joaquin, Shivani, Jacob, Yanqing
 
-![](./final-renders/M3-mirror-teapot.jpg)
+![](./final-renders/E5.jpg)
 
 
 
