@@ -29,12 +29,12 @@
 
 Picture: Debug ray with a simple obj
 
-2. Computate shading at the ?rst impact point (di?use and specular).
+2. Computate shading at the first impact point (difuse and specular).
 	Joaquin, Jacob
 Picture: Two pictures (with and without shading) for comparison
 
 
-3. Perform recursive raytracing for re?ections to simulate specular materials. 
+3. Perform recursive raytracing for refections to simulate specular materials. 
 	Joaquin, Jacob, lazer
 ![](./final-renders/M3-mirror-teapot.jpg)
 
@@ -54,8 +54,8 @@ Two pcitures: pic with soft shadows
 
 7. Implement a (simple) acceleration structure. 
 	Jacob, Joaquin, Moshiur and Yanqing, Shivani, Lazer
-
-Pitures: boxes
+![](./final-renders/M7-boxes.png)
+![](./final-renders/M7-no-boxes.png)
 
 
 8. Show a scene created by the group, exported as a wavefront object (OBJ) and directly loaded into the application.
@@ -74,7 +74,7 @@ Pitures: code
 
 2. Multicore support of the ray tracer (implementing additional threads).
 	
-Picture: ![](./final-renders/E2.png)
+![](./final-renders/E2.png)
 
 3. A numerical evaluation of the performance of your ray tracer.
 	Lazer
@@ -88,10 +88,14 @@ Picture: Picture of debug rays
 
 5. An illustration of interesting test or corner cases. 
 	Joaquin, Shivani, Jacob, Yanqing
+![](./final-renders/E5_box-corner-case.jpg)
 
-Picture: picture from slides
 
-6. Extending the debugger to show the nth re?ection of a ray via the keyboard, or triggering a ray highlighting and showing command line output of the selected ray’s properties. 
-	Lazer
+6. Extending the debugger to show the nth refection of a ray via the keyboard, or triggering a ray highlighting and showing command line output of the selected ray’s properties. 
+![](./final-renders/E6-alt.png)
 
 Picture: Picture of debug rays --> Lazer
+
+
+#### Final image
+![](./final-renders/finalrender800.jpg)
