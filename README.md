@@ -44,7 +44,7 @@
 
 5. Calculate soft shadows from a spherical light centered at a point light.
 	Joaquin,Shivani, Lazer, Moshiur, Yanqing, Jacob
-
+![](./final-renders/final-scene/result4.png)
 
 6. Show an interactive display in OpenGL of the 3D scene and a debug ray tracer. A ray from a chosen pixel should be shown via OpenGL, illustrating the interactions with the surfaces. 
 	Lazer
