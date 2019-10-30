@@ -80,6 +80,22 @@ Pitures: code
 
 3. A numerical evaluation of the performance of your ray tracer.
 	Lazer
+	
+# 1 Baseline measurement for with-acc
+- cube.obj
+- acc = on
+- thread = on
+- multi light
+- resolution: 100x100
+- triangle limit = 10
+		number of vertices    : 8
+		number of faces       : 36
+		number of materials   : 6
+		number of leaf boxes  : 2
+
+average time: 12947494
+
+
 
 4. An illustration of interesting test or corner cases. 
 	Joaquin, Shivani, Jacob, Yanqing
@@ -88,7 +104,7 @@ Pitures: code
 
 
 
-5. Extending the debugger to show the nth refection of a ray via the keyboard, or triggering a ray highlighting and showing command line output of the selected ray’s properties. 
+5. Extending the debugger to show the nth refection of a ray via the keyboard, or triggering a ray highlighting and showing command line output of the selected rayâ€™s properties. 
 ![](./final-renders/E6-alt.png)
 
 
