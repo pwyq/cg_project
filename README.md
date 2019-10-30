@@ -18,13 +18,11 @@
     gdb ./build/raytracing
 
 
+#### REPORT
 
 
 
-REPORT
-
-
-MINIMUM REQUIREMENTS
+#### MINIMUM REQUIREMENTS
 
 1. Perform ray intersections with planes, triangles, and bounding boxes.
 	Joaquin, Lazer, Yanqing, Jacob
