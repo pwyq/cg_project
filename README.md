@@ -27,11 +27,11 @@
 1. Perform ray intersections with planes, triangles, and bounding boxes.
 	Joaquin, Lazer, Yanqing, Jacob
 
-Picture: Debug ray with a simple obj
+![](./final-renders/E6-alt.png)
 
 2. Computate shading at the first impact point (difuse and specular).
 	Joaquin, Jacob
-Picture: Two pictures (with and without shading) for comparison
+![](./final-renders/finalrender800.jpg)
 
 
 3. Perform recursive raytracing for refections to simulate specular materials. 
@@ -40,16 +40,15 @@ Picture: Two pictures (with and without shading) for comparison
 
 4. Calculate hard shadows from a point light. 
 	Joaquin, Lazer, Moshiur, Yanqing, Jacob, Shivani
-One picture: Pic with hard shadows 
+![](./final-renders/finalrender800.jpg)
 
 5. Calculate soft shadows from a spherical light centered at a point light.
 	Joaquin,Shivani, Lazer, Moshiur, Yanqing, Jacob
-Two pcitures: pic with soft shadows
+![](./final-renders/finalrender800.jpg)
 
 6. Show an interactive display in OpenGL of the 3D scene and a debug ray tracer. A ray from a chosen pixel should be shown via OpenGL, illustrating the interactions with the surfaces. 
 	Lazer
-
-![](./final-renders/M6E6.png)
+![](./final-renders/E6-alt.png)
 
 
 7. Implement a (simple) acceleration structure. 
@@ -61,7 +60,7 @@ Two pcitures: pic with soft shadows
 
 8. Show a scene created by the group, exported as a wavefront object (OBJ) and directly loaded into the application.
 	Shivani, Joaquin, Yanqing
-Picture: finl pic
+![](./final-renders/finalrender800.jpg)
 
 
 
@@ -95,7 +94,7 @@ Picture: Picture of debug rays
 6. Extending the debugger to show the nth refection of a ray via the keyboard, or triggering a ray highlighting and showing command line output of the selected ray’s properties. 
 ![](./final-renders/E6-alt.png)
 
-Picture: Picture of debug rays --> Lazer
+
 
 
 #### Final image
