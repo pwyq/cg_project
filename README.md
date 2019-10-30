@@ -62,7 +62,7 @@
 	Shivani, Joaquin, Yanqing
 ![](./final-renders/final-scene/result3.png)
 ![](./final-renders/final-scene/result5.png)
-![](./final-renders/final-scene/result7.png)
+![](./final-renders/final-scene/result7.jpg)
 
 
 
