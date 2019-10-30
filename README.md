@@ -84,11 +84,11 @@ Pitures: code
 4. An illustration of interesting test or corner cases. 
 	Joaquin, Shivani, Jacob, Yanqing
 
-![](./final-renders/E2.png)
+![](./final-renders/E5.jpg)
 
 
 
-5. Extending the debugger to show the nth refection of a ray via the keyboard, or triggering a ray highlighting and showing command line output of the selected ray’s properties. 
+5. Extending the debugger to show the nth refection of a ray via the keyboard, or triggering a ray highlighting and showing command line output of the selected rayâ€™s properties. 
 ![](./final-renders/E6-alt.png)
 
 
