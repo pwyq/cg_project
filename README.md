@@ -40,11 +40,11 @@
 
 4. Calculate hard shadows from a point light. 
 	Joaquin, Lazer, Moshiur, Yanqing, Jacob, Shivani
-![](./final-renders/finalrender800.jpg)
+![](./final-renders/final-scene/result3.png)
 
 5. Calculate soft shadows from a spherical light centered at a point light.
 	Joaquin,Shivani, Lazer, Moshiur, Yanqing, Jacob
-![](./final-renders/finalrender800.jpg)
+
 
 6. Show an interactive display in OpenGL of the 3D scene and a debug ray tracer. A ray from a chosen pixel should be shown via OpenGL, illustrating the interactions with the surfaces. 
 	Lazer
