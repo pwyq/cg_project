@@ -54,8 +54,9 @@ Two pcitures: pic with soft shadows
 
 7. Implement a (simple) acceleration structure. 
 	Jacob, Joaquin, Moshiur and Yanqing, Shivani, Lazer
-![](./final-renders/M7-boxes.png)
 ![](./final-renders/M7-no-boxes.png)
+![](./final-renders/M7-boxes.png)
+
 
 
 8. Show a scene created by the group, exported as a wavefront object (OBJ) and directly loaded into the application.
