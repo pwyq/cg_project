@@ -71,8 +71,8 @@ EXTENSIONS
 
 1. Implementing a more complex scene hierarchy. 
 	Shivani, Joaquin, Jacob, Moshiur, Yanqing, lazer
+![](./final-renders/classStructure.JPG)
 
-Pitures: code
 
 2. Multicore support of the ray tracer (implementing additional threads).
 	
@@ -114,7 +114,7 @@ average time: 12947494
 
 
 
-5. Extending the debugger to show the nth refection of a ray via the keyboard, or triggering a ray highlighting and showing command line output of the selected ray’s properties. 
+5. Extending the debugger to show the nth refection of a ray via the keyboard, or triggering a ray highlighting and showing command line output of the selected rayâ€™s properties. 
 ![](./final-renders/E6-alt.png)
 
 
